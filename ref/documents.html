@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GED Qualité — ENSP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sidebar-bg:    #0F1F3D;
+    --sidebar-hover: #1A3260;
+    --sidebar-active:#1E3D7A;
+    --accent:        #00A878;
+    --accent-dim:    #007A58;
+    --amber:         #F59E0B;
+    --danger:        #DC2626;
+    --surface:       #F7F8FA;
+    --surface-2:     #EEF0F4;
+    --border:        #DDE1E9;
+    --text:          #1A1D23;
+    --text-muted:    #6B7280;
+    --text-light:    #9CA3AF;
+    --white:         #FFFFFF;
+
+    --status-brouillon:  #6B7280;
+    --status-en-revue:   #F59E0B;
+    --status-approuve:   #3B82F6;
+    --status-applicable: #00A878;
+    --status-obsolete:   #DC2626;
+    --status-archive:    #9CA3AF;
+
+    --font-ui:    'Inter', sans-serif;
+    --font-code:  'Fira Code', monospace;
+    --radius-sm:  4px;
+    --radius-md:  8px;
+    --radius-lg:  12px;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+    --shadow-md:  0 4px 16px rgba(0,0,0,.12);
+  }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--surface);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-size: 13px;
+  }
+
+  /* ── SIDEBAR ────────────────────────────────── */
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar-logo {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-logo .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sidebar-logo .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .sidebar-logo .logo-text { color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .3px; line-height: 1.2; }
+  .sidebar-logo .logo-sub  { color: rgba(255,255,255,.45); font-size: 10px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+
+  .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 0; }
+  .nav-section-label {
+    padding: 8px 18px 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255,255,255,.28);
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 18px;
+    color: rgba(255,255,255,.6);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    font-size: 12.5px;
+    font-weight: 500;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--sidebar-active); color: #fff; }
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+  .nav-item .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--amber);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+  .nav-badge.danger { background: var(--danger); }
+
+  .sidebar-footer {
+    padding: 12px 18px;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .user-card {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+  }
+  .user-avatar {
+    width: 30px; height: 30px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 700;
+  }
+  .user-name  { color: #fff; font-size: 12px; font-weight: 600; }
+  .user-role  { color: rgba(255,255,255,.4); font-size: 10px; }
+
+  /* ── MAIN ───────────────────────────────────── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── TOPBAR ─────────────────────────────────── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 52px;
+    display: flex; align-items: center; gap: 16px;
+    flex-shrink: 0;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; color: var(--text); flex: 1; }
+  .topbar-title span { color: var(--text-muted); font-weight: 400; margin-left: 6px; font-size: 13px; }
+
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 6px 12px;
+    width: 260px;
+  }
+  .search-box input {
+    border: none; background: transparent; outline: none;
+    font-family: var(--font-ui); font-size: 12.5px; color: var(--text);
+    width: 100%;
+  }
+  .search-icon { color: var(--text-light); font-size: 14px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-ui); font-size: 12.5px; font-weight: 600;
+    cursor: pointer; border: none; transition: all .15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dim); }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+
+  /* ── LAYOUT SPLIT ───────────────────────────── */
+  .content-area {
+    flex: 1; display: flex; overflow: hidden;
+  }
+
+  /* ── LIST PANE ──────────────────────────────── */
+  .list-pane {
+    width: 380px; min-width: 380px;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    background: var(--white);
+    overflow: hidden;
+  }
+
+  .list-toolbar {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .filter-chip {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text-muted);
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .filter-chip.active { background: var(--sidebar-bg); color: #fff; border-color: var(--sidebar-bg); }
+  .filter-chip:hover:not(.active) { background: var(--border); }
+
+  .list-count { margin-left: auto; font-size: 11px; color: var(--text-light); font-weight: 500; }
+
+  .doc-list { flex: 1; overflow-y: auto; }
+
+  .doc-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--surface-2);
+    cursor: pointer;
+    transition: background .12s;
+    position: relative;
+  }
+  .doc-item:hover { background: var(--surface); }
+  .doc-item.active { background: #EEF6F2; border-left: 3px solid var(--accent); padding-left: 13px; }
+
+  .doc-item-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; }
+  .doc-code {
+    font-family: var(--font-code);
+    font-size: 11px; font-weight: 500;
+    color: var(--sidebar-bg);
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .doc-title-text { font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.35; }
+  .doc-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .doc-process {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+    color: var(--text-light);
+  }
+  .doc-rev { font-size: 10px; color: var(--text-light); }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    padding: 2px 7px; border-radius: 10px;
+    margin-left: auto; flex-shrink: 0;
+  }
+  .status-badge::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+  .s-applicable { color: var(--status-applicable); background: #E6F7F2; }
+  .s-en-revue   { color: #B45309; background: #FEF3C7; }
+  .s-brouillon  { color: var(--text-muted); background: var(--surface-2); }
+  .s-obsolete   { color: var(--status-obsolete); background: #FEF2F2; }
+  .s-approuve   { color: #1D4ED8; background: #EFF6FF; }
+
+  /* ── DETAIL PANE ────────────────────────────── */
+  .detail-pane {
+    flex: 1; overflow-y: auto;
+    background: var(--surface);
+    padding: 24px;
+  }
+
+  /* ── WORKFLOW TIMELINE ──────────────────────── */
+  .workflow-bar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .workflow-bar h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 14px; }
+
+  .workflow-steps {
+    display: flex; align-items: center; gap: 0;
+    position: relative;
+  }
+  .workflow-step {
+    flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1;
+  }
+  .workflow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 13px; left: 50%; right: -50%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .workflow-step.done:not(:last-child)::after,
+  .workflow-step.active:not(:last-child)::after {
+    background: var(--accent);
+  }
+
+  .step-dot {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 700;
+    position: relative; z-index: 1;
+    transition: all .2s;
+  }
+  .workflow-step.done .step-dot  { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .workflow-step.active .step-dot { background: var(--white); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 3px rgba(0,168,120,.18); }
+
+  .step-label { font-size: 10px; font-weight: 600; margin-top: 6px; color: var(--text-light); text-align: center; }
+  .workflow-step.done .step-label   { color: var(--accent); }
+  .workflow-step.active .step-label { color: var(--accent); font-weight: 700; }
+  .step-date { font-size: 9px; color: var(--text-light); margin-top: 2px; }
+
+  /* ── DETAIL CARDS ───────────────────────────── */
+  .detail-header {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .detail-header-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .detail-type-icon {
+    width: 42px; height: 42px;
+    background: var(--sidebar-bg);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .detail-title { font-size: 16px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+  .detail-code  {
+    font-family: var(--font-code);
+    font-size: 12px; color: var(--text-muted);
+    background: var(--surface-2);
+    display: inline-block;
+    padding: 2px 8px; border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .detail-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 10px;
+    background: var(--surface-2); color: var(--text-muted);
+  }
+  .tag.process-tag { background: #EFF6FF; color: #1D4ED8; }
+
+  .detail-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--surface-2); }
+
+  /* ── CARDS GRID ─────────────────────────────── */
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card h4 {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-icon { font-size: 13px; }
+
+  .info-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--surface-2); }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+  .info-value { font-size: 11px; color: var(--text); font-weight: 600; text-align: right; }
+  .info-value.code-font { font-family: var(--font-code); font-size: 10.5px; }
+
+  /* ── HISTORIQUE ─────────────────────────────── */
+  .timeline-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+  }
+  .timeline-card h4 {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item { display: flex; gap: 14px; padding-bottom: 16px; position: relative; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; width: 28px; flex-shrink: 0; }
+  .tl-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+    border: 2px solid var(--border);
+    background: var(--white);
+    position: relative; z-index: 1;
+  }
+  .tl-dot.applicable { background: #E6F7F2; border-color: var(--accent); color: var(--accent); }
+  .tl-dot.obsolete   { background: #FEF2F2; border-color: var(--danger); color: var(--danger); }
+  .tl-dot.brouillon  { background: var(--surface-2); border-color: var(--border); color: var(--text-light); }
+  .tl-line { flex: 1; width: 2px; background: var(--surface-2); margin-top: 0; }
+  .tl-item:last-child .tl-line { display: none; }
+  .tl-content { flex: 1; padding-bottom: 0; }
+  .tl-title { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+  .tl-meta  { font-size: 10.5px; color: var(--text-muted); margin-bottom: 4px; }
+  .tl-motif { font-size: 10.5px; color: var(--text-light); font-style: italic; }
+
+  /* ── ALERTE ECHÉANCE ─────────────────────────── */
+  .alert-banner {
+    display: flex; align-items: center; gap: 10px;
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+  .alert-banner .alert-icon { font-size: 16px; }
+  .alert-banner .alert-text { font-size: 12px; font-weight: 600; color: #92400E; }
+  .alert-banner .alert-sub  { font-size: 11px; color: #B45309; }
+
+  /* ── DASHBOARD WIDGETS ──────────────────────── */
+  .dashboard { padding: 24px; flex: 1; overflow-y: auto; }
+  .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .kpi-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 800; line-height: 1; color: var(--text); margin-bottom: 4px; }
+  .kpi-sub   { font-size: 11px; color: var(--text-light); }
+  .kpi-card.green .kpi-value { color: var(--accent); }
+  .kpi-card.amber .kpi-value { color: var(--amber); }
+  .kpi-card.red   .kpi-value { color: var(--danger); }
+
+  /* ── SCROLLBAR ──────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════ SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">📋</div>
+      <div>
+        <div class="logo-text">GED Qualité</div>
+        <div class="logo-sub">ENSP — ISO 9001:2015</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Navigation</div>
+    <div class="nav-item" onclick="showView('dashboard')">
+      <span class="nav-icon">🏠</span> Tableau de bord
+    </div>
+    <div class="nav-item active" onclick="showView('documents')">
+      <span class="nav-icon">📄</span> Documents
+    </div>
+    <div class="nav-item" onclick="showView('workflow')">
+      <span class="nav-icon">🔄</span> Workflow
+      <span class="nav-badge">4</span>
+    </div>
+
+    <div class="nav-section-label" style="margin-top:8px">Supervision</div>
+    <div class="nav-item">
+      <span class="nav-icon">⏰</span> Révisions à planifier
+      <span class="nav-badge danger">2</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">📋</span> Piste d'audit
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">📊</span> Rapports
+    </div>
+
+    <div class="nav-section-label" style="margin-top:8px">Administration</div>
+    <div class="nav-item">
+      <span class="nav-icon">👥</span> Utilisateurs
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon">⚙️</span> Référentiels
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">KB</div>
+      <div>
+        <div class="user-name">Karim Bouali</div>
+        <div class="user-role">Resp. Qualité</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════════ MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Documents <span>Procédures — 9 documents</span></div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Chercher par titre, codification…" id="search-input" oninput="filterDocs()">
+    </div>
+    <button class="btn btn-ghost">⬇ Exporter</button>
+    <button class="btn btn-primary" onclick="showNewDoc()">+ Nouveau document</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content-area" id="content-area">
+
+    <!-- LIST PANE -->
+    <div class="list-pane" id="list-pane">
+      <div class="list-toolbar">
+        <div class="filter-chip active" onclick="filterType(this,'ALL')">Tous</div>
+        <div class="filter-chip" onclick="filterType(this,'PRO')">PRO</div>
+        <div class="filter-chip" onclick="filterType(this,'MOD')">MOD</div>
+        <div class="filter-chip" onclick="filterType(this,'INS')">INS</div>
+        <div class="filter-chip" onclick="filterType(this,'FOR')">FOR</div>
+        <div class="list-count" id="list-count">9 résultats</div>
+      </div>
+      <div class="doc-list" id="doc-list"></div>
+    </div>
+
+    <!-- DETAIL PANE -->
+    <div class="detail-pane" id="detail-pane">
+      <div id="detail-content"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const documents = [
+  {
+    id:1, code:'PRO.QHSE.GEN.001', type:'PRO', processus:'DQHSE',
+    titre:'Maîtrise des informations documentées',
+    rev:2, statut:'APPLICABLE', conf:2,
+    dateApp:'2024-02-01', dateProchaine:'2026-02-01',
+    lieu:'Bureau dépt qualité', archive:'Salle d\'archive', duree:'3 ans',
+    redacteur:'A. Ferhat', revu:'K. Bouali', approuve:'K. Bouali',
+    motif:'Mise à jour suite audit interne — exigences §7.5 renforcées',
+    emoji:'📋',
+    revisions:[
+      {num:2, statut:'APPLICABLE', dateApp:'2024-02-01', motif:'Mise à jour suite audit interne', acteur:'K. Bouali'},
+      {num:1, statut:'OBSOLETE',   dateApp:'2022-06-01', motif:'Révision annuelle', acteur:'K. Bouali'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2021-01-15', motif:'Création initiale', acteur:'A. Ferhat'},
+    ]
+  },
+  {
+    id:2, code:'PRO.QHSE.HSE.003', type:'PRO', processus:'DQHSE',
+    titre:'Gestion des non-conformités et actions correctives',
+    rev:1, statut:'APPLICABLE', conf:2,
+    dateApp:'2023-09-01', dateProchaine:'2025-09-01',
+    lieu:'Bureau dépt qualité', archive:'Salle d\'archive', duree:'5 ans',
+    redacteur:'H. Meddah', revu:'K. Bouali', approuve:'K. Bouali',
+    motif:'Adaptation au nouveau formulaire FOR.QHSE.NC.012',
+    emoji:'🔴',
+    revisions:[
+      {num:1, statut:'APPLICABLE', dateApp:'2023-09-01', motif:'Adaptation formulaire NC', acteur:'K. Bouali'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2020-03-10', motif:'Création', acteur:'M. Salah'},
+    ]
+  },
+  {
+    id:3, code:'MOD.QHSE.HSE.003', type:'MOD', processus:'DQHSE',
+    titre:'Mode opératoire inspection des équipements sous pression',
+    rev:0, statut:'EN_REVUE', conf:3,
+    dateApp:null, dateProchaine:null,
+    lieu:'Bureau service concerné', archive:'Salle d\'archive', duree:'3 ans',
+    redacteur:'F. Aissaoui', revu:null, approuve:null,
+    motif:'Création — suite intégration nouvelles normes EN 13445',
+    emoji:'🔧',
+    revisions:[
+      {num:0, statut:'EN_REVUE', dateApp:null, motif:'Création initiale', acteur:'F. Aissaoui'},
+    ]
+  },
+  {
+    id:4, code:'INS.QHSE.HSE.001', type:'INS', processus:'DQHSE',
+    titre:'Instruction port des EPI en zone de production',
+    rev:3, statut:'APPLICABLE', conf:2,
+    dateApp:'2024-11-01', dateProchaine:'2025-11-01',
+    lieu:'Bureau dépt qualité', archive:'Salle d\'archive', duree:'3 ans',
+    redacteur:'A. Ferhat', revu:'K. Bouali', approuve:'K. Bouali',
+    motif:'Ajout zone B — réorganisation ateliers',
+    emoji:'⛑️',
+    revisions:[
+      {num:3, statut:'APPLICABLE', dateApp:'2024-11-01', motif:'Ajout zone B', acteur:'K. Bouali'},
+      {num:2, statut:'OBSOLETE',   dateApp:'2023-05-15', motif:'Mise à jour réglementaire', acteur:'K. Bouali'},
+      {num:1, statut:'OBSOLETE',   dateApp:'2022-01-10', motif:'Révision annuelle', acteur:'A. Ferhat'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2021-03-01', motif:'Création', acteur:'A. Ferhat'},
+    ]
+  },
+  {
+    id:5, code:'FOR.QHSE.GEN.008', type:'FOR', processus:'DQHSE',
+    titre:'Fiche de revue de direction — compte-rendu',
+    rev:1, statut:'BROUILLON', conf:3,
+    dateApp:null, dateProchaine:null,
+    lieu:'Bureau dépt qualité', archive:'Salle d\'archive', duree:'10 ans',
+    redacteur:'H. Meddah', revu:null, approuve:null,
+    motif:'Refonte complète du format — exigences §9.3',
+    emoji:'📊',
+    revisions:[
+      {num:1, statut:'BROUILLON',  dateApp:null,       motif:'Refonte complète §9.3', acteur:'H. Meddah'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2022-04-01', motif:'Création', acteur:'H. Meddah'},
+    ]
+  },
+  {
+    id:6, code:'PRO.DAL.LOG.001', type:'PRO', processus:'DAL',
+    titre:'Procédure de réception des matières premières',
+    rev:2, statut:'APPLICABLE', conf:2,
+    dateApp:'2024-01-15', dateProchaine:'2026-01-15',
+    lieu:'Bureau service concerné', archive:'Salle d\'archive', duree:'5 ans',
+    redacteur:'R. Kaci', revu:'N. Amrani', approuve:'N. Amrani',
+    motif:'Intégration contrôles qualité fournisseurs',
+    emoji:'🚚',
+    revisions:[
+      {num:2, statut:'APPLICABLE', dateApp:'2024-01-15', motif:'Intégration CQ fournisseurs', acteur:'N. Amrani'},
+      {num:1, statut:'OBSOLETE',   dateApp:'2022-07-01', motif:'Révision processus achats', acteur:'R. Kaci'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2020-10-01', motif:'Création', acteur:'R. Kaci'},
+    ]
+  },
+  {
+    id:7, code:'INS.QHSE.ENV.004', type:'INS', processus:'DQHSE',
+    titre:'Instruction tri et élimination des déchets industriels',
+    rev:1, statut:'APPLICABLE', conf:2,
+    dateApp:'2023-06-01', dateProchaine:'2025-06-01',
+    lieu:'Bureau dépt qualité', archive:'Salle d\'archive', duree:'3 ans',
+    redacteur:'S. Benali', revu:'K. Bouali', approuve:'K. Bouali',
+    motif:'Conformité nouvelle réglementation déchets spéciaux',
+    emoji:'♻️',
+    revisions:[
+      {num:1, statut:'APPLICABLE', dateApp:'2023-06-01', motif:'Conformité réglementation', acteur:'K. Bouali'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2021-09-01', motif:'Création', acteur:'S. Benali'},
+    ]
+  },
+  {
+    id:8, code:'MOD.ENSP.GEN.007', type:'MOD', processus:'ENSP',
+    titre:'Mode opératoire calibration des instruments de mesure',
+    rev:0, statut:'APPROUVE', conf:2,
+    dateApp:null, dateProchaine:null,
+    lieu:'Bureau service concerné', archive:'Salle d\'archive', duree:'3 ans',
+    redacteur:'T. Hamza', revu:'K. Bouali', approuve:'K. Bouali',
+    motif:'Création suite acquisition nouveaux équipements labo',
+    emoji:'📐',
+    revisions:[
+      {num:0, statut:'APPROUVE', dateApp:null, motif:'Création initiale', acteur:'T. Hamza'},
+    ]
+  },
+  {
+    id:9, code:'PRO.DRH.GEN.002', type:'PRO', processus:'DRH',
+    titre:'Procédure de compétences et formation du personnel',
+    rev:2, statut:'APPLICABLE', conf:2,
+    dateApp:'2023-01-01', dateProchaine:'2025-01-01',
+    lieu:'Bureau dépt qualité', archive:'Salle d\'archive', duree:'5 ans',
+    redacteur:'L. Meziane', revu:'K. Bouali', approuve:'K. Bouali',
+    motif:'Intégration plan de formation 2023-2025',
+    emoji:'🎓',
+    revisions:[
+      {num:2, statut:'APPLICABLE', dateApp:'2023-01-01', motif:'Plan formation 2023-2025', acteur:'K. Bouali'},
+      {num:1, statut:'OBSOLETE',   dateApp:'2021-06-01', motif:'Révision annuelle', acteur:'L. Meziane'},
+      {num:0, statut:'OBSOLETE',   dateApp:'2019-09-01', motif:'Création', acteur:'L. Meziane'},
+    ]
+  },
+];
+
+const statusLabels = {
+  'APPLICABLE':'Applicable','EN_REVUE':'En revue',
+  'BROUILLON':'Brouillon','OBSOLETE':'Obsolète',
+  'APPROUVE':'Approuvé','ARCHIVE':'Archivé'
+};
+const statusClass = {
+  'APPLICABLE':'s-applicable','EN_REVUE':'s-en-revue',
+  'BROUILLON':'s-brouillon','OBSOLETE':'s-obsolete',
+  'APPROUVE':'s-approuve'
+};
+
+let currentFilter = 'ALL';
+let currentDoc = null;
+let searchQuery = '';
+
+function filterType(el, type) {
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = type;
+  renderList();
+}
+
+function filterDocs() {
+  searchQuery = document.getElementById('search-input').value.toLowerCase();
+  renderList();
+}
+
+function getFiltered() {
+  return documents.filter(d => {
+    if (currentFilter !== 'ALL' && d.type !== currentFilter) return false;
+    if (searchQuery && !d.titre.toLowerCase().includes(searchQuery) && !d.code.toLowerCase().includes(searchQuery)) return false;
+    return true;
+  });
+}
+
+function renderList() {
+  const filtered = getFiltered();
+  document.getElementById('list-count').textContent = filtered.length + ' résultat' + (filtered.length>1?'s':'');
+  const list = document.getElementById('doc-list');
+  list.innerHTML = filtered.map(d => `
+    <div class="doc-item ${currentDoc?.id===d.id?'active':''}" onclick="selectDoc(${d.id})">
+      <div class="doc-item-header">
+        <span class="doc-code">${d.code}</span>
+        <span class="status-badge ${statusClass[d.statut]}">${statusLabels[d.statut]}</span>
+      </div>
+      <div class="doc-title-text">${d.titre}</div>
+      <div class="doc-meta">
+        <span class="doc-process">${d.processus}</span>
+        <span class="doc-rev">Rév. ${d.rev}</span>
+        ${d.dateApp ? `<span class="doc-rev">• ${d.dateApp}</span>` : '<span class="doc-rev">• Non publiée</span>'}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectDoc(id) {
+  currentDoc = documents.find(d=>d.id===id);
+  renderList();
+  renderDetail();
+}
+
+function workflowStep(statut) {
+  const steps = ['BROUILLON','EN_REVUE','APPROUVE','APPLICABLE'];
+  return steps.indexOf(statut);
+}
+
+function formatDate(d) {
+  if(!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function isOverdue(dateStr) {
+  if(!dateStr) return false;
+  return new Date(dateStr) < new Date();
+}
+
+function isUrgent(dateStr) {
+  if(!dateStr) return false;
+  const diff = (new Date(dateStr) - new Date()) / (1000*60*60*24);
+  return diff >= 0 && diff <= 90;
+}
+
+function renderDetail() {
+  const d = currentDoc;
+  if(!d) return;
+  const stepIdx = workflowStep(d.statut);
+  const overdue = isOverdue(d.dateProchaine);
+  const urgent  = !overdue && isUrgent(d.dateProchaine);
+  const steps = [
+    {label:'Rédaction', icon:'✍️', date: d.revisions.at(-1)?.dateApp || d.dateApp ? '':''},
+    {label:'En revue',  icon:'🔍', date:''},
+    {label:'Approuvé',  icon:'✅', date:''},
+    {label:'Applicable',icon:'📢', date: d.dateApp || ''},
+    {label:'Obsolète',  icon:'📦', date:''},
+  ];
+
+  const pane = document.getElementById('detail-content');
+  pane.innerHTML = `
+    ${(overdue||urgent) ? `
+    <div class="alert-banner">
+      <span class="alert-icon">${overdue?'🔴':'⚠️'}</span>
+      <div>
+        <div class="alert-text">${overdue?'Révision en retard':'Révision à planifier prochainement'}</div>
+        <div class="alert-sub">Date de prochaine révision : ${formatDate(d.dateProchaine)}${overdue?' (dépassée de '+Math.abs(Math.round((new Date(d.dateProchaine)-new Date())/(1000*60*60*24)))+' jours)':''}</div>
+      </div>
+    </div>` : ''}
+
+    <!-- Workflow bar — la signature de cette interface -->
+    <div class="workflow-bar">
+      <h4>Cycle de vie de la révision courante (Rév. ${d.rev})</h4>
+      <div class="workflow-steps">
+        ${steps.map((s,i)=>`
+          <div class="workflow-step ${i<stepIdx?'done':i===stepIdx?'active':''}">
+            <div class="step-dot">${i<stepIdx?'✓':i+1}</div>
+            <div class="step-label">${s.label}</div>
+            ${i===3&&d.dateApp?`<div class="step-date">${formatDate(d.dateApp)}</div>`:''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- En-tête document -->
+    <div class="detail-header">
+      <div class="detail-header-top">
+        <div class="detail-type-icon">${d.emoji}</div>
+        <div style="flex:1">
+          <div class="detail-code">${d.code}</div>
+          <div class="detail-title">${d.titre}</div>
+          <div class="detail-tags">
+            <span class="tag process-tag">${d.processus}</span>
+            <span class="tag">${d.type === 'PRO'?'Procédure':d.type==='MOD'?'Mode opératoire':d.type==='INS'?'Instruction':'Enregistrement'}</span>
+            <span class="tag">Confid. niveau ${d.conf}</span>
+            <span class="status-badge ${statusClass[d.statut]}">${statusLabels[d.statut]}</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:2px;">
+        <strong>Motif de révision :</strong> ${d.motif}
+      </div>
+      <div class="detail-actions">
+        ${d.statut==='APPLICABLE'?`
+          <button class="btn btn-primary">📥 Télécharger PDF</button>
+          <button class="btn btn-ghost">🔄 Créer Rév. ${d.rev+1}</button>
+        `:''}
+        ${d.statut==='EN_REVUE'?`
+          <button class="btn btn-primary">✅ Approuver</button>
+          <button class="btn btn-ghost">↩ Retourner en brouillon</button>
+        `:''}
+        ${d.statut==='APPROUVE'?`
+          <button class="btn btn-primary">📢 Rendre applicable</button>
+          <button class="btn btn-ghost">↩ Retourner en brouillon</button>
+        `:''}
+        ${d.statut==='BROUILLON'?`
+          <button class="btn btn-primary">📤 Soumettre à revue</button>
+          <button class="btn btn-ghost">✏️ Modifier</button>
+        `:''}
+        <button class="btn btn-ghost" style="margin-left:auto">⋯ Plus</button>
+      </div>
+    </div>
+
+    <!-- Cartes de métadonnées -->
+    <div class="cards-grid">
+      <div class="card">
+        <h4><span class="card-icon">📅</span> Dates clés</h4>
+        <div class="info-row">
+          <span class="info-label">Date d'application</span>
+          <span class="info-value">${formatDate(d.dateApp)}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Prochaine révision</span>
+          <span class="info-value" style="${overdue?'color:var(--danger)':urgent?'color:var(--amber)':''}">${formatDate(d.dateProchaine)}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Révision N°</span>
+          <span class="info-value">${d.rev}</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4><span class="card-icon">👤</span> Responsabilités</h4>
+        <div class="info-row">
+          <span class="info-label">Rédacteur</span>
+          <span class="info-value">${d.redacteur}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Revu par</span>
+          <span class="info-value">${d.revu || '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Approuvé par</span>
+          <span class="info-value">${d.approuve || '—'}</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4><span class="card-icon">🗂️</span> Conservation</h4>
+        <div class="info-row">
+          <span class="info-label">Lieu de classement</span>
+          <span class="info-value">${d.lieu}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Durée de classement</span>
+          <span class="info-value">${d.duree}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Lieu d'archivage</span>
+          <span class="info-value">${d.archive}</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4><span class="card-icon">🔐</span> Accès & diffusion</h4>
+        <div class="info-row">
+          <span class="info-label">Confidentialité</span>
+          <span class="info-value">${d.conf===1?'Public':d.conf===2?'Interne':'Confidentiel'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Méthode classement</span>
+          <span class="info-value">Méthode 1</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Versions totales</span>
+          <span class="info-value">${d.revisions.length}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historique des révisions -->
+    <div class="timeline-card">
+      <h4>📜 Historique des révisions</h4>
+      <div class="timeline">
+        ${d.revisions.map(r=>`
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot ${r.statut.toLowerCase()}">${r.num}</div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-title">Révision ${r.num} — <span class="status-badge ${statusClass[r.statut]}" style="font-size:9px">${statusLabels[r.statut]}</span></div>
+              <div class="tl-meta">
+                ${r.dateApp ? `Mise en application : ${formatDate(r.dateApp)}` : 'Non encore publiée'} · ${r.acteur}
+              </div>
+              <div class="tl-motif">${r.motif}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function showView(view) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function showNewDoc() {
+  alert('Formulaire de création d\'un nouveau document (non implémenté dans cette maquette)');
+}
+
+// Initialisation
+renderList();
+selectDoc(1);
+</script>
+</body>
+</html>

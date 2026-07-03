@@ -1,0 +1,284 @@
+import React, { useState, useEffect } from 'react';
+import { createDocument, fetchTypeDocuments, fetchProcessus, fetchNiveauxConfidentialite, fetchLieux, fetchMethodesClassement, fetchFonctionsResponsable } from '../services/api';
+import type { ReferenceItem } from '../services/api';
+
+interface NewDocumentProps {
+  onBack: () => void;
+  onSuccess?: () => void;
+}
+
+const TYPE_CARDS = [
+  { code: 'PRO', name: 'Procédure', icon: '📋', desc: 'Décrit un processus global', id: 1 },
+  { code: 'MOD', name: 'Mode opératoire', icon: '🔧', desc: 'Étapes d\'exécution détaillées', id: 2 },
+  { code: 'INS', name: 'Instruction', icon: '📌', desc: 'Consigne spécifique', id: 3 },
+  { code: 'FOR', name: 'Enregistrement', icon: '📊', desc: 'Formulaire ou rapport', id: 4 },
+  { code: 'TAB', name: 'Tableau', icon: '📈', desc: 'Données structurées', id: 5 },
+  { code: 'MAN', name: 'Manuel', icon: '📖', desc: 'Document de référence', id: 6 },
+];
+
+const NewDocument: React.FC<NewDocumentProps> = ({ onBack, onSuccess }) => {
+  const [step, setStep] = useState(1);
+  const [selectedType, setSelectedType] = useState<{code: string, name: string, id: number} | null>(null);
+  const [processusId, setProcessusId] = useState('');
+  const [processusCode, setProcessusCode] = useState('');
+  const [domaine, setDomaine] = useState('');
+  const [titre, setTitre] = useState('');
+  const [niveauConf, setNiveauConf] = useState('');
+  const [estExterne, setEstExterne] = useState('non');
+  const [lieuClassement, setLieuClassement] = useState('');
+  const [methode, setMethode] = useState('');
+  const [dureeClass, setDureeClass] = useState('');
+  const [lieuArch, setLieuArch] = useState('');
+  const [dureeArch, setDureeArch] = useState('');
+  const [respDest, setRespDest] = useState('');
+  const [motif, setMotif] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [codification, setCodification] = useState('');
+
+  const [typeDocuments, setTypeDocuments] = useState<ReferenceItem[]>([]);
+  const [processus, setProcessus] = useState<ReferenceItem[]>([]);
+  const [niveaux, setNiveaux] = useState<ReferenceItem[]>([]);
+  const [lieux, setLieux] = useState<ReferenceItem[]>([]);
+  const [methodes, setMethodes] = useState<ReferenceItem[]>([]);
+  const [responsables, setResponsables] = useState<ReferenceItem[]>([]);
+
+  useEffect(() => {
+    const loadRefs = async () => {
+      const [td, pr, nc, lx, mc, fr] = await Promise.all([
+        fetchTypeDocuments(),
+        fetchProcessus(),
+        fetchNiveauxConfidentialite(),
+        fetchLieux(),
+        fetchMethodesClassement(),
+        fetchFonctionsResponsable(),
+      ]);
+      setTypeDocuments(td);
+      setProcessus(pr);
+      setNiveaux(nc);
+      setLieux(lx);
+      setMethodes(mc);
+      setResponsables(fr);
+    };
+    loadRefs();
+  }, []);
+
+  const handleProcessusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setProcessusId(val);
+    const selected = processus.find(p => p.id.toString() === val);
+    setProcessusCode(selected?.label?.split(' — ')[0] || '');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedType || !processusId || !domaine || !titre) return;
+
+    setLoading(true);
+
+    const data = {
+      numero_ordre: null,
+      type_document_id: selectedType.id,
+      processus_id: parseInt(processusId),
+      codification: `${selectedType.code}.${processusCode}.${domaine}.${(Math.floor(Math.random()*15)+1).toString().padStart(3,'0')}`,
+      niveau_confidentialite_id: parseInt(niveauConf) || null,
+      lieu_classement_id: parseInt(lieuClassement) || null,
+      methode_classement_id: parseInt(methode) || null,
+      duree_classement: dureeClass || null,
+      lieu_archivage_id: parseInt(lieuArch) || null,
+      duree_archivage: dureeArch || null,
+      responsable_destruction_id: parseInt(respDest) || null,
+      est_externe: estExterne === 'oui',
+      actif: true,
+    };
+
+    try {
+      const result = await createDocument(data);
+      if (result) {
+        setCodification(result.codification || data.codification);
+        setSuccess(true);
+      }
+    } catch (err) {
+      console.error('Erreur:', err);
+    }
+    setLoading(false);
+  };
+
+  const nextStep = () => {
+    if (step === 3) {
+      handleSubmit({ preventDefault: () => {} } as any);
+      return;
+    }
+    setStep(step + 1);
+  };
+
+  const prevStep = () => setStep(step - 1);
+
+  if (success) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ background: '#0F1F3D', height: 52, display: 'flex', alignItems: 'center', padding: '0 24px' }}>
+          <span onClick={onBack} style={{ color: 'rgba(255,255,255,.7)', cursor: 'pointer', fontSize: 13 }}>← Documents</span>
+          <span style={{ color: '#fff', fontSize: 13, fontWeight: 600, marginLeft: 16 }}>Document créé !</span>
+        </div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+            <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 8 }}>Document créé !</div>
+            <div style={{ fontFamily: "'Fira Code'", fontSize: 15, fontWeight: 600, color: '#00A878', background: '#E6F7F2', padding: '6px 16px', borderRadius: 8, display: 'inline-block', marginBottom: 10 }}>{codification}</div>
+            <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>Le document a été créé en <strong>Brouillon (Rév. 0)</strong>.</p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button onClick={onBack} className="btn btn-ghost">Voir le registre</button>
+              <button onClick={onBack} className="btn btn-primary">Ouvrir le document →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Topbar */}
+      <div style={{ background: '#0F1F3D', height: 52, display: 'flex', alignItems: 'center', padding: '0 24px', gap: 16 }}>
+        <span onClick={onBack} style={{ color: 'rgba(255,255,255,.5)', cursor: 'pointer', fontSize: 12.5 }}>← Documents</span>
+        <span style={{ color: 'rgba(255,255,255,.2)' }}>/</span>
+        <span style={{ color: '#fff', fontSize: 13, fontWeight: 600 }}>Nouveau document</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 26, height: 26, background: '#00A878', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>📋</div>
+          <span style={{ color: 'rgba(255,255,255,.7)', fontSize: 11, fontWeight: 600 }}>GED Qualité · ENSP</span>
+        </div>
+      </div>
+
+      {/* Page */}
+      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 340px', gap: 0, maxWidth: 1100, margin: '0 auto', padding: '32px 24px', width: '100%' }}>
+        {/* Progress */}
+        <div style={{ gridColumn: '1 / -1', marginBottom: 28 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 20 }}>
+            Créer un <span style={{ color: '#00A878' }}>nouveau document</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0, position: 'relative', padding: '0 10px' }}>
+            <div style={{ position: 'absolute', top: 13, left: 23, right: 23, height: 2, background: '#DDE1E9', zIndex: 0 }}></div>
+            {[1, 2, 3].map((s) => (
+              <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1, flex: '0 0 auto' }}>
+                <div style={{
+                  width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 12, fontWeight: 700, border: '2px solid #DDE1E9', background: '#fff',
+                  ...(step > s ? { background: '#00A878', borderColor: '#00A878', color: '#fff' } : step === s ? { borderColor: '#00A878', color: '#00A878' } : { color: '#9CA3AF' })
+                }}>
+                  {step > s ? '✓' : s}
+                </div>
+                <div style={{ marginTop: 6, textAlign: 'center' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: step === s ? '#00A878' : '#6B7280' }}>
+                    {{ 1: 'Identification', 2: 'Conservation', 3: 'Révision initiale' }[s]}
+                  </div>
+                  <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>
+                    {{ 1: 'Type, processus, titre', 2: 'Classement, archivage', 3: 'Fichier, responsables' }[s]}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Form Area */}
+        {step === 1 && (
+          <div style={{ paddingRight: 32 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: '#E6F7F2' }}>🏷️</div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>Identification du document</div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>Définit la nature et la place du document dans le référentiel qualité</div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#6B7280', marginBottom: 10 }}>
+                Type de document <span style={{ color: '#DC2626' }}>•</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                {TYPE_CARDS.map((t) => (
+                  <div key={t.code} onClick={() => { setSelType(t.code); setSelectedType(t.code); }}
+                    style={{
+                      border: '2px solid #DDE1E9', borderRadius: 12, padding: 14, cursor: 'pointer',
+                      textAlign: 'center', transition: 'all .15s', background: '#fff',
+                      position: 'relative',
+                      ...(selectedType === t.code ? { borderColor: '#00A878', background: '#E6F7F2' } : {})
+                    }}>
+                    <div style={{ fontSize: 22, marginBottom: 6 }}>{t.icon}</div>
+                    <div style={{ fontFamily: "'Fira Code'", fontSize: 11, fontWeight: 600, color: '#0F1F3D', background: '#EEF0F4', padding: '1px 6px', borderRadius: 3, display: 'inline-block', marginBottom: 4 }}>{t.code}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600 }}>{t.name}</div>
+                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>{t.desc}</div>
+                    {selectedType === t.code && <div style={{ position: 'absolute', top: 6, right: 8, fontSize: 10, fontWeight: 800, color: '#00A878' }}>✓</div>}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Processus <span style={{ color: '#DC2626', fontSize: 14 }}>•</span>
+                </label>
+                <select value={processus} onChange={(e) => setProcessus(e.target.value)}
+                  style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #DDE1E9', borderRadius: 8, fontSize: 13 }}>
+                  <option value="">— Sélectionner —</option>
+                  {processusOptions.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: '#6B7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  Domaine <span style={{ color: '#DC2626', fontSize: 14 }}>•</span>
+                </label>
+                <input type="text" value={domaine} onChange={(e) => setDomaine(e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))}
+                  placeholder="ex: HSE, GEN, LOG…" maxLength={5}
+                  style={{ width: '100%', padding: '9px 12px', border: '1.5px solid #DDE1E9', borderRadius: 8, fontSize: 13, fontFamily: "'Fira Code'" }} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div style={{ paddingRight: 32 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: '#E6F7F2' }}>🗂️</div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>Conservation et archivage</div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>Définit où et combien de temps le document est conservé</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div style={{ paddingRight: 32 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: '#E6F7F2' }}>✍️</div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>Révision initiale (Rév. 0)</div>
+                <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>Le document démarre en brouillon</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sidebar Preview */}
+        <div style={{ position: 'sticky', top: 24 }}>
+          <div style={{ background: '#0F1F3D', borderRadius: 16, padding: 22, marginBottom: 14, boxShadow: '0 4px 20px rgba(0,0,0,.1)' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1.5, color: 'rgba(255,255,255,.35)', marginBottom: 10 }}>
+              Codification générée
+            </div>
+            <div style={{ fontFamily: "'Fira Code'", fontSize: 19, fontWeight: 600, color: '#fff', letterSpacing: 1, minHeight: 28, wordBreak: 'break-all' }}>
+              {selectedType ? <span style={{ color: '#00A878' }}>{selectedType}</span> : <span style={{ color: 'rgba(255,255,255,.2)' }}>TYPE</span>}.
+              {processus ? <span style={{ color: '#7DD3FA' }}>{processus}</span> : <span style={{ color: 'rgba(255,255,255,.2)' }}>PROC</span>}.
+              {domaine ? <span style={{ color: '#FCD34D' }}>{domaine}</span> : <span style={{ color: 'rgba(255,255,255,.2)' }}>DOM</span>}.
+              <span style={{ color: 'rgba(255,255,255,.7)' }}>NNN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NewDocument;

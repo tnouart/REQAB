@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extensions — GED Qualité ENSP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1F3D;--navy2:#162B52;
+  --accent:#00A878;--accent-d:#007A58;--accent-l:#E6F7F2;
+  --blue:#2563EB;--blue-l:#EFF6FF;--blue-d:#1D4ED8;
+  --amber:#D97706;--amber-l:#FFFBEB;--amber-d:#B45309;
+  --red:#DC2626;--red-l:#FEF2F2;--red-d:#B91C1C;
+  --purple:#7C3AED;--purple-l:#EDE9FE;
+  --orange:#EA580C;--orange-l:#FFF7ED;
+  --surf:#F4F6FA;--surf2:#E8ECF2;
+  --bdr:#DDE1E9;--text:#1A1D23;--muted:#6B7280;--light:#9CA3AF;--white:#FFFFFF;
+  --fu:'Inter',sans-serif;--fc:'Fira Code',monospace;--fs:'Crimson Pro',Georgia,serif;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;
+  --sh1:0 1px 3px rgba(0,0,0,.07);--sh2:0 4px 16px rgba(0,0,0,.10);--sh3:0 8px 32px rgba(0,0,0,.14);
+}
+body{font-family:var(--fu);background:var(--surf);color:var(--text);min-height:100vh;display:flex;flex-direction:column;font-size:13px;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* ══ TOPBAR ══ */
+.topbar{background:var(--navy);height:52px;display:flex;align-items:center;padding:0 20px;gap:0;position:sticky;top:0;z-index:100;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:9px;margin-right:20px}
+.logo-ic{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.logo-tx{color:#fff;font-size:13px;font-weight:700}
+.tb-nav{display:flex;height:100%}
+.tb-tab{display:flex;align-items:center;gap:6px;padding:0 14px;color:rgba(255,255,255,.45);font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
+.tb-tab:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.05)}
+.tb-tab.active{color:#fff;border-bottom-color:var(--accent)}
+.tb-badge{background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:10px;margin-left:2px}
+.tb-badge.amb{background:var(--amber)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--accent-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.user-nm{color:rgba(255,255,255,.7);font-size:11.5px;font-weight:600}
+
+/* ══ APP ══ */
+.app{flex:1;display:flex;overflow:hidden;height:calc(100vh - 52px)}
+.sidebar{width:200px;min-width:200px;background:var(--white);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+.snl{padding:14px 16px 4px;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--light)}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 16px;color:var(--muted);cursor:pointer;font-size:12.5px;font-weight:500;transition:all .13s;position:relative;user-select:none}
+.ni:hover{background:var(--surf);color:var(--text)}
+.ni.active{background:var(--accent-l);color:var(--accent-d);font-weight:700}
+.ni.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.ni-ic{font-size:14px;width:18px;text-align:center}
+.ni-bd{margin-left:auto;font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px;color:#fff}
+.bd-r{background:var(--red)}.bd-a{background:var(--amber)}.bd-g{background:var(--accent)}
+.sb-ft{margin-top:auto;padding:12px 16px;border-top:1px solid var(--bdr)}
+.role-chip{display:inline-flex;align-items:center;gap:5px;background:var(--accent-l);color:var(--accent-d);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px}
+
+/* ══ VIEWS ══ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.view{flex:1;overflow-y:auto;display:none}
+.view.active{display:flex;flex-direction:column}
+
+/* ══ PAGE HEADER ══ */
+.page-header{background:var(--white);border-bottom:1px solid var(--bdr);padding:16px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ph-icon{width:38px;height:38px;border-radius:var(--r12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ph-title{font-size:16px;font-weight:800;flex:1}
+.ph-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r8);font-family:var(--fu);font-size:12.5px;font-weight:700;border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,168,120,.3)}
+.btn-g{background:var(--surf);color:var(--muted);border:1px solid var(--bdr)}.btn-g:hover{background:var(--surf2);color:var(--text)}
+.btn-d{background:var(--red-l);color:var(--red-d);border:1px solid #FECACA}.btn-d:hover{background:#FEE2E2}
+.btn-b{background:var(--blue);color:#fff}.btn-b:hover{background:var(--blue-d)}
+.btn-sm{padding:5px 11px;font-size:11.5px}
+.scroll-body{flex:1;overflow-y:auto;padding:20px 24px}
+.scroll-body::-webkit-scrollbar{width:5px}.scroll-body::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* ══════════════════════════════════════════════════════════
+   MODULE 1 — NON-CONFORMITÉS
+══════════════════════════════════════════════════════════ */
+.nc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.nc-stat{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);padding:14px 16px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.nc-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.nc-stat.crit::before{background:var(--red)}
+.nc-stat.maj::before{background:var(--orange)}
+.nc-stat.min::before{background:var(--amber)}
+.nc-stat.clos::before{background:var(--accent)}
+.nc-stat-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px}
+.nc-stat-val{font-size:28px;font-weight:900;line-height:1;margin-bottom:3px}
+.nc-stat.crit .nc-stat-val{color:var(--red)}
+.nc-stat.maj  .nc-stat-val{color:var(--orange)}
+.nc-stat.min  .nc-stat-val{color:var(--amber)}
+.nc-stat.clos .nc-stat-val{color:var(--accent)}
+.nc-stat-sub{font-size:10.5px;color:var(--light)}
+
+/* Grille NC : liste + détail */
+.nc-split{display:grid;grid-template-columns:1fr 420px;gap:14px;margin-bottom:20px}
+.nc-list-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1)}
+.nc-list-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.nc-list-head-title{font-size:12px;font-weight:800;flex:1}
+.nc-table{width:100%;border-collapse:collapse;font-size:12px}
+.nc-table thead th{background:var(--surf);padding:8px 14px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--bdr)}
+.nc-table tbody tr{border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s}
+.nc-table tbody tr:hover{background:var(--surf)}
+.nc-table tbody tr.selected{background:#EEF6F2;border-left:3px solid var(--accent)}
+.nc-table tbody td{padding:10px 14px;vertical-align:middle}
+
+/* Criticité */
+.crit-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r8);white-space:nowrap}
+.cb-crit{background:#FEF2F2;color:var(--red-d)}
+.cb-maj {background:#FFF7ED;color:var(--orange)}
+.cb-min {background:var(--amber-l);color:var(--amber-d)}
+
+/* Statut NC */
+.nc-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.ns-ouverte  {background:#FEF2F2;color:var(--red-d)}
+.ns-en-cours {background:var(--amber-l);color:var(--amber-d)}
+.ns-cloturee {background:var(--accent-l);color:var(--accent-d)}
+
+/* Panneau détail NC */
+.nc-detail{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1);display:flex;flex-direction:column}
+.ncd-head{padding:16px;border-bottom:1px solid var(--bdr)}
+.ncd-num{font-family:var(--fc);font-size:10px;color:var(--muted);background:var(--surf2);padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:6px}
+.ncd-title{font-size:14px;font-weight:800;margin-bottom:8px;line-height:1.3}
+.ncd-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ncd-body{flex:1;overflow-y:auto;padding:14px 16px}
+.ncd-section{margin-bottom:14px}
+.ncd-section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px}
+.ncd-info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--surf2);font-size:11.5px}
+.ncd-info-row:last-child{border-bottom:none}
+.ncd-key{color:var(--muted)}.ncd-val{font-weight:600}
+
+/* Indicateur de criticité — anneau SVG */
+.crit-ring-wrap{display:flex;align-items:center;gap:14px;background:var(--surf);border-radius:var(--r12);padding:12px 14px;margin-bottom:12px}
+.crit-ring-info .crit-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.crit-ring-info .crit-desc{font-size:11px;color:var(--muted)}
+
+/* Lien document */
+.doc-link{display:flex;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r8);padding:10px 12px;margin-bottom:10px;cursor:pointer;transition:border-color .13s}
+.doc-link:hover{border-color:var(--accent)}
+.doc-link-code{font-family:var(--fc);font-size:10px;color:var(--navy);background:var(--surf2);padding:2px 6px;border-radius:3px}
+.doc-link-title{font-size:12px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-link-rev{font-size:10px;color:var(--muted)}
+
+/* Action corrective */
+.action-corrective{background:var(--accent-l);border:1px solid rgba(0,168,120,.3);border-radius:var(--r12);padding:12px 14px;margin-top:10px}
+.ac-title{font-size:11px;font-weight:800;color:var(--accent-d);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ac-text{font-size:11.5px;color:var(--text);line-height:1.5}
+.ac-btn{margin-top:8px;font-size:11px;font-weight:700;color:var(--accent-d);cursor:pointer;display:flex;align-items:center;gap:4px}
+
+/* Formulaire déclaration NC */
+.nc-form-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);padding:20px;box-shadow:var(--sh1);margin-bottom:20px}
+.nc-form-title{font-size:14px;font-weight:800;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--surf2)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.form-field input,.form-field select,.form-field textarea{font-family:var(--fu);font-size:12.5px;color:var(--text);background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r8);padding:8px 10px;outline:none;transition:border-color .14s,box-shadow .14s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--accent);background:var(--white);box-shadow:0 0 0 3px rgba(0,168,120,.12)}
+.form-field select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.form-field textarea{resize:vertical;min-height:80px}
+.form-full{grid-column:1/-1}
+
+/* ══════════════════════════════════════════════════════════
+   MODULE 2 — NOTIFICATIONS D'ÉCHÉANCE
+══════════════════════════════════════════════════════════ */
+.notif-layout{display:grid;grid-template-columns:1fr 360px;gap:14px}
+
+/* Timeline de notifications */
+.notif-list-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1)}
+.notif-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.notif-head-title{font-size:12px;font-weight:800;flex:1}
+
+.notif-group{border-bottom:1px solid var(--surf2)}
+.notif-group-label{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--surf);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.ng-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s;position:relative}
+.notif-item:last-child{border-bottom:none}
+.notif-item:hover{background:var(--surf)}
+.notif-item.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 2px 2px 0}
+.notif-item.unread.crit-item::before{background:var(--red)}
+.notif-item.unread.maj-item::before{background:var(--amber)}
+.notif-item.unread.ok-item::before{background:var(--accent)}
+
+/* Anneau SVG countdown — LA SIGNATURE du module notifs */
+.countdown-ring{position:relative;flex-shrink:0}
+.countdown-ring svg{transform:rotate(-90deg)}
+.cr-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.cr-days{font-size:11px;font-weight:900;line-height:1}
+.cr-unit{font-size:7px;font-weight:600;text-transform:uppercase;color:var(--light);letter-spacing:.3px}
+
+.notif-content{flex:1;min-width:0}
+.notif-doc-code{font-family:var(--fc);font-size:10px;color:var(--muted);background:var(--surf2);padding:1px 5px;border-radius:3px;display:inline-block;margin-bottom:4px}
+.notif-title{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notif-meta{font-size:10.5px;color:var(--muted)}
+.notif-actions{display:flex;gap:6px;margin-top:6px}
+.notif-action{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:var(--r8);border:none;cursor:pointer;transition:all .13s}
+.na-p{background:var(--accent);color:#fff}.na-p:hover{background:var(--accent-d)}
+.na-g{background:var(--surf2);color:var(--muted);border:1px solid var(--bdr)}.na-g:hover{background:var(--bdr)}
+
+/* Panneau paramétrage notifications */
+.notif-settings{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1)}
+.ns-head{padding:14px 16px;border-bottom:1px solid var(--bdr)}
+.ns-head-title{font-size:12px;font-weight:800;margin-bottom:2px}
+.ns-head-sub{font-size:10.5px;color:var(--muted)}
+.ns-body{padding:14px 16px}
+
+.notif-rule{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--surf2)}
+.notif-rule:last-of-type{border-bottom:none}
+.nr-icon{width:32px;height:32px;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.nr-info{flex:1}
+.nr-title{font-size:12px;font-weight:700;margin-bottom:1px}
+.nr-desc{font-size:10.5px;color:var(--muted)}
+.nr-toggle{flex-shrink:0;cursor:pointer}
+
+.toggle{width:36px;height:20px;border-radius:10px;position:relative;cursor:pointer;border:none;transition:background .2s}
+.toggle.on{background:var(--accent)}.toggle.off{background:var(--bdr)}
+.toggle .knob{position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.toggle.on .knob{left:18px}.toggle.off .knob{left:2px}
+
+.seuil-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--surf2);font-size:12px}
+.seuil-row:last-of-type{border-bottom:none}
+.seuil-icon{width:28px;height:28px;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.seuil-label{flex:1;font-weight:600}
+.seuil-select{font-family:var(--fu);font-size:11.5px;background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r8);padding:4px 8px;outline:none;cursor:pointer}
+
+.ns-section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+.ns-section-title::after{content:'';flex:1;height:1px;background:var(--surf2)}
+
+/* ══════════════════════════════════════════════════════════
+   MODULE 3 — RAPPORT REVUE DE DIRECTION
+══════════════════════════════════════════════════════════ */
+.rrd-layout{display:grid;grid-template-columns:340px 1fr;gap:14px}
+
+/* Panneau de génération */
+.rrd-gen-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1);height:fit-content}
+.rrd-gen-head{background:var(--navy);padding:16px}
+.rrd-gen-head-title{font-size:13px;font-weight:800;color:#fff;margin-bottom:3px}
+.rrd-gen-head-sub{font-size:10.5px;color:rgba(255,255,255,.45)}
+.rrd-gen-body{padding:16px}
+.rrd-gen-field{margin-bottom:14px}
+.rrd-gen-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px}
+.rrd-gen-select{width:100%;font-family:var(--fu);font-size:12.5px;color:var(--text);background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r8);padding:8px 10px;outline:none;transition:border-color .14s;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.rrd-gen-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,168,120,.12)}
+
+/* Sections à inclure */
+.section-checkbox{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--surf2);cursor:pointer}
+.section-checkbox:last-of-type{border-bottom:none}
+.sc-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s;font-size:10px;color:#fff}
+.sc-check.on{background:var(--accent);border-color:var(--accent)}
+.sc-label{font-size:12px;font-weight:600;flex:1}
+.sc-ref{font-size:10px;color:var(--light);font-family:var(--fc)}
+.rrd-progress{background:var(--surf2);height:4px;border-radius:10px;margin:14px 0}
+.rrd-progress-fill{height:100%;border-radius:10px;background:var(--accent);transition:width .4s ease}
+.rrd-progress-label{font-size:10.5px;color:var(--muted);margin-top:4px}
+
+/* Aperçu du rapport — document imprimé */
+.rrd-preview{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh1)}
+.rrd-preview-bar{background:var(--navy);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.rrd-preview-bar-title{color:rgba(255,255,255,.6);font-size:11.5px;font-weight:600;flex:1}
+.rrd-preview-actions{display:flex;gap:6px}
+.rrd-preview-btn{padding:4px 12px;border-radius:6px;font-family:var(--fu);font-size:11px;font-weight:700;border:none;cursor:pointer;transition:all .13s}
+.rpb-print{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}.rpb-print:hover{background:rgba(255,255,255,.18);color:#fff}
+.rpb-pdf{background:var(--accent);color:#fff}.rpb-pdf:hover{background:var(--accent-d)}
+
+.rrd-preview-body{padding:0;overflow-y:auto;max-height:calc(100vh - 240px)}
+.rrd-preview-body::-webkit-scrollbar{width:5px}.rrd-preview-body::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* Le rapport comme document imprimé */
+.rapport-doc{background:var(--white);max-width:760px;margin:0 auto;padding:48px 56px;font-family:var(--fs)}
+
+.rapport-doc .r-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid var(--navy)}
+.rapport-doc .r-logo{display:flex;align-items:center;gap:10px}
+.rapport-doc .r-logo-icon{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.rapport-doc .r-logo-text{font-family:var(--fu);font-size:14px;font-weight:800;color:var(--navy)}
+.rapport-doc .r-logo-sub{font-family:var(--fu);font-size:10px;color:var(--muted)}
+.rapport-doc .r-meta{text-align:right;font-family:var(--fu)}
+.rapport-doc .r-meta-ref{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.rapport-doc .r-meta-title{font-size:15px;font-weight:900;color:var(--navy)}
+.rapport-doc .r-meta-period{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* Titre du rapport */
+.rapport-doc .r-title-block{text-align:center;margin-bottom:36px;padding:24px;background:var(--surf);border-radius:8px}
+.rapport-doc .r-title{font-size:22px;font-weight:600;color:var(--navy);margin-bottom:6px;line-height:1.3}
+.rapport-doc .r-subtitle{font-size:14px;color:var(--muted);font-style:italic}
+.rapport-doc .r-iso-ref{display:inline-block;font-family:var(--fc);font-size:10px;color:var(--accent-d);background:var(--accent-l);padding:3px 10px;border-radius:4px;margin-top:8px}
+
+/* Sections du rapport */
+.rapport-doc .r-section{margin-bottom:32px}
+.rapport-doc .r-section-num{font-family:var(--fu);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent-d);margin-bottom:4px}
+.rapport-doc .r-section-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+.rapport-doc .r-section-text{font-size:13.5px;color:#3D3D3D;line-height:1.75;margin-bottom:12px}
+
+/* Tableaux dans le rapport */
+.rapport-doc .r-table{width:100%;border-collapse:collapse;font-family:var(--fu);font-size:11.5px;margin-bottom:16px}
+.rapport-doc .r-table thead th{background:var(--navy);color:rgba(255,255,255,.75);padding:7px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.rapport-doc .r-table tbody tr{border-bottom:1px solid var(--bdr)}
+.rapport-doc .r-table tbody tr:nth-child(even){background:var(--surf)}
+.rapport-doc .r-table tbody td{padding:8px 12px;vertical-align:middle}
+.rapport-doc .r-kpi-val{font-weight:800;font-size:13px}
+.rapport-doc .r-kpi-val.green{color:var(--accent-d)}.rapport-doc .r-kpi-val.red{color:var(--red-d)}.rapport-doc .r-kpi-val.amber{color:var(--amber-d)}
+.rapport-doc .r-trend.up{color:var(--accent-d);font-size:11px;font-weight:700}
+.rapport-doc .r-trend.down{color:var(--red);font-size:11px;font-weight:700}
+
+/* Mini-chart barres dans le rapport */
+.rapport-doc .r-bar-chart{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.rapport-doc .r-bar-row{display:flex;align-items:center;gap:8px}
+.rapport-doc .r-bar-lbl{font-family:var(--fu);font-size:10.5px;font-weight:600;color:var(--text);width:55px;flex-shrink:0}
+.rapport-doc .r-bar-track{flex:1;height:7px;background:var(--surf2);border-radius:10px;overflow:hidden}
+.rapport-doc .r-bar-fill{height:100%;border-radius:10px}
+.rapport-doc .r-bar-num{font-family:var(--fu);font-size:10.5px;font-weight:700;color:var(--muted);width:28px;text-align:right}
+
+/* Décision et conclusion */
+.rapport-doc .r-decision{background:var(--navy);color:#fff;border-radius:8px;padding:16px 20px;margin-top:20px;font-family:var(--fu)}
+.rapport-doc .r-decision-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:8px}
+.rapport-doc .r-decision-item{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:rgba(255,255,255,.8);margin-bottom:6px;line-height:1.5}
+.rapport-doc .r-decision-item::before{content:'→';color:var(--accent);font-weight:800;flex-shrink:0;margin-top:1px}
+
+/* Signatures */
+.rapport-doc .r-signatures{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:32px;padding-top:24px;border-top:2px solid var(--bdr)}
+.rapport-doc .r-sig-block{text-align:center}
+.rapport-doc .r-sig-role{font-family:var(--fu);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px}
+.rapport-doc .r-sig-line{height:1px;background:var(--bdr);margin-bottom:6px}
+.rapport-doc .r-sig-name{font-family:var(--fu);font-size:11.5px;font-weight:600;color:var(--text)}
+
+/* ══ TOAST ══ */
+.toast-c{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:9px;background:var(--navy);color:#fff;padding:11px 16px;border-radius:var(--r12);font-size:12.5px;font-weight:600;box-shadow:var(--sh3);animation:slideUp .22s ease;pointer-events:all;min-width:240px}
+.toast.ok{background:var(--accent-d)}.toast.warn{background:var(--amber)}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ══ MODAL ══ */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(15,31,61,.55);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
+.modal-ov.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r20);padding:28px;max-width:560px;width:92%;box-shadow:var(--sh3);animation:popIn .22s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:6px}
+.modal-sub{font-size:12.5px;color:var(--muted);margin-bottom:20px;line-height:1.55}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><div class="logo-ic">📋</div><div class="logo-tx">GED Qualité · ENSP</div></div>
+  <nav class="tb-nav">
+    <div class="tb-tab">🏠 Tableau de bord</div>
+    <div class="tb-tab">📄 Documents</div>
+    <div class="tb-tab">🔄 Workflow <span class="tb-badge amb">4</span></div>
+    <div class="tb-tab active" onclick="showView('nc',this)">⚠️ Non-conformités <span class="tb-badge">3</span></div>
+    <div class="tb-tab" onclick="showView('notifs',this)">🔔 Notifications <span class="tb-badge">5</span></div>
+    <div class="tb-tab" onclick="showView('rapport',this)">📑 Revue de direction</div>
+  </nav>
+  <div class="tb-right">
+    <div class="user-av">KB</div>
+    <div class="user-nm">K. Bouali</div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="snl">Qualité</div>
+    <div class="ni"><span class="ni-ic">🏠</span> Tableau de bord</div>
+    <div class="ni"><span class="ni-ic">📄</span> Documents</div>
+    <div class="ni"><span class="ni-ic">🔄</span> Workflow <span class="ni-bd bd-a">4</span></div>
+    <div class="snl" style="margin-top:6px">Extensions</div>
+    <div class="ni active" id="ni-nc" onclick="showView('nc',null)"><span class="ni-ic">⚠️</span> Non-conformités <span class="ni-bd bd-r">3</span></div>
+    <div class="ni" id="ni-notifs" onclick="showView('notifs',null)"><span class="ni-ic">🔔</span> Notifications <span class="ni-bd bd-a">5</span></div>
+    <div class="ni" id="ni-rapport" onclick="showView('rapport',null)"><span class="ni-ic">📑</span> Revue de direction</div>
+    <div class="snl" style="margin-top:6px">Supervision</div>
+    <div class="ni"><span class="ni-ic">📜</span> Piste d'audit</div>
+    <div class="ni"><span class="ni-ic">📊</span> Rapports</div>
+    <div class="ni"><span class="ni-ic">⚙️</span> Référentiels</div>
+    <div class="sb-ft">
+      <div style="font-size:10px;color:var(--light);margin-bottom:5px">Rôle actif</div>
+      <div class="role-chip">✅ Resp. Qualité</div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+  <!-- ═══════════════════════════════════════════════════════
+       VUE 1 — NON-CONFORMITÉS
+  ═══════════════════════════════════════════════════════ -->
+  <div class="view active" id="view-nc">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#FEF2F2">⚠️</div>
+      <div><div class="ph-title">Gestion des non-conformités documentaires</div>
+        <div class="ph-sub">Conformité ISO 9001:2015 §10.2 — Identification, traitement et actions correctives</div></div>
+      <button class="btn btn-p btn-sm" onclick="openModal('nc')">+ Déclarer une NC</button>
+    </div>
+    <div class="scroll-body">
+
+      <!-- Stats -->
+      <div class="nc-stats">
+        <div class="nc-stat crit">
+          <div class="nc-stat-lbl">Critiques</div>
+          <div class="nc-stat-val">1</div>
+          <div class="nc-stat-sub">Action immédiate requise</div>
+        </div>
+        <div class="nc-stat maj">
+          <div class="nc-stat-lbl">Majeures</div>
+          <div class="nc-stat-val">2</div>
+          <div class="nc-stat-sub">Délai de traitement dépassé</div>
+        </div>
+        <div class="nc-stat min">
+          <div class="nc-stat-lbl">Mineures</div>
+          <div class="nc-stat-val">4</div>
+          <div class="nc-stat-sub">En cours de traitement</div>
+        </div>
+        <div class="nc-stat clos">
+          <div class="nc-stat-lbl">Clôturées</div>
+          <div class="nc-stat-val">18</div>
+          <div class="nc-stat-sub">Depuis 12 mois</div>
+        </div>
+      </div>
+
+      <div class="nc-split">
+        <!-- Liste NC -->
+        <div class="nc-list-card">
+          <div class="nc-list-head">
+            <div class="nc-list-head-title">Non-conformités ouvertes</div>
+            <select style="font-size:11px;background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;outline:none">
+              <option>Toutes les criticités</option>
+              <option>Critique</option>
+              <option>Majeure</option>
+              <option>Mineure</option>
+            </select>
+          </div>
+          <table class="nc-table">
+            <thead>
+              <tr>
+                <th>Réf.</th>
+                <th>Description</th>
+                <th>Criticité</th>
+                <th>Document lié</th>
+                <th>Statut</th>
+                <th>Délai</th>
+              </tr>
+            </thead>
+            <tbody id="nc-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Détail NC -->
+        <div class="nc-detail" id="nc-detail"></div>
+      </div>
+
+      <!-- Formulaire déclaration rapide -->
+      <div class="nc-form-card">
+        <div class="nc-form-title">📋 Déclarer une nouvelle non-conformité</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Type de NC <span style="color:var(--red)">•</span></label>
+            <select>
+              <option>Sélectionner…</option>
+              <option>Document obsolète encore utilisé</option>
+              <option>Révision non effectuée à l'échéance</option>
+              <option>Document sans approbation formelle</option>
+              <option>Codification incorrecte</option>
+              <option>Accès non autorisé</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Criticité <span style="color:var(--red)">•</span></label>
+            <select>
+              <option>Sélectionner…</option>
+              <option>🔴 Critique — risque immédiat sur la qualité</option>
+              <option>🟠 Majeure — impact significatif sur le SMQ</option>
+              <option>🟡 Mineure — écart ponctuel sans impact majeur</option>
+            </select>
+          </div>
+          <div class="form-field form-full">
+            <label>Description de la non-conformité <span style="color:var(--red)">•</span></label>
+            <textarea placeholder="Décrire précisément la non-conformité constatée, le contexte et les conditions de détection…" rows="3"></textarea>
+          </div>
+          <div class="form-field">
+            <label>Document concerné</label>
+            <select>
+              <option>— Sélectionner un document —</option>
+              <option>PRO.QHSE.GEN.001 — Maîtrise des informations documentées</option>
+              <option>MOD.QHSE.HSE.003 — Inspection équipements</option>
+              <option>INS.QHSE.HSE.001 — Port des EPI</option>
+              <option>PRO.DRH.GEN.002 — Compétences et formation</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Détecté lors de</label>
+            <select>
+              <option>Audit interne</option>
+              <option>Revue de direction</option>
+              <option>Contrôle qualité terrain</option>
+              <option>Réclamation client</option>
+              <option>Auto-contrôle</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Responsable de traitement <span style="color:var(--red)">•</span></label>
+            <select>
+              <option>K. Bouali (Resp. Qualité)</option>
+              <option>A. Ferhat (Rédacteur)</option>
+              <option>H. Meddah (Rédacteur)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Délai de traitement</label>
+            <input type="date" value="2025-06-30">
+          </div>
+          <div class="form-field form-full" style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn-g btn-sm">Annuler</button>
+            <button class="btn btn-p btn-sm" onclick="submitNC()">✓ Enregistrer la non-conformité</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VUE 2 — NOTIFICATIONS D'ÉCHÉANCE
+  ═══════════════════════════════════════════════════════ -->
+  <div class="view" id="view-notifs">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#FFFBEB">🔔</div>
+      <div><div class="ph-title">Notifications d'échéance de révision</div>
+        <div class="ph-sub">Alertes J-90 · J-30 · J-0 — Conformité ISO 9001:2015 §7.5.3</div></div>
+      <button class="btn btn-g btn-sm" onclick="markAllRead()">✓ Tout marquer comme lu</button>
+      <button class="btn btn-p btn-sm" onclick="toast('Envoi des notifications email en cours…','ok')">📧 Envoyer les rappels email</button>
+    </div>
+    <div class="scroll-body">
+      <div class="notif-layout">
+
+        <!-- Liste notifications -->
+        <div class="notif-list-card">
+          <div class="notif-head">
+            <div class="notif-head-title">5 alertes actives</div>
+            <select style="font-size:11px;background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;outline:none">
+              <option>Toutes</option><option>En retard</option><option>Urgentes (&lt;30j)</option><option>À planifier (&lt;90j)</option>
+            </select>
+          </div>
+          <div id="notif-list"></div>
+        </div>
+
+        <!-- Paramétrage -->
+        <div class="notif-settings">
+          <div class="ns-head">
+            <div class="ns-head-title">⚙️ Paramétrage des notifications</div>
+            <div class="ns-head-sub">Configurer les seuils et les destinataires</div>
+          </div>
+          <div class="ns-body">
+
+            <div class="ns-section-title">Seuils d'alerte</div>
+            <div class="seuil-row">
+              <div class="seuil-icon" style="background:#FEF2F2">🔴</div>
+              <div class="seuil-label">Alerte critique</div>
+              <select class="seuil-select"><option>J-0 (jour J)</option><option>J-7</option><option>J-15</option></select>
+            </div>
+            <div class="seuil-row">
+              <div class="seuil-icon" style="background:#FFFBEB">🟡</div>
+              <div class="seuil-label">Alerte urgente</div>
+              <select class="seuil-select"><option>J-30</option><option>J-15</option><option>J-45</option></select>
+            </div>
+            <div class="seuil-row">
+              <div class="seuil-icon" style="background:#EFF6FF">🔵</div>
+              <div class="seuil-label">Alerte anticipée</div>
+              <select class="seuil-select"><option>J-90</option><option>J-60</option><option>J-120</option></select>
+            </div>
+
+            <div class="ns-section-title">Canaux d'envoi</div>
+            <div class="notif-rule">
+              <div class="nr-icon" style="background:#EFF6FF">📧</div>
+              <div class="nr-info">
+                <div class="nr-title">Email au rédacteur</div>
+                <div class="nr-desc">Notifier le rédacteur assigné au document</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="knob"></div></button>
+            </div>
+            <div class="notif-rule">
+              <div class="nr-icon" style="background:#E6F7F2">✅</div>
+              <div class="nr-info">
+                <div class="nr-title">Email au Resp. Qualité</div>
+                <div class="nr-desc">Copier le responsable qualité systématiquement</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="knob"></div></button>
+            </div>
+            <div class="notif-rule">
+              <div class="nr-icon" style="background:#FFF7ED">📱</div>
+              <div class="nr-info">
+                <div class="nr-title">Notification dans l'application</div>
+                <div class="nr-desc">Alerte dans la cloche de notification</div>
+              </div>
+              <button class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="knob"></div></button>
+            </div>
+            <div class="notif-rule">
+              <div class="nr-icon" style="background:var(--surf2)">🔒</div>
+              <div class="nr-info">
+                <div class="nr-title">SMS (non disponible)</div>
+                <div class="nr-desc">Module SMS — extension future</div>
+              </div>
+              <button class="toggle off" style="opacity:.4;cursor:not-allowed"><div class="knob"></div></button>
+            </div>
+
+            <div class="ns-section-title">Destinataires par processus</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">
+              En plus du rédacteur, chaque processus peut avoir des destinataires supplémentaires notifiés.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid var(--surf2)">
+                <span style="font-weight:600">DQHSE</span>
+                <span style="color:var(--muted)">k.bouali@ensp.dz, a.ferhat@ensp.dz</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid var(--surf2)">
+                <span style="font-weight:600">DAL</span>
+                <span style="color:var(--muted)">n.amrani@ensp.dz</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0">
+                <span style="font-weight:600">DRH</span>
+                <span style="color:var(--muted)">l.meziane@ensp.dz</span>
+              </div>
+            </div>
+            <button class="btn btn-p" style="width:100%;margin-top:14px;font-size:12px" onclick="toast('Paramètres sauvegardés ✓','ok')">💾 Sauvegarder les paramètres</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VUE 3 — RAPPORT REVUE DE DIRECTION
+  ═══════════════════════════════════════════════════════ -->
+  <div class="view" id="view-rapport">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#EDE9FE">📑</div>
+      <div><div class="ph-title">Rapport de revue de direction</div>
+        <div class="ph-sub">Génération automatique — Conformité ISO 9001:2015 §9.3</div></div>
+    </div>
+    <div class="scroll-body">
+      <div class="rrd-layout">
+
+        <!-- Panneau de génération -->
+        <div>
+          <div class="rrd-gen-card">
+            <div class="rrd-gen-head">
+              <div class="rrd-gen-head-title">📑 Générer le rapport §9.3</div>
+              <div class="rrd-gen-head-sub">L'aperçu se met à jour en temps réel</div>
+            </div>
+            <div class="rrd-gen-body">
+              <div class="rrd-gen-field">
+                <div class="rrd-gen-label">Période couverte</div>
+                <select class="rrd-gen-select" onchange="updateReport()">
+                  <option>Janvier – Juin 2025 (S1)</option>
+                  <option>Janvier – Décembre 2024 (Annuel)</option>
+                  <option>Juillet – Décembre 2024 (S2)</option>
+                </select>
+              </div>
+              <div class="rrd-gen-field">
+                <div class="rrd-gen-label">Organisé par</div>
+                <select class="rrd-gen-select" onchange="updateReport()">
+                  <option>Direction (DG)</option>
+                  <option>Responsable Qualité</option>
+                </select>
+              </div>
+              <div class="rrd-gen-field">
+                <div class="rrd-gen-label">Sections à inclure</div>
+                <div id="sections-list"></div>
+              </div>
+              <div class="rrd-progress">
+                <div class="rrd-progress-fill" id="rrd-progress-fill" style="width:83%"></div>
+              </div>
+              <div class="rrd-progress-label" id="rrd-progress-label">5 sur 6 sections sélectionnées</div>
+
+              <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+                <button class="btn btn-p" style="width:100%" onclick="toast('Génération du PDF en cours…','ok')">⬇ Exporter en PDF</button>
+                <button class="btn btn-g" style="width:100%" onclick="toast('Rapport imprimé','')">🖨 Imprimer</button>
+                <button class="btn btn-g" style="width:100%" onclick="toast('Rapport partagé par email ✓','ok')">📧 Envoyer par email</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aperçu du rapport -->
+        <div class="rrd-preview">
+          <div class="rrd-preview-bar">
+            <span class="rrd-preview-bar-title">📄 Aperçu — Rapport de revue de direction · S1 2025</span>
+            <div class="rrd-preview-actions">
+              <button class="rrd-preview-btn rpb-print" onclick="toast('Impression…','')">🖨 Imprimer</button>
+              <button class="rrd-preview-btn rpb-pdf" onclick="toast('Export PDF en cours…','ok')">⬇ PDF</button>
+            </div>
+          </div>
+          <div class="rrd-preview-body">
+            <div class="rapport-doc" id="rapport-doc"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODAL DÉCLARATION NC -->
+<div class="modal-ov" id="modal-nc">
+  <div class="modal">
+    <div class="modal-title">⚠️ Déclarer une non-conformité</div>
+    <div class="modal-sub">Cette NC sera liée au document concerné. Une révision corrective peut être créée directement depuis cette fiche.</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Document concerné</label>
+        <select><option>PRO.QHSE.GEN.001 — Maîtrise documents</option><option>MOD.QHSE.HSE.003 — Inspection</option></select>
+      </div>
+      <div class="form-field">
+        <label>Criticité</label>
+        <select><option>🔴 Critique</option><option>🟠 Majeure</option><option>🟡 Mineure</option></select>
+      </div>
+      <div class="form-field form-full">
+        <label>Description</label>
+        <textarea placeholder="Décrire la non-conformité…" rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-g" onclick="closeModal('nc')">Annuler</button>
+      <button class="btn btn-p" onclick="closeModal('nc');toast('Non-conformité NC-2025-008 créée ✓','ok')">✓ Créer la NC et lier le document →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-c" id="toasts"></div>
+
+<script>
+/* ═══ DATA ══════════════════════════════════════════════════ */
+const NCS = [
+  {id:'NC-2025-001',desc:'Document PRO.DRH.GEN.002 utilisé en version obsolète (Rév.1) lors d\'une formation le 12/04/2025',crit:'CRIT',doc:'PRO.DRH.GEN.002',docTitle:'Compétences et formation',statut:'OUVERTE',detecte:'Audit interne',resp:'K. Bouali',delai:'2025-05-15',retard:28,action:'Mettre à jour le document de formation, créer une révision corrective (Rév.3) intégrant les nouvelles exigences réglementaires de formation.'},
+  {id:'NC-2025-003',desc:'Absence d\'approbation formelle sur l\'instruction INS.QHSE.HSE.007 mise en application sans visa du Responsable Qualité',crit:'MAJ',doc:'INS.QHSE.HSE.007',docTitle:'Consignation équipements',statut:'EN_COURS',detecte:'Contrôle qualité',resp:'A. Ferhat',delai:'2025-06-01',retard:0,action:'Régulariser l\'approbation via le workflow — soumettre à K. Bouali pour validation formelle.'},
+  {id:'NC-2025-005',desc:'Codification incorrecte sur TAB.DRH.GEN.002 : le domaine GEN ne correspond pas au contenu (formations spécifiques)',crit:'MAJ',doc:'TAB.DRH.GEN.002',docTitle:'Suivi formations et habilitations',statut:'EN_COURS',detecte:'Auto-contrôle',resp:'H. Meddah',delai:'2025-06-15',retard:0,action:'Modifier la codification vers TAB.DRH.FOR.002, mettre à jour toutes les références internes.'},
+  {id:'NC-2025-006',desc:'Durée d\'archivage non renseignée sur 3 enregistrements qualité du processus DPE',crit:'MIN',doc:'FOR.DPE.GEN.004',docTitle:'Enregistrement contrôle process',statut:'OUVERTE',detecte:'Revue de direction',resp:'K. Bouali',delai:'2025-07-01',retard:0,action:''},
+  {id:'NC-2025-007',desc:'Deux rédacteurs ont accès à des documents confidentiels (niveau 3) sans permission REVISION_LIRE_CONFIDENTIEL',crit:'MIN',doc:null,docTitle:null,statut:'OUVERTE',detecte:'Audit accès',resp:'K. Bouali',delai:'2025-07-15',retard:0,action:''},
+];
+
+const NOTIFS = [
+  {doc:'PRO.DRH.GEN.002',title:'Compétences et formation',proc:'DRH',echeance:'2025-01-01',jours:-148,type:'RETARD'},
+  {doc:'INS.QHSE.ENV.004',title:'Tri et élimination déchets industriels',proc:'DQHSE',echeance:'2025-06-01',jours:-28,type:'RETARD'},
+  {doc:'MOD.DAL.LOG.001', title:'Réception matières premières',proc:'DAL',echeance:'2025-07-15',jours:17,type:'URGENT'},
+  {doc:'FOR.QHSE.GEN.008',title:'Fiche revue de direction',proc:'DQHSE',echeance:'2025-08-01',jours:34,type:'URGENT'},
+  {doc:'PRO.QHSE.HSE.003',title:'Gestion non-conformités',proc:'DQHSE',echeance:'2025-09-01',jours:65,type:'ANTICIPE'},
+];
+
+const SECTIONS_RRD = [
+  {key:'perf',label:'Indicateurs de performance qualité',ref:'§9.1',on:true},
+  {key:'doc',label:'État du référentiel documentaire',ref:'§7.5',on:true},
+  {key:'nc',label:'Non-conformités et actions correctives',ref:'§10.2',on:true},
+  {key:'audit',label:'Résultats des audits internes',ref:'§9.2',on:true},
+  {key:'risques',label:'Risques et opportunités',ref:'§6.1',on:true},
+  {key:'objectifs',label:'Suivi des objectifs qualité',ref:'§6.2',on:false},
+];
+
+let selectedNC = NCS[0];
+
+/* ═══ UTILS ══════════════════════════════════════════════ */
+function fmtDate(s){if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`}
+
+function toast(msg,type=''){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${type==='ok'?'✅':'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},3000);
+}
+
+function openModal(id){document.getElementById('modal-'+id).classList.add('open')}
+function closeModal(id){document.getElementById('modal-'+id).classList.remove('open')}
+
+function showView(id, el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  const ni=document.getElementById('ni-'+id);
+  if(ni) ni.classList.add('active');
+}
+
+/* ═══ MODULE NC ══════════════════════════════════════════ */
+function critColor(c){return{CRIT:['#DC2626','#FEF2F2'],MAJ:['#EA580C','#FFF7ED'],MIN:['#D97706','#FFFBEB']}[c]||['#6B7280','#F1F5F9']}
+function critLabel(c){return{CRIT:'🔴 Critique',MAJ:'🟠 Majeure',MIN:'🟡 Mineure'}[c]||c}
+function statutClass(s){return{OUVERTE:'ns-ouverte',EN_COURS:'ns-en-cours',CLOTUREE:'ns-cloturee'}[s]}
+function statutLabel(s){return{OUVERTE:'● Ouverte',EN_COURS:'◐ En cours',CLOTUREE:'✓ Clôturée'}[s]}
+
+function renderNCTable(){
+  document.getElementById('nc-tbody').innerHTML=NCS.map(nc=>`
+    <tr class="${selectedNC?.id===nc.id?'selected':''}" onclick="selectNC('${nc.id}')">
+      <td><span style="font-family:var(--fc);font-size:10px;color:var(--muted)">${nc.id}</span></td>
+      <td style="max-width:220px"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:500">${nc.desc}</div></td>
+      <td><span class="crit-badge ${nc.crit==='CRIT'?'cb-crit':nc.crit==='MAJ'?'cb-maj':'cb-min'}">${critLabel(nc.crit)}</span></td>
+      <td>${nc.doc?`<span style="font-family:var(--fc);font-size:10px;background:var(--surf2);padding:1px 5px;border-radius:3px">${nc.doc}</span>`:'<span style="color:var(--light)">—</span>'}</td>
+      <td><span class="nc-status ${statutClass(nc.statut)}">${statutLabel(nc.statut)}</span></td>
+      <td>${nc.retard>0?`<span style="color:var(--red-d);font-weight:700;font-size:11px">+${nc.retard}j</span>`:`<span style="color:var(--muted);font-size:11px">${fmtDate(nc.delai)}</span>`}</td>
+    </tr>`).join('');
+  renderNCDetail();
+}
+
+function selectNC(id){selectedNC=NCS.find(n=>n.id===id);renderNCTable();}
+
+function renderNCDetail(){
+  const nc=selectedNC;
+  if(!nc){document.getElementById('nc-detail').innerHTML='';return;}
+  const [col,bg]=critColor(nc.crit);
+  const pct=nc.crit==='CRIT'?90:nc.crit==='MAJ'?60:35;
+  const r=28, circ=2*Math.PI*r;
+  document.getElementById('nc-detail').innerHTML=`
+    <div class="ncd-head">
+      <div class="ncd-num">${nc.id}</div>
+      <div class="ncd-title">${nc.desc}</div>
+      <div class="ncd-tags">
+        <span class="crit-badge ${nc.crit==='CRIT'?'cb-crit':nc.crit==='MAJ'?'cb-maj':'cb-min'}">${critLabel(nc.crit)}</span>
+        <span class="nc-status ${statutClass(nc.statut)}">${statutLabel(nc.statut)}</span>
+      </div>
+    </div>
+    <div class="ncd-body">
+      <div class="crit-ring-wrap">
+        <div class="countdown-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="${r}" fill="none" stroke="${bg}" stroke-width="8"/>
+            <circle cx="32" cy="32" r="${r}" fill="none" stroke="${col}" stroke-width="8"
+              stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}"
+              stroke-linecap="round" style="transform-origin:center;transform:rotate(-90deg)"/>
+          </svg>
+          <div class="cr-text">
+            <div class="cr-days" style="color:${col}">${pct}%</div>
+            <div class="cr-unit">impact</div>
+          </div>
+        </div>
+        <div class="crit-ring-info">
+          <div class="crit-label" style="color:${col}">${critLabel(nc.crit)}</div>
+          <div class="crit-desc">Détectée lors d'un ${nc.detecte?.toLowerCase()||'contrôle'}<br>Responsable : ${nc.resp}</div>
+        </div>
+      </div>
+      ${nc.doc?`
+      <div class="ncd-section-title">📄 Document lié</div>
+      <div class="doc-link">
+        <span class="doc-link-code">${nc.doc}</span>
+        <span class="doc-link-title">${nc.docTitle}</span>
+        <span class="doc-link-rev">→</span>
+      </div>
+      <button class="btn btn-p btn-sm" style="width:100%;margin-bottom:10px" onclick="toast('Brouillon de révision corrective créé ✓','ok')">
+        🔄 Créer une révision corrective
+      </button>`:''
+      }
+      <div class="ncd-section">
+        <div class="ncd-section-title">Informations</div>
+        <div class="ncd-info-row"><span class="ncd-key">Détecté lors de</span><span class="ncd-val">${nc.detecte}</span></div>
+        <div class="ncd-info-row"><span class="ncd-key">Responsable</span><span class="ncd-val">${nc.resp}</span></div>
+        <div class="ncd-info-row"><span class="ncd-key">Délai de traitement</span><span class="ncd-val" style="${nc.retard>0?'color:var(--red-d)':''}">${fmtDate(nc.delai)}${nc.retard>0?' (+'+nc.retard+'j)':''}</span></div>
+      </div>
+      ${nc.action?`
+      <div class="action-corrective">
+        <div class="ac-title">✅ Action corrective proposée</div>
+        <div class="ac-text">${nc.action}</div>
+        <div class="ac-btn" onclick="toast('Action corrective enregistrée ✓','ok')">✓ Valider cette action →</div>
+      </div>`:`
+      <div class="action-corrective" style="background:var(--amber-l);border-color:#FCD34D">
+        <div class="ac-title" style="color:var(--amber-d)">⚠️ Action corrective — à définir</div>
+        <div class="ac-text" style="color:var(--amber-d)">Aucune action corrective n'a encore été définie pour cette NC.</div>
+      </div>`}
+    </div>`;
+}
+
+function submitNC(){toast('Non-conformité NC-2025-008 créée et liée au document ✓','ok')}
+
+/* ═══ MODULE NOTIFICATIONS ═══════════════════════════════ */
+function renderNotifs(){
+  const groups={RETARD:[],URGENT:[],ANTICIPE:[]};
+  NOTIFS.forEach(n=>groups[n.type].push(n));
+  const labels={RETARD:{l:'🔴 En retard',col:'var(--red)',bg:'var(--red-l)',dot:'#DC2626'},URGENT:{l:'🟡 Urgent — moins de 30 jours',col:'var(--amber)',bg:'var(--amber-l)',dot:'#D97706'},ANTICIPE:{l:'🔵 À planifier — moins de 90 jours',col:'var(--blue)',bg:'var(--blue-l)',dot:'#2563EB'}};
+  let html='';
+  Object.entries(groups).forEach(([type,items])=>{
+    if(!items.length)return;
+    const {l,col,bg,dot}=labels[type];
+    html+=`<div class="notif-group">
+      <div class="notif-group-label"><div class="ng-dot" style="background:${dot}"></div>${l} (${items.length})</div>
+      ${items.map(n=>{
+        const abs=Math.abs(n.jours);
+        const isRet=n.jours<0;
+        const jLabel=isRet?`+${abs}j de retard`:`J-${abs}`;
+        const pct=isRet?100:Math.max(5,100-Math.round(abs/90*100));
+        const r=22;const circ=2*Math.PI*r;const ringCol=isRet?'#DC2626':n.jours<30?'#D97706':'#2563EB';
+        const ringBg=isRet?'#FEE2E2':n.jours<30?'#FEF3C7':'#DBEAFE';
+        return `<div class="notif-item unread ${isRet?'crit-item':n.jours<30?'maj-item':'ok-item'}">
+          <div class="countdown-ring">
+            <svg width="52" height="52" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="${r}" fill="none" stroke="${ringBg}" stroke-width="6"/>
+              <circle cx="26" cy="26" r="${r}" fill="none" stroke="${ringCol}" stroke-width="6"
+                stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}"
+                stroke-linecap="round" style="transform-origin:center;transform:rotate(-90deg)"/>
+            </svg>
+            <div class="cr-text">
+              <div class="cr-days" style="color:${ringCol};font-size:${isRet?'9px':'10px'}">${isRet?'+'+abs:abs}</div>
+              <div class="cr-unit">${isRet?'retard':'jours'}</div>
+            </div>
+          </div>
+          <div class="notif-content">
+            <div class="notif-doc-code">${n.doc}</div>
+            <div class="notif-title">${n.title}</div>
+            <div class="notif-meta">${n.proc} · Échéance : ${fmtDate(n.echeance)} · <strong style="color:${ringCol}">${jLabel}</strong></div>
+            <div class="notif-actions">
+              <button class="notif-action na-p" onclick="toast('Révision planifiée pour ${n.doc} ✓','ok')">📅 Planifier la révision</button>
+              <button class="notif-action na-g" onclick="toast('Email envoyé au rédacteur ✓','ok')">📧 Notifier</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+  document.getElementById('notif-list').innerHTML=html;
+}
+
+function markAllRead(){
+  document.querySelectorAll('.notif-item').forEach(el=>el.classList.remove('unread','crit-item','maj-item','ok-item'));
+  toast('Toutes les notifications marquées comme lues','ok');
+}
+
+/* ═══ MODULE RAPPORT ═════════════════════════════════════ */
+function renderSections(){
+  document.getElementById('sections-list').innerHTML=SECTIONS_RRD.map((s,i)=>`
+    <div class="section-checkbox" onclick="toggleSection(${i})">
+      <div class="sc-check ${s.on?'on':''}">${s.on?'✓':''}</div>
+      <div class="sc-label">${s.label}</div>
+      <div class="sc-ref">${s.ref}</div>
+    </div>`).join('');
+  const cnt=SECTIONS_RRD.filter(s=>s.on).length;
+  document.getElementById('rrd-progress-fill').style.width=`${Math.round(cnt/SECTIONS_RRD.length*100)}%`;
+  document.getElementById('rrd-progress-label').textContent=`${cnt} sur ${SECTIONS_RRD.length} sections sélectionnées`;
+}
+
+function toggleSection(i){SECTIONS_RRD[i].on=!SECTIONS_RRD[i].on;renderSections();updateReport();}
+function updateReport(){renderRapport();}
+
+function renderRapport(){
+  const s=SECTIONS_RRD;
+  document.getElementById('rapport-doc').innerHTML=`
+    <div class="r-header">
+      <div class="r-logo">
+        <div class="r-logo-icon">📋</div>
+        <div><div class="r-logo-text">GED Qualité · ENSP</div><div class="r-logo-sub">Entreprise Nationale de Services aux Puits</div></div>
+      </div>
+      <div class="r-meta">
+        <div class="r-meta-ref">RRD-2025-S1 · Version 1.0</div>
+        <div class="r-meta-title">Rapport de revue de direction</div>
+        <div class="r-meta-period">Période : Janvier – Juin 2025</div>
+      </div>
+    </div>
+
+    <div class="r-title-block">
+      <div class="r-title">Revue de direction du Système de Management de la Qualité</div>
+      <div class="r-subtitle">Conformément à l'article 9.3 de la norme ISO 9001:2015</div>
+      <div class="r-iso-ref">ISO 9001:2015 §9.3</div>
+    </div>
+
+    ${s.find(x=>x.key==='perf'&&x.on)?`
+    <div class="r-section">
+      <div class="r-section-num">Section 1</div>
+      <div class="r-section-title">Indicateurs de performance qualité</div>
+      <div class="r-section-text">Sur la période Janvier–Juin 2025, le référentiel qualité de l'ENSP compte <strong>127 documents applicables</strong> sur un total de 151, soit un taux de conformité documentaire de <strong>84%</strong>. Cet indicateur est en progression de +3 points par rapport à la même période 2024 (81%), mais reste en deçà de l'objectif fixé à 90%.</div>
+      <table class="r-table">
+        <thead><tr><th>Indicateur</th><th>S1 2025</th><th>S1 2024</th><th>Objectif</th><th>Tendance</th></tr></thead>
+        <tbody>
+          <tr><td>Taux de conformité documentaire</td><td><span class="r-kpi-val amber">84%</span></td><td>81%</td><td>90%</td><td><span class="r-trend up">↑ +3pts</span></td></tr>
+          <tr><td>Documents applicables</td><td><span class="r-kpi-val green">127</span></td><td>119</td><td>—</td><td><span class="r-trend up">↑ +8</span></td></tr>
+          <tr><td>Révisions réalisées</td><td><span class="r-kpi-val">34</span></td><td>28</td><td>—</td><td><span class="r-trend up">↑ +6</span></td></tr>
+          <tr><td>Révisions en retard</td><td><span class="r-kpi-val red">2</span></td><td>3</td><td>0</td><td><span class="r-trend up">↓ -1</span></td></tr>
+          <tr><td>Délai moyen d'approbation</td><td><span class="r-kpi-val">12j</span></td><td>18j</td><td>≤10j</td><td><span class="r-trend up">↑ -6j</span></td></tr>
+        </tbody>
+      </table>
+    </div>`:''}
+
+    ${s.find(x=>x.key==='doc'&&x.on)?`
+    <div class="r-section">
+      <div class="r-section-num">Section 2</div>
+      <div class="r-section-title">État du référentiel documentaire par processus</div>
+      <div class="r-section-text">La couverture documentaire reste inégale selon les processus. La DQHSE concentre 41% du référentiel et présente le meilleur taux de mise à jour. Le processus DRH présente un retard préoccupant avec 2 révisions dépassées.</div>
+      <div class="r-bar-chart">
+        ${[['DQHSE',52,100],['DAL',24,95],['DRH',18,78],['DMI',14,86],['DPE',9,100],['DG',6,100]].map(([proc,n,pct])=>`
+        <div class="r-bar-row">
+          <div class="r-bar-lbl">${proc}</div>
+          <div class="r-bar-track"><div class="r-bar-fill" style="width:${pct}%;background:${pct>=90?'#00A878':pct>=80?'#D97706':'#DC2626'}"></div></div>
+          <div class="r-bar-num">${n}</div>
+        </div>`).join('')}
+      </div>
+    </div>`:''}
+
+    ${s.find(x=>x.key==='nc'&&x.on)?`
+    <div class="r-section">
+      <div class="r-section-num">Section 3</div>
+      <div class="r-section-title">Non-conformités et actions correctives</div>
+      <div class="r-section-text">Sur la période, <strong>7 non-conformités documentaires</strong> ont été déclarées, dont 1 critique et 2 majeures. 18 NC ont été clôturées sur les 12 derniers mois. Le taux de traitement dans les délais est de 78%.</div>
+      <table class="r-table">
+        <thead><tr><th>Réf.</th><th>Criticité</th><th>Statut</th><th>Document concerné</th><th>Délai</th></tr></thead>
+        <tbody>
+          <tr><td>NC-2025-001</td><td style="color:#DC2626;font-weight:700">Critique</td><td style="color:#DC2626">Ouverte</td><td>PRO.DRH.GEN.002</td><td style="color:#DC2626;font-weight:700">+28j</td></tr>
+          <tr><td>NC-2025-003</td><td style="color:#EA580C;font-weight:700">Majeure</td><td style="color:#D97706">En cours</td><td>INS.QHSE.HSE.007</td><td>01/06/2025</td></tr>
+          <tr><td>NC-2025-005</td><td style="color:#EA580C;font-weight:700">Majeure</td><td style="color:#D97706">En cours</td><td>TAB.DRH.GEN.002</td><td>15/06/2025</td></tr>
+        </tbody>
+      </table>
+    </div>`:''}
+
+    ${s.find(x=>x.key==='risques'&&x.on)?`
+    <div class="r-section">
+      <div class="r-section-num">Section 4</div>
+      <div class="r-section-title">Risques et opportunités identifiés</div>
+      <div class="r-section-text">L'analyse des données du premier semestre révèle deux risques principaux : (1) le sous-effectif du processus DRH en matière de rédaction documentaire compromet la mise à jour des procédures de formation ; (2) l'absence de module de notification automatique expose l'organisme à des retards de révision non détectés à temps. Une opportunité d'amélioration a été identifiée : la mise en place du module de notifications (planifié en S2 2025) devrait réduire les retards de révision de 60%.</div>
+    </div>`:''}
+
+    ${s.find(x=>x.key==='audit'&&x.on)?`
+    <div class="r-section">
+      <div class="r-section-num">Section 5</div>
+      <div class="r-section-title">Résultats des audits documentaires</div>
+      <div class="r-section-text">Un audit interne de la GED a été réalisé le 15 mars 2025. Il a permis d'identifier 7 non-conformités (dont celles listées en section 3) et de constater une amélioration générale de la maîtrise documentaire par rapport à l'audit 2024. L'auditeur a particulièrement noté la qualité du journal d'audit immuable et la robustesse du workflow d'approbation.</div>
+    </div>`:''}
+
+    <div class="r-decision">
+      <div class="r-decision-title">Décisions de la revue de direction</div>
+      <div class="r-decision-item">Traitement immédiat de la NC-2025-001 (critique) : révision corrective PRO.DRH.GEN.002 avant le 30/06/2025.</div>
+      <div class="r-decision-item">Déploiement du module de notifications automatiques en priorité — objectif S2 2025.</div>
+      <div class="r-decision-item">Révision de l'objectif de taux de conformité : passage à 88% pour S2 2025, 90% en 2026.</div>
+      <div class="r-decision-item">Renforcement des ressources du processus DRH : nomination d'un rédacteur supplémentaire.</div>
+    </div>
+
+    <div class="r-signatures">
+      <div class="r-sig-block"><div class="r-sig-role">Rédigé par</div><div class="r-sig-line"></div><div class="r-sig-name">K. Bouali<br><span style="font-size:10px;color:var(--muted)">Responsable Qualité</span></div></div>
+      <div class="r-sig-block"><div class="r-sig-role">Vérifié par</div><div class="r-sig-line"></div><div class="r-sig-name">—<br><span style="font-size:10px;color:var(--muted)">Directeur QHSE</span></div></div>
+      <div class="r-sig-block"><div class="r-sig-role">Approuvé par</div><div class="r-sig-line"></div><div class="r-sig-name">—<br><span style="font-size:10px;color:var(--muted)">Directeur Général</span></div></div>
+    </div>`;
+}
+
+/* ═══ INIT ═══════════════════════════════════════════════ */
+renderNCTable();
+renderNotifs();
+renderSections();
+renderRapport();
+</script>
+</body>
+</html>

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GED Qualité ENSP — Supervision</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1F3D;--navy2:#1A3260;
+  --accent:#00A878;--accent-d:#007A58;--accent-l:#E6F7F2;
+  --blue:#2563EB;--blue-l:#EFF6FF;
+  --amber:#D97706;--amber-l:#FFFBEB;
+  --red:#DC2626;--red-l:#FEF2F2;
+  --slate:#64748B;--slate-l:#F1F5F9;
+  --surf:#F4F6FA;--surf2:#E8ECF2;
+  --bdr:#DDE1E9;--text:#1A1D23;--muted:#6B7280;--light:#9CA3AF;--white:#FFFFFF;
+  --fu:'Inter',sans-serif;--fc:'Fira Code',monospace;
+  --r4:4px;--r8:8px;--r12:12px;--r16:16px;
+  --sh1:0 1px 3px rgba(0,0,0,.07);--sh2:0 4px 16px rgba(0,0,0,.10);--sh3:0 8px 32px rgba(0,0,0,.14);
+}
+body{font-family:var(--fu);background:var(--surf);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:13px}
+
+/* ── TOPBAR ─────────────────────────────── */
+.topbar{background:var(--navy);height:52px;min-height:52px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:9px;margin-right:20px}
+.logo-ic{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.logo-tx{color:#fff;font-size:13px;font-weight:700}
+.logo-sep{color:rgba(255,255,255,.2);margin:0 8px}
+.tb-nav{display:flex;height:100%}
+.tb-tab{display:flex;align-items:center;gap:7px;padding:0 18px;color:rgba(255,255,255,.5);font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
+.tb-tab:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.05)}
+.tb-tab.active{color:#fff;border-bottom-color:var(--accent);background:rgba(255,255,255,.06)}
+.tb-tab .tb-icon{font-size:14px}
+.tb-badge{background:var(--amber);color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px}
+.tb-badge.red{background:var(--red)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--accent-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.user-nm{color:rgba(255,255,255,.7);font-size:11.5px;font-weight:600}
+
+/* ── LAYOUT ─────────────────────────────── */
+.app{flex:1;display:flex;overflow:hidden}
+.sidebar{width:200px;min-width:200px;background:var(--white);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0}
+.snl{padding:16px 16px 4px;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--light)}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 16px;color:var(--muted);cursor:pointer;font-size:12.5px;font-weight:500;transition:all .13s;position:relative}
+.ni:hover{background:var(--surf);color:var(--text)}
+.ni.active{background:var(--accent-l);color:var(--accent-d);font-weight:700}
+.ni.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.ni-ic{font-size:14px;width:18px;text-align:center}
+.ni-bd{margin-left:auto;font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px;color:#fff}
+.bd-red{background:var(--red)}.bd-amb{background:var(--amber)}.bd-grn{background:var(--accent)}
+.sb-ft{margin-top:auto;padding:14px 16px;border-top:1px solid var(--bdr)}
+.role-chip{display:inline-flex;align-items:center;gap:5px;background:var(--accent-l);color:var(--accent-d);font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px}
+
+/* ── VIEWS ──────────────────────────────── */
+.view{flex:1;overflow:hidden;display:none;flex-direction:column}
+.view.active{display:flex}
+
+/* ── SHARED ─────────────────────────────── */
+.view-header{background:var(--white);border-bottom:1px solid var(--bdr);padding:14px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.vh-title{font-size:16px;font-weight:800;flex:1}
+.vh-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r8);font-family:var(--fu);font-size:12.5px;font-weight:700;border:none;cursor:pointer;transition:all .14s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-d)}
+.btn-ghost{background:var(--surf);color:var(--muted);border:1px solid var(--bdr)}.btn-ghost:hover{background:var(--surf2);color:var(--text)}
+.btn-danger{background:var(--red-l);color:var(--red);border:1px solid #FECACA}.btn-danger:hover{background:#FEE2E2}
+.btn-sm{padding:5px 10px;font-size:11.5px}
+
+/* scrollable body */
+.vscroll{flex:1;overflow-y:auto;padding:20px 24px}
+.vscroll::-webkit-scrollbar{width:5px}.vscroll::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* ═══════════════════════════════════════════
+   PISTE D'AUDIT
+═══════════════════════════════════════════ */
+.audit-filters{background:var(--white);border-bottom:1px solid var(--bdr);padding:10px 24px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.af-sel{font-family:var(--fu);font-size:12px;color:var(--text);background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r8);padding:6px 10px;outline:none;cursor:pointer}
+.af-input{font-family:var(--fu);font-size:12px;color:var(--text);background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r8);padding:6px 10px;outline:none;width:220px}
+.af-input:focus,.af-sel:focus{border-color:var(--accent)}
+.af-right{margin-left:auto;font-size:11px;color:var(--light);font-weight:500}
+
+.audit-table-wrap{flex:1;overflow-y:auto}
+.audit-table-wrap::-webkit-scrollbar{width:5px}.audit-table-wrap::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+table.audit-tbl{width:100%;border-collapse:collapse;font-size:12px}
+table.audit-tbl thead th{position:sticky;top:0;background:var(--white);border-bottom:2px solid var(--bdr);padding:10px 14px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);white-space:nowrap;z-index:2}
+table.audit-tbl tbody tr{border-bottom:1px solid var(--surf2);transition:background .1s;cursor:pointer}
+table.audit-tbl tbody tr:hover{background:var(--surf)}
+table.audit-tbl tbody td{padding:10px 14px;vertical-align:middle}
+
+.ts{font-family:var(--fc);font-size:10.5px;color:var(--muted);white-space:nowrap}
+.ts-date{color:var(--light);font-size:10px}
+
+.actor-cell{display:flex;align-items:center;gap:7px}
+.av-sm{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0}
+
+.doc-code-cell{font-family:var(--fc);font-size:10.5px;color:var(--navy);background:var(--surf2);padding:2px 7px;border-radius:3px;white-space:nowrap}
+
+/* transition arrow */
+.transition-cell{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.st-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.st-BROUILLON{background:#F1F5F9;color:#475569}
+.st-EN_REVUE{background:#FEF3C7;color:#B45309}
+.st-APPROUVE{background:#DBEAFE;color:#1D4ED8}
+.st-APPLICABLE{background:#D1FAE5;color:#059669}
+.st-OBSOLETE{background:#FEE2E2;color:#B91C1C}
+.st-ARCHIVE{background:#F3F4F6;color:#6B7280}
+.arr{color:var(--light);font-size:12px}
+
+.action-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:10px}
+.ab-create{background:#D1FAE5;color:#059669}
+.ab-submit{background:#DBEAFE;color:#1D4ED8}
+.ab-approve{background:#EDE9FE;color:#7C3AED}
+.ab-publish{background:#D1FAE5;color:#059669}
+.ab-return{background:#FEF3C7;color:#B45309}
+.ab-download{background:#F1F5F9;color:#475569}
+.ab-archive{background:#FEE2E2;color:#B91C1C}
+.ab-user{background:#FEF3C7;color:#B45309}
+
+.detail-json{font-family:var(--fc);font-size:10px;color:var(--muted);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ═══════════════════════════════════════════
+   RAPPORTS
+═══════════════════════════════════════════ */
+.rpt-grid-top{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r12);padding:16px 18px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.g::before{background:var(--accent)}
+.kpi.b::before{background:var(--blue)}
+.kpi.a::before{background:var(--amber)}
+.kpi.r::before{background:var(--red)}
+.kpi-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px}
+.kpi-val{font-size:30px;font-weight:800;line-height:1;margin-bottom:3px}
+.kpi-val.g{color:var(--accent)}.kpi-val.b{color:var(--blue)}.kpi-val.a{color:var(--amber)}.kpi-val.r{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--light)}
+.kpi-trend{position:absolute;top:16px;right:16px;font-size:11px;font-weight:700}
+.kpi-trend.up{color:var(--accent)}.kpi-trend.down{color:var(--red)}
+
+.rpt-grid-mid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+.rpt-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r12);padding:18px;box-shadow:var(--sh1)}
+.rpt-card-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+
+/* gauge */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0}
+.gauge-svg{overflow:visible}
+.gauge-val{font-size:22px;font-weight:800;fill:var(--text)}
+.gauge-sub{font-size:10px;fill:var(--muted);font-weight:500}
+
+/* bar chart */
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-lbl{font-size:11px;font-weight:600;color:var(--text);width:60px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:var(--surf2);border-radius:10px;overflow:hidden}
+.bar-fill{height:100%;border-radius:10px;transition:width .4s ease}
+.bar-num{font-size:11px;font-weight:700;color:var(--muted);width:30px;text-align:right;flex-shrink:0}
+
+/* donut */
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{display:flex;flex-direction:column;gap:7px;flex:1}
+.dl-item{display:flex;align-items:center;gap:7px;font-size:11px}
+.dl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dl-lbl{color:var(--muted);flex:1}
+.dl-val{font-weight:700;color:var(--text)}
+
+/* table retard */
+.rpt-table{width:100%;border-collapse:collapse;font-size:12px}
+.rpt-table thead th{border-bottom:2px solid var(--bdr);padding:8px 10px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.rpt-table tbody tr{border-bottom:1px solid var(--surf2)}
+.rpt-table tbody tr:hover{background:var(--surf)}
+.rpt-table tbody td{padding:9px 10px;vertical-align:middle}
+.days-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.days-red{background:var(--red-l);color:var(--red)}
+.days-amb{background:var(--amber-l);color:var(--amber)}
+.days-ok{background:var(--accent-l);color:var(--accent-d)}
+
+/* ═══════════════════════════════════════════
+   RÉFÉRENTIELS
+═══════════════════════════════════════════ */
+.ref-tabs{display:flex;border-bottom:2px solid var(--bdr);background:var(--white);padding:0 24px;flex-shrink:0}
+.ref-tab{padding:12px 18px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .14s;white-space:nowrap}
+.ref-tab:hover{color:var(--text)}
+.ref-tab.active{color:var(--accent-d);border-bottom-color:var(--accent);font-weight:700}
+
+.ref-view{display:none;flex:1;overflow-y:auto;padding:20px 24px}
+.ref-view.active{display:block}
+.ref-view::-webkit-scrollbar{width:5px}.ref-view::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+.ref-section{background:var(--white);border:1px solid var(--bdr);border-radius:var(--r12);overflow:hidden;margin-bottom:20px;box-shadow:var(--sh1)}
+.ref-sec-head{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--bdr);gap:10px}
+.ref-sec-title{font-size:13px;font-weight:800;flex:1}
+.ref-sec-count{font-size:11px;color:var(--muted);font-weight:500}
+
+.ref-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.ref-table thead th{background:var(--surf);padding:9px 14px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid var(--bdr)}
+.ref-table tbody tr{border-bottom:1px solid var(--surf2);transition:background .1s}
+.ref-table tbody tr:hover{background:var(--surf)}
+.ref-table tbody tr:last-child{border-bottom:none}
+.ref-table tbody td{padding:10px 14px;vertical-align:middle}
+
+/* inline edit */
+.ed-cell{display:flex;align-items:center;gap:6px}
+.ed-val{flex:1;cursor:text;border-radius:var(--r4);padding:3px 6px;transition:background .13s}
+.ed-val:hover{background:var(--surf2)}
+.ed-val.editing{background:var(--white);border:1.5px solid var(--accent);padding:3px 5px;border-radius:var(--r4);outline:none}
+.ed-actions{display:none;gap:4px}
+.ed-cell:focus-within .ed-actions{display:flex}
+.ed-btn{background:none;border:none;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:var(--r4);transition:background .13s}
+.ed-btn:hover{background:var(--surf2)}
+
+.code-chip{font-family:var(--fc);font-size:10.5px;font-weight:500;background:var(--surf2);color:var(--navy);padding:2px 8px;border-radius:3px}
+
+.status-toggle{display:inline-flex;align-items:center;gap:5px;cursor:pointer;padding:3px 8px;border-radius:10px;font-size:10.5px;font-weight:700;transition:all .14s}
+.st-active{background:var(--accent-l);color:var(--accent-d)}
+.st-inactive{background:var(--surf2);color:var(--light)}
+
+.ref-add-row{padding:12px 14px;border-top:1px solid var(--surf2)}
+.add-row-form{display:flex;gap:8px;align-items:center}
+.add-inp{font-family:var(--fu);font-size:12.5px;background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r8);padding:7px 10px;outline:none;transition:border-color .14s;flex:1}
+.add-inp:focus{border-color:var(--accent);background:var(--white)}
+
+/* workflow state machine diagram in ref */
+.wf-diagram{display:flex;align-items:center;gap:0;padding:16px 18px;overflow-x:auto}
+.wf-node{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.wf-node-box{padding:8px 14px;border-radius:var(--r8);font-size:11.5px;font-weight:700;border:2px solid;text-align:center;min-width:90px}
+.wf-node-desc{font-size:9.5px;color:var(--light);max-width:90px;text-align:center;line-height:1.3}
+.wf-arrow{display:flex;flex-direction:column;align-items:center;padding:0 6px;flex-shrink:0}
+.wf-arrow-line{width:32px;height:2px;background:var(--bdr);position:relative}
+.wf-arrow-line::after{content:'▶';position:absolute;right:-6px;top:-6px;font-size:10px;color:var(--light)}
+.wf-arrow-lbl{font-size:9px;color:var(--light);white-space:nowrap;margin-top:4px}
+.wf-or{display:flex;flex-direction:column;gap:4px}
+.wf-arrow-rev{transform:scaleX(-1)}
+.nb-BROUILLON{border-color:#CBD5E1;background:#F8FAFC;color:#475569}
+.nb-EN_REVUE{border-color:#FCD34D;background:#FFFBEB;color:#B45309}
+.nb-APPROUVE{border-color:#93C5FD;background:#EFF6FF;color:#1D4ED8}
+.nb-APPLICABLE{border-color:#6EE7B7;background:#ECFDF5;color:#059669}
+.nb-OBSOLETE{border-color:#FCA5A5;background:#FEF2F2;color:#B91C1C}
+.nb-ARCHIVE{border-color:#D1D5DB;background:#F9FAFB;color:#6B7280}
+
+/* toast */
+.toast-c{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:9px;background:var(--navy);color:#fff;padding:11px 16px;border-radius:var(--r12);font-size:12.5px;font-weight:600;box-shadow:var(--sh3);animation:slideUp .22s ease;pointer-events:all;min-width:240px}
+.toast.ok{background:var(--accent-d)}.toast.warn{background:var(--amber)}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-ic">📋</div>
+    <div class="logo-tx">GED Qualité · ENSP</div>
+  </div>
+  <span class="logo-sep">/</span>
+  <nav class="tb-nav">
+    <div class="tb-tab" onclick="showView('audit',this)"><span class="tb-icon">📜</span> Piste d'audit <span class="tb-badge">247</span></div>
+    <div class="tb-tab" onclick="showView('rapports',this)"><span class="tb-icon">📊</span> Rapports</div>
+    <div class="tb-tab active" onclick="showView('referentiels',this)"><span class="tb-icon">⚙️</span> Référentiels</div>
+  </nav>
+  <div class="tb-right">
+    <div class="user-av">KB</div>
+    <div class="user-nm">K. Bouali · Resp. Qualité</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="snl">Navigation</div>
+    <div class="ni"><span class="ni-ic">🏠</span> Tableau de bord</div>
+    <div class="ni"><span class="ni-ic">📄</span> Documents</div>
+    <div class="ni"><span class="ni-ic">🔄</span> Workflow <span class="ni-bd bd-amb">4</span></div>
+    <div class="snl" style="margin-top:8px">Supervision</div>
+    <div class="ni"><span class="ni-ic">⏰</span> À planifier <span class="ni-bd bd-red">2</span></div>
+    <div class="ni active" onclick="showView('audit',null)"><span class="ni-ic">📜</span> Piste d'audit</div>
+    <div class="ni" onclick="showView('rapports',null)"><span class="ni-ic">📊</span> Rapports</div>
+    <div class="snl" style="margin-top:8px">Administration</div>
+    <div class="ni"><span class="ni-ic">👥</span> Utilisateurs</div>
+    <div class="ni" onclick="showView('referentiels',null)"><span class="ni-ic">⚙️</span> Référentiels</div>
+    <div class="sb-ft">
+      <div style="font-size:10px;color:var(--light);margin-bottom:5px">Rôle actif</div>
+      <div class="role-chip">✅ Resp. Qualité</div>
+    </div>
+  </aside>
+
+  <!-- ═══ VUE : PISTE D'AUDIT ═══ -->
+  <div class="view active" id="view-audit">
+    <div class="view-header">
+      <div>
+        <div class="vh-title">📜 Piste d'audit</div>
+        <div class="vh-sub">Toutes les actions sur les documents — immuable, conforme ISO 9001 §9.1</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="exportAudit()">⬇ Exporter CSV</button>
+    </div>
+
+    <div class="audit-filters">
+      <input class="af-input" type="text" placeholder="🔍  Chercher par document, utilisateur…" oninput="filterAudit(this.value)">
+      <select class="af-sel" onchange="filterAuditAction(this.value)">
+        <option value="">Toutes les actions</option>
+        <option value="REVISION_CREEE">Création</option>
+        <option value="REVISION_SOUMISE_REVUE">Soumission à revue</option>
+        <option value="REVISION_APPROUVEE">Approbation revue</option>
+        <option value="REVISION_RENDUE_APPLICABLE">Mise en application</option>
+        <option value="REVISION_RETOURNEE">Retour en brouillon</option>
+        <option value="FICHIER_TELECHARGE">Téléchargement</option>
+        <option value="REVISION_ARCHIVEE">Archivage</option>
+      </select>
+      <select class="af-sel" onchange="filterAuditUser(this.value)">
+        <option value="">Tous les utilisateurs</option>
+        <option value="K. Bouali">K. Bouali</option>
+        <option value="A. Ferhat">A. Ferhat</option>
+        <option value="H. Meddah">H. Meddah</option>
+        <option value="F. Aissaoui">F. Aissaoui</option>
+      </select>
+      <select class="af-sel" id="audit-period">
+        <option value="7">7 derniers jours</option>
+        <option value="30" selected>30 derniers jours</option>
+        <option value="90">3 derniers mois</option>
+        <option value="365">1 an</option>
+      </select>
+      <div class="af-right" id="audit-count">247 entrées</div>
+    </div>
+
+    <div class="audit-table-wrap">
+      <table class="audit-tbl" id="audit-table">
+        <thead>
+          <tr>
+            <th>Horodatage</th>
+            <th>Acteur</th>
+            <th>Document</th>
+            <th>Action</th>
+            <th>Transition de statut</th>
+            <th>Détail</th>
+          </tr>
+        </thead>
+        <tbody id="audit-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ VUE : RAPPORTS ═══ -->
+  <div class="view" id="view-rapports">
+    <div class="view-header">
+      <div>
+        <div class="vh-title">📊 Rapports de conformité</div>
+        <div class="vh-sub">Tableau de bord qualité — période : Janvier – Mai 2025</div>
+      </div>
+      <select class="af-sel">
+        <option>Janvier – Mai 2025</option>
+        <option>2024 (annuel)</option>
+        <option>2023 (annuel)</option>
+      </select>
+      <button class="btn btn-primary btn-sm">⬇ Exporter PDF</button>
+    </div>
+    <div class="vscroll">
+
+      <!-- KPIs -->
+      <div class="rpt-grid-top">
+        <div class="kpi g">
+          <div class="kpi-lbl">Documents applicables</div>
+          <div class="kpi-val g">127</div>
+          <div class="kpi-sub">dans le référentiel actif</div>
+          <div class="kpi-trend up">↑ +8 vs 2024</div>
+        </div>
+        <div class="kpi b">
+          <div class="kpi-lbl">Révisions réalisées</div>
+          <div class="kpi-val b">34</div>
+          <div class="kpi-sub">sur la période</div>
+          <div class="kpi-trend up">↑ +6 vs 2024</div>
+        </div>
+        <div class="kpi a">
+          <div class="kpi-lbl">Révisions en retard</div>
+          <div class="kpi-val a">2</div>
+          <div class="kpi-sub">date dépassée</div>
+          <div class="kpi-trend down">↓ -1 vs 2024</div>
+        </div>
+        <div class="kpi r">
+          <div class="kpi-lbl">Retours en brouillon</div>
+          <div class="kpi-val r">5</div>
+          <div class="kpi-sub">corrections demandées</div>
+          <div class="kpi-trend up">↑ +2 vs 2024</div>
+        </div>
+      </div>
+
+      <div class="rpt-grid-mid">
+
+        <!-- GAUGE conformité -->
+        <div class="rpt-card">
+          <div class="rpt-card-title">🎯 Taux de conformité global</div>
+          <div class="gauge-wrap">
+            <svg class="gauge-svg" width="160" height="100" viewBox="0 0 160 100">
+              <!-- track -->
+              <path d="M 20 90 A 60 60 0 0 1 140 90" fill="none" stroke="#E8ECF2" stroke-width="14" stroke-linecap="round"/>
+              <!-- fill 84% of 180° = 151.2° -->
+              <path d="M 20 90 A 60 60 0 0 1 140 90" fill="none" stroke="#00A878" stroke-width="14" stroke-linecap="round"
+                stroke-dasharray="188.5" stroke-dashoffset="30" style="transition:stroke-dashoffset .6s ease"/>
+              <!-- value -->
+              <text x="80" y="82" text-anchor="middle" class="gauge-val" font-family="Inter" font-weight="800" font-size="26" fill="#1A1D23">84%</text>
+              <text x="80" y="96" text-anchor="middle" font-family="Inter" font-size="10" fill="#9CA3AF">127/151 documents à jour</text>
+            </svg>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--light);width:160px;margin-top:-8px">
+              <span>0%</span><span style="color:var(--accent-d);font-weight:700">Objectif 90%</span><span>100%</span>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:7px">
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--muted)">À jour</span><span style="font-weight:700;color:var(--accent)">127 docs</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--muted)">En cours de révision</span><span style="font-weight:700;color:var(--blue)">7 docs</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--muted)">En retard</span><span style="font-weight:700;color:var(--red)">2 docs</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px">
+              <span style="color:var(--muted)">Non planifiés</span><span style="font-weight:700;color:var(--light)">15 docs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BAR : distribution par processus -->
+        <div class="rpt-card">
+          <div class="rpt-card-title">🏢 Documents par processus</div>
+          <div class="bar-chart" id="bar-processus"></div>
+        </div>
+
+        <!-- DONUT : distribution par type -->
+        <div class="rpt-card">
+          <div class="rpt-card-title">📑 Répartition par type</div>
+          <div class="donut-wrap">
+            <svg width="110" height="110" viewBox="0 0 110 110" id="donut-svg"></svg>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table retards + activité -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+        <div class="rpt-card">
+          <div class="rpt-card-title">⏰ Révisions en retard ou urgentes</div>
+          <table class="rpt-table">
+            <thead><tr><th>Document</th><th>Processus</th><th>Échéance</th><th>Délai</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="code-chip">PRO.DRH.GEN.002</span><div style="font-size:11px;color:var(--muted);margin-top:2px">Compétences et formation</div></td>
+                <td>DRH</td><td>01/01/2025</td>
+                <td><span class="days-badge days-red">+148j retard</span></td>
+              </tr>
+              <tr>
+                <td><span class="code-chip">INS.QHSE.ENV.004</span><div style="font-size:11px;color:var(--muted);margin-top:2px">Tri déchets industriels</div></td>
+                <td>DQHSE</td><td>01/06/2025</td>
+                <td><span class="days-badge days-red">+28j retard</span></td>
+              </tr>
+              <tr>
+                <td><span class="code-chip">MOD.DAL.LOG.001</span><div style="font-size:11px;color:var(--muted);margin-top:2px">Réception matières premières</div></td>
+                <td>DAL</td><td>15/07/2025</td>
+                <td><span class="days-badge days-amb">17j restants</span></td>
+              </tr>
+              <tr>
+                <td><span class="code-chip">PRO.QHSE.HSE.003</span><div style="font-size:11px;color:var(--muted);margin-top:2px">Gestion non-conformités</div></td>
+                <td>DQHSE</td><td>01/09/2025</td>
+                <td><span class="days-badge days-ok">93j restants</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="rpt-card">
+          <div class="rpt-card-title">📈 Activité — révisions par mois</div>
+          <div id="activity-bars" style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px"></div>
+          <div id="activity-labels" style="display:flex;gap:6px;margin-top:6px"></div>
+          <div style="margin-top:14px;display:flex;gap:14px">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px"><div style="width:10px;height:10px;border-radius:2px;background:var(--accent)"></div>Rendues applicables</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px"><div style="width:10px;height:10px;border-radius:2px;background:var(--surf2)"></div>Soumises</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ VUE : RÉFÉRENTIELS ═══ -->
+  <div class="view" id="view-referentiels">
+    <div class="view-header">
+      <div>
+        <div class="vh-title">⚙️ Référentiels</div>
+        <div class="vh-sub">Tables de valeurs du système — modification directe inline</div>
+      </div>
+    </div>
+
+    <div class="ref-tabs">
+      <div class="ref-tab active" onclick="showRefTab('types',this)">Types de document</div>
+      <div class="ref-tab" onclick="showRefTab('processus',this)">Processus</div>
+      <div class="ref-tab" onclick="showRefTab('lieux',this)">Lieux</div>
+      <div class="ref-tab" onclick="showRefTab('workflow',this)">Workflow d'approbation</div>
+      <div class="ref-tab" onclick="showRefTab('conf',this)">Confidentialité</div>
+    </div>
+
+    <!-- TAB: types -->
+    <div class="ref-view active" id="reftab-types">
+      <div class="ref-section">
+        <div class="ref-sec-head">
+          <div class="ref-sec-title">Types de document</div>
+          <div class="ref-sec-count">9 types enregistrés</div>
+        </div>
+        <table class="ref-table">
+          <thead><tr><th>Code</th><th>Libellé</th><th>Description</th><th>Documents</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="types-tbody"></tbody>
+        </table>
+        <div class="ref-add-row">
+          <div class="add-row-form">
+            <input class="add-inp" id="add-type-code" placeholder="Code (ex: PLN)" maxlength="5" style="max-width:100px;text-transform:uppercase">
+            <input class="add-inp" id="add-type-lib" placeholder="Libellé (ex: Plan)">
+            <input class="add-inp" id="add-type-desc" placeholder="Description courte">
+            <button class="btn btn-primary btn-sm" onclick="addType()">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: processus -->
+    <div class="ref-view" id="reftab-processus">
+      <div class="ref-section">
+        <div class="ref-sec-head">
+          <div class="ref-sec-title">Processus / Directions</div>
+          <div class="ref-sec-count">19 processus enregistrés</div>
+        </div>
+        <table class="ref-table">
+          <thead><tr><th>Code</th><th>Libellé</th><th>Responsable</th><th>Documents</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="processus-tbody"></tbody>
+        </table>
+        <div class="ref-add-row">
+          <div class="add-row-form">
+            <input class="add-inp" id="add-proc-code" placeholder="Code (ex: DFI)" maxlength="8" style="max-width:110px;text-transform:uppercase">
+            <input class="add-inp" id="add-proc-lib" placeholder="Libellé complet de la direction">
+            <input class="add-inp" id="add-proc-resp" placeholder="Responsable">
+            <button class="btn btn-primary btn-sm" onclick="addProcessus()">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: lieux -->
+    <div class="ref-view" id="reftab-lieux">
+      <div class="ref-section">
+        <div class="ref-sec-head">
+          <div class="ref-sec-title">Lieux de classement et d'archivage</div>
+          <div class="ref-sec-count">5 lieux enregistrés</div>
+        </div>
+        <table class="ref-table">
+          <thead><tr><th>Libellé</th><th>Type</th><th>Capacité</th><th>Responsable</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="lieux-tbody"></tbody>
+        </table>
+        <div class="ref-add-row">
+          <div class="add-row-form">
+            <input class="add-inp" id="add-lieu-lib" placeholder="Libellé du lieu">
+            <select class="add-inp" id="add-lieu-type" style="max-width:180px"><option value="classement">Classement</option><option value="archivage">Archivage</option><option value="les deux">Les deux</option></select>
+            <input class="add-inp" id="add-lieu-resp" placeholder="Responsable">
+            <button class="btn btn-primary btn-sm" onclick="addLieu()">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: workflow -->
+    <div class="ref-view" id="reftab-workflow">
+      <div class="ref-section">
+        <div class="ref-sec-head">
+          <div class="ref-sec-title">Machine à états du workflow ISO 9001</div>
+          <div class="ref-sec-count" style="color:var(--amber)">⚠️ Lecture seule — modifiable uniquement par l'administrateur</div>
+        </div>
+        <div class="wf-diagram" id="wf-diagram"></div>
+        <div style="padding:14px 18px;border-top:1px solid var(--surf2)">
+          <table class="ref-table">
+            <thead><tr><th>Transition</th><th>De</th><th>Vers</th><th>Permission requise</th><th>Automatique</th></tr></thead>
+            <tbody id="wf-transitions-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: confidentialité -->
+    <div class="ref-view" id="reftab-conf">
+      <div class="ref-section">
+        <div class="ref-sec-head">
+          <div class="ref-sec-title">Niveaux de confidentialité</div>
+          <div class="ref-sec-count">3 niveaux définis</div>
+        </div>
+        <table class="ref-table">
+          <thead><tr><th>Niveau</th><th>Libellé</th><th>Description</th><th>Permissions d'accès</th><th></th></tr></thead>
+          <tbody id="conf-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /app -->
+
+<div class="toast-c" id="toasts"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   DATA
+══════════════════════════════════════════ */
+const USERS_MAP = {
+  'KB':{ name:'K. Bouali',   color:'#1D4ED8' },
+  'AF':{ name:'A. Ferhat',   color:'#059669' },
+  'HM':{ name:'H. Meddah',   color:'#D97706' },
+  'FA':{ name:'F. Aissaoui', color:'#7C3AED' },
+  'TH':{ name:'T. Hamza',    color:'#DC2626' },
+  'SY':{ name:'Système',     color:'#6B7280' },
+};
+
+const AUDIT_DATA = [
+  { id:247, ts:'2025-05-06 09:42:11', actor:'KB', doc:'MOD.ENSP.GEN.007', titre:'Calibration instruments', action:'REVISION_RENDUE_APPLICABLE', from:'APPROUVE',   to:'APPLICABLE', detail:'{"rev":0}' },
+  { id:246, ts:'2025-05-05 16:20:04', actor:'KB', doc:'MOD.ENSP.GEN.007', titre:'Calibration instruments', action:'REVISION_APPROUVEE',         from:'EN_REVUE',   to:'APPROUVE',   detail:'{"rev":0}' },
+  { id:245, ts:'2025-05-04 11:33:29', actor:'TH', doc:'MOD.ENSP.GEN.007', titre:'Calibration instruments', action:'REVISION_SOUMISE_REVUE',      from:'BROUILLON',  to:'EN_REVUE',   detail:'{"rev":0}' },
+  { id:244, ts:'2025-05-03 08:15:00', actor:'FA', doc:'MOD.QHSE.HSE.003', titre:'Inspection équipements', action:'REVISION_SOUMISE_REVUE',       from:'BROUILLON',  to:'EN_REVUE',   detail:'{"rev":0}' },
+  { id:243, ts:'2025-05-02 14:07:55', actor:'AF', doc:'INS.QHSE.HSE.007', titre:'Consignation équipements', action:'REVISION_CREEE',             from:null,         to:'BROUILLON',  detail:'{"rev":0}' },
+  { id:242, ts:'2025-05-01 09:00:00', actor:'KB', doc:'INS.QHSE.ENV.006', titre:'Produits chimiques',      action:'REVISION_RENDUE_APPLICABLE',  from:'APPROUVE',   to:'APPLICABLE', detail:'{"rev":1}' },
+  { id:241, ts:'2025-04-29 15:44:10', actor:'KB', doc:'INS.QHSE.ENV.006', titre:'Produits chimiques',      action:'REVISION_APPROUVEE',          from:'EN_REVUE',   to:'APPROUVE',   detail:'{"rev":1}' },
+  { id:240, ts:'2025-04-28 10:22:33', actor:'HM', doc:'TAB.DRH.GEN.002',  titre:'Suivi formations',        action:'REVISION_SOUMISE_REVUE',      from:'BROUILLON',  to:'EN_REVUE',   detail:'{"rev":1}' },
+  { id:239, ts:'2025-04-25 09:11:02', actor:'KB', doc:'PRO.QHSE.GEN.001', titre:'Maîtrise documents',      action:'FICHIER_TELECHARGE',          from:null,         to:null,         detail:'{"fichier":"PRO.QHSE.GEN.001_v2.pdf"}' },
+  { id:238, ts:'2025-04-22 16:55:40', actor:'AF', doc:'INS.QHSE.ENV.006', titre:'Produits chimiques',      action:'REVISION_RETOURNEE',          from:'EN_REVUE',   to:'BROUILLON',  detail:'{"motif":"Schéma manquant §4.2"}' },
+  { id:237, ts:'2025-04-20 11:30:19', actor:'TH', doc:'PRO.DMI.GEN.004',  titre:'Maintenance préventive',  action:'REVISION_CREEE',              from:null,         to:'BROUILLON',  detail:'{"rev":2}' },
+  { id:236, ts:'2025-04-18 08:45:00', actor:'KB', doc:'FOR.QHSE.GEN.008', titre:'Revue de direction',      action:'REVISION_CREEE',              from:null,         to:'BROUILLON',  detail:'{"rev":1}' },
+  { id:235, ts:'2025-04-15 14:10:55', actor:'SY', doc:'PRO.DRH.GEN.002',  titre:'Compétences formation',   action:'REVISION_ARCHIVEE',           from:'OBSOLETE',   to:'ARCHIVE',    detail:'{"auto":true}' },
+  { id:234, ts:'2025-04-10 09:02:31', actor:'KB', doc:'PRO.QHSE.GEN.001', titre:'Maîtrise documents',      action:'REVISION_RENDUE_APPLICABLE',  from:'APPROUVE',   to:'APPLICABLE', detail:'{"rev":2}' },
+  { id:233, ts:'2025-04-08 15:30:00', actor:'AF', doc:'PRO.QHSE.GEN.001', titre:'Maîtrise documents',      action:'REVISION_SOUMISE_REVUE',      from:'BROUILLON',  to:'EN_REVUE',   detail:'{"rev":2}' },
+];
+
+let auditFilter = { q:'', action:'', user:'' };
+
+const ACTION_LABELS = {
+  REVISION_CREEE:             { lbl:'Brouillon créé',        cls:'ab-create',   ic:'✍️' },
+  REVISION_SOUMISE_REVUE:     { lbl:'Soumis à revue',        cls:'ab-submit',   ic:'📤' },
+  REVISION_APPROUVEE:         { lbl:'Revue approuvée',       cls:'ab-approve',  ic:'✅' },
+  REVISION_RENDUE_APPLICABLE: { lbl:'Rendu applicable',      cls:'ab-publish',  ic:'📢' },
+  REVISION_RETOURNEE:         { lbl:'Retourné en brouillon', cls:'ab-return',   ic:'↩' },
+  FICHIER_TELECHARGE:         { lbl:'Fichier téléchargé',    cls:'ab-download', ic:'⬇' },
+  REVISION_ARCHIVEE:          { lbl:'Archivé',               cls:'ab-archive',  ic:'📦' },
+  UTILISATEUR_CREE:           { lbl:'Utilisateur créé',      cls:'ab-user',     ic:'👤' },
+};
+
+/* ══════════════════════════════════════════
+   VIEWS
+══════════════════════════════════════════ */
+function showView(id, el) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`view-${id}`).classList.add('active');
+  if (el) el.classList.add('active');
+  if (id==='rapports') initCharts();
+}
+
+/* ══════════════════════════════════════════
+   PISTE D'AUDIT
+══════════════════════════════════════════ */
+function renderAudit() {
+  let data = AUDIT_DATA.filter(r=>{
+    const q = auditFilter.q.toLowerCase();
+    const matchQ = !q || r.doc.toLowerCase().includes(q) || r.titre.toLowerCase().includes(q) || USERS_MAP[r.actor]?.name.toLowerCase().includes(q);
+    const matchA = !auditFilter.action || r.action === auditFilter.action;
+    const matchU = !auditFilter.user || USERS_MAP[r.actor]?.name === auditFilter.user;
+    return matchQ && matchA && matchU;
+  });
+  document.getElementById('audit-count').textContent = data.length + ' entrées';
+  document.getElementById('audit-tbody').innerHTML = data.map(r=>{
+    const u  = USERS_MAP[r.actor];
+    const ac = ACTION_LABELS[r.action] || { lbl:r.action, cls:'ab-download', ic:'•' };
+    const [date,time] = r.ts.split(' ');
+    const fmtDate = d => { const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; };
+    const statusBadge = s => s ? `<span class="st-badge st-${s}">${{BROUILLON:'Brouillon',EN_REVUE:'En revue',APPROUVE:'Approuvé',APPLICABLE:'Applicable',OBSOLETE:'Obsolète',ARCHIVE:'Archivé'}[s]||s}</span>` : '';
+    const transition = r.from || r.to
+      ? `<div class="transition-cell">${r.from?statusBadge(r.from):'<span style="color:var(--light);font-size:11px">—</span>'}${r.from&&r.to?'<span class="arr">→</span>':''}${r.to?statusBadge(r.to):''}</div>`
+      : '<span style="color:var(--light);font-size:11px">—</span>';
+    return `<tr>
+      <td><div class="ts">${time}</div><div class="ts-date">${fmtDate(date)}</div></td>
+      <td><div class="actor-cell">
+        <div class="av-sm" style="background:${u?.color||'#6B7280'}">${r.actor}</div>
+        <span style="font-size:12px;font-weight:600">${u?.name||r.actor}</span>
+      </div></td>
+      <td><div><span class="doc-code-cell">${r.doc}</span></div><div style="font-size:10.5px;color:var(--muted);margin-top:2px">${r.titre}</div></td>
+      <td><span class="action-badge ${ac.cls}">${ac.ic} ${ac.lbl}</span></td>
+      <td>${transition}</td>
+      <td><div class="detail-json">${r.detail}</div></td>
+    </tr>`;
+  }).join('');
+}
+function filterAudit(q) { auditFilter.q=q; renderAudit(); }
+function filterAuditAction(a) { auditFilter.action=a; renderAudit(); }
+function filterAuditUser(u) { auditFilter.user=u; renderAudit(); }
+function exportAudit() { toast('Export CSV en cours…'); }
+
+/* ══════════════════════════════════════════
+   RAPPORTS — CHARTS
+══════════════════════════════════════════ */
+let chartsInit = false;
+function initCharts() {
+  if (chartsInit) return; chartsInit = true;
+
+  // Bar chart processus
+  const procData = [
+    {lbl:'DQHSE',n:52,c:'#00A878'},{lbl:'DAL',n:24,c:'#2563EB'},
+    {lbl:'DRH',n:18,c:'#7C3AED'},{lbl:'DMI',n:14,c:'#D97706'},
+    {lbl:'DPE',n:9,c:'#DC2626'},{lbl:'DG',n:6,c:'#64748B'},
+    {lbl:'ENSP',n:4,c:'#0891B2'}
+  ];
+  const maxN = Math.max(...procData.map(d=>d.n));
+  document.getElementById('bar-processus').innerHTML = procData.map(d=>`
+    <div class="bar-row">
+      <div class="bar-lbl" title="${d.lbl}">${d.lbl}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(d.n/maxN*100)}%;background:${d.c}"></div></div>
+      <div class="bar-num">${d.n}</div>
+    </div>`).join('');
+
+  // Donut type
+  const typeData = [
+    {lbl:'Enreg. (FOR)',n:42,c:'#2563EB'},{lbl:'Procédures (PRO)',n:32,c:'#00A878'},
+    {lbl:'Instructions (INS)',n:28,c:'#7C3AED'},{lbl:'Modes op. (MOD)',n:15,c:'#D97706'},
+    {lbl:'Tableaux (TAB)',n:10,c:'#DC2626'}
+  ];
+  const total = typeData.reduce((s,d)=>s+d.n,0);
+  const cx=55,cy=55,r=38,sw=14;
+  let start=0, paths='';
+  typeData.forEach(d=>{
+    const angle = (d.n/total)*360;
+    const rad   = a => a*Math.PI/180;
+    const large = angle>180?1:0;
+    const ex = cx+r*Math.cos(rad(start-90)), ey=cy+r*Math.sin(rad(start-90));
+    const end = start+angle;
+    const nx  = cx+r*Math.cos(rad(end-90)), ny=cy+r*Math.sin(rad(end-90));
+    paths += `<path d="M ${ex} ${ey} A ${r} ${r} 0 ${large} 1 ${nx} ${ny}" fill="none" stroke="${d.c}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+    start = end;
+  });
+  document.getElementById('donut-svg').innerHTML = paths + `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-family="Inter" font-size="15" font-weight="800" fill="#1A1D23">${total}</text>`;
+  document.getElementById('donut-legend').innerHTML = typeData.map(d=>`
+    <div class="dl-item">
+      <div class="dl-dot" style="background:${d.c}"></div>
+      <div class="dl-lbl">${d.lbl}</div>
+      <div class="dl-val">${d.n}</div>
+    </div>`).join('');
+
+  // Activity bars
+  const months = ['Jan','Fév','Mar','Avr','Mai'];
+  const pub    = [4,7,5,9,6];
+  const sub    = [6,9,8,11,8];
+  const maxA   = Math.max(...sub);
+  const barsEl = document.getElementById('activity-bars');
+  const lblsEl = document.getElementById('activity-labels');
+  barsEl.innerHTML = months.map((m,i)=>`
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end">
+      <div style="width:100%;background:var(--surf2);border-radius:var(--r4) var(--r4) 0 0;height:${Math.round(sub[i]/maxA*100)}%;position:relative;min-height:4px">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:var(--accent);border-radius:var(--r4) var(--r4) 0 0;height:${Math.round(pub[i]/sub[i]*100)}%"></div>
+      </div>
+      <div style="font-size:9.5px;font-weight:700;color:var(--muted)">${sub[i]}</div>
+    </div>`).join('');
+  lblsEl.innerHTML = months.map(m=>`<div style="flex:1;text-align:center;font-size:10.5px;font-weight:600;color:var(--light)">${m}</div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   RÉFÉRENTIELS
+══════════════════════════════════════════ */
+function showRefTab(id,el) {
+  document.querySelectorAll('.ref-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ref-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`reftab-${id}`).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ─ Types ─ */
+let types = [
+  {code:'PRO',lib:'Procédure',desc:'Décrit un processus global',n:32,active:true},
+  {code:'MOD',lib:'Mode opératoire',desc:'Étapes d\'exécution détaillées',n:15,active:true},
+  {code:'INS',lib:'Instruction',desc:'Consigne opérationnelle spécifique',n:28,active:true},
+  {code:'FOR',lib:'Enregistrement / Formulaire',desc:'Formulaire ou rapport de saisie',n:42,active:true},
+  {code:'TAB',lib:'Tableau',desc:'Données structurées de référence',n:10,active:true},
+  {code:'MAN',lib:'Manuel',desc:'Document de référence global',n:3,active:true},
+  {code:'REG',lib:'Règlement',desc:'Texte réglementaire applicable',n:3,active:true},
+  {code:'GUI',lib:'Guide',desc:'Document d\'orientation pratique',n:2,active:true},
+  {code:'PLN',lib:'Plan',desc:'Plan de contrôle ou de surveillance',n:2,active:false},
+];
+function renderTypes() {
+  document.getElementById('types-tbody').innerHTML = types.map((t,i)=>`
+    <tr>
+      <td><span class="code-chip">${t.code}</span></td>
+      <td><div class="ed-cell"><span class="ed-val" contenteditable="true" onblur="saveType(${i},'lib',this)">${t.lib}</span></div></td>
+      <td><div class="ed-cell"><span class="ed-val" contenteditable="true" onblur="saveType(${i},'desc',this)" style="color:var(--muted)">${t.desc}</span></div></td>
+      <td style="color:var(--muted);font-weight:600">${t.n}</td>
+      <td><span class="status-toggle ${t.active?'st-active':'st-inactive'}" onclick="toggleType(${i})">${t.active?'✅ Actif':'⏸ Inactif'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="deleteType(${i})" style="color:var(--red);border-color:#FECACA" title="Supprimer">${t.n>0?'—':'🗑'}</button></td>
+    </tr>`).join('');
+}
+function saveType(i,field,el) { types[i][field]=el.textContent.trim(); toast('Modification enregistrée','ok'); }
+function toggleType(i) { types[i].active=!types[i].active; renderTypes(); toast(types[i].active?'Type activé':'Type désactivé'); }
+function deleteType(i) { if(types[i].n>0){toast('Impossible : '+ types[i].n+' documents utilisent ce type',''); return;} types.splice(i,1); renderTypes(); toast('Type supprimé'); }
+function addType() {
+  const code=document.getElementById('add-type-code').value.trim().toUpperCase();
+  const lib =document.getElementById('add-type-lib').value.trim();
+  const desc=document.getElementById('add-type-desc').value.trim();
+  if(!code||!lib){toast('Code et libellé requis'); return;}
+  if(types.find(t=>t.code===code)){toast('Ce code existe déjà'); return;}
+  types.push({code,lib,desc,n:0,active:true});
+  document.getElementById('add-type-code').value='';
+  document.getElementById('add-type-lib').value='';
+  document.getElementById('add-type-desc').value='';
+  renderTypes(); toast('Type ajouté','ok');
+}
+
+/* ─ Processus ─ */
+let processus = [
+  {code:'DQHSE',lib:'Direction Qualité, Hygiène, Sécurité & Environnement',resp:'K. Bouali',n:52,active:true},
+  {code:'DAL',  lib:'Direction Achats & Logistique',resp:'N. Amrani',n:24,active:true},
+  {code:'DRH',  lib:'Direction Ressources Humaines',resp:'L. Meziane',n:18,active:true},
+  {code:'DMI',  lib:'Direction Maintenance & Infrastructures',resp:'T. Hamza',n:14,active:true},
+  {code:'DPE',  lib:'Direction Production & Exploitation',resp:'R. Kaci',n:9,active:true},
+  {code:'DFAB', lib:'Direction Fabrication',resp:'M. Salah',n:6,active:true},
+  {code:'DG',   lib:'Direction Générale',resp:'Directeur Général',n:6,active:true},
+  {code:'ENSP', lib:'Entreprise (transverse)',resp:'Système',n:4,active:true},
+  {code:'GEN',  lib:'Général / multi-processus',resp:'—',n:3,active:true},
+  {code:'QHSE', lib:'QHSE (ancien code)',resp:'—',n:1,active:false},
+];
+function renderProcessus() {
+  document.getElementById('processus-tbody').innerHTML = processus.map((p,i)=>`
+    <tr>
+      <td><span class="code-chip">${p.code}</span></td>
+      <td><span class="ed-val" contenteditable="true" onblur="saveProc(${i},'lib',this)" style="font-size:12px">${p.lib}</span></td>
+      <td><span class="ed-val" contenteditable="true" onblur="saveProc(${i},'resp',this)">${p.resp}</span></td>
+      <td style="color:var(--muted);font-weight:600">${p.n}</td>
+      <td><span class="status-toggle ${p.active?'st-active':'st-inactive'}" onclick="toggleProc(${i})">${p.active?'✅ Actif':'⏸ Inactif'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" style="${p.n>0?'opacity:.35;cursor:not-allowed':'color:var(--red);border-color:#FECACA'}" onclick="deleteProc(${i})" title="Supprimer">${p.n>0?'—':'🗑'}</button></td>
+    </tr>`).join('');
+}
+function saveProc(i,f,el){processus[i][f]=el.textContent.trim();toast('Modification enregistrée','ok')}
+function toggleProc(i){processus[i].active=!processus[i].active;renderProcessus();toast(processus[i].active?'Processus activé':'Processus désactivé')}
+function deleteProc(i){if(processus[i].n>0)return;processus.splice(i,1);renderProcessus();toast('Processus supprimé')}
+function addProcessus(){
+  const code=document.getElementById('add-proc-code').value.trim().toUpperCase();
+  const lib =document.getElementById('add-proc-lib').value.trim();
+  const resp=document.getElementById('add-proc-resp').value.trim();
+  if(!code||!lib){toast('Code et libellé requis');return;}
+  if(processus.find(p=>p.code===code)){toast('Ce code existe déjà');return;}
+  processus.push({code,lib,resp:resp||'—',n:0,active:true});
+  document.getElementById('add-proc-code').value='';
+  document.getElementById('add-proc-lib').value='';
+  document.getElementById('add-proc-resp').value='';
+  renderProcessus();toast('Processus ajouté','ok');
+}
+
+/* ─ Lieux ─ */
+let lieux = [
+  {lib:'Bureau dépt qualité',type:'classement',cap:'500 dossiers',resp:'Chef service qualité',active:true},
+  {lib:'Bureau service concerné',type:'classement',cap:'200 dossiers',resp:'Chef de service',active:true},
+  {lib:'Serveur partagé GED',type:'classement',cap:'Illimitée',resp:'DDSI',active:true},
+  {lib:'Salle d\'archive',type:'archivage',cap:'2 000 boîtes',resp:'Responsable archives',active:true},
+  {lib:'Archivage numérique sécurisé',type:'archivage',cap:'Illimitée',resp:'DDSI',active:false},
+];
+function renderLieux(){
+  document.getElementById('lieux-tbody').innerHTML=lieux.map((l,i)=>`
+    <tr>
+      <td><span class="ed-val" contenteditable="true" onblur="saveLieu(${i},'lib',this)">${l.lib}</span></td>
+      <td><span class="code-chip" style="background:${l.type==='archivage'?'#EFF6FF':'var(--surf2)'}; color:${l.type==='archivage'?'#1D4ED8':'var(--muted)'}">${l.type}</span></td>
+      <td style="color:var(--muted)">${l.cap}</td>
+      <td><span class="ed-val" contenteditable="true" onblur="saveLieu(${i},'resp',this)">${l.resp}</span></td>
+      <td><span class="status-toggle ${l.active?'st-active':'st-inactive'}" onclick="toggleLieu(${i})">${l.active?'✅ Actif':'⏸ Inactif'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" style="color:var(--red);border-color:#FECACA" onclick="deleteLieu(${i})">🗑</button></td>
+    </tr>`).join('');
+}
+function saveLieu(i,f,el){lieux[i][f]=el.textContent.trim();toast('Modification enregistrée','ok')}
+function toggleLieu(i){lieux[i].active=!lieux[i].active;renderLieux();toast(lieux[i].active?'Lieu activé':'Lieu désactivé')}
+function deleteLieu(i){lieux.splice(i,1);renderLieux();toast('Lieu supprimé')}
+function addLieu(){
+  const lib =document.getElementById('add-lieu-lib').value.trim();
+  const type=document.getElementById('add-lieu-type').value;
+  const resp=document.getElementById('add-lieu-resp').value.trim();
+  if(!lib){toast('Libellé requis');return;}
+  lieux.push({lib,type,cap:'—',resp:resp||'—',active:true});
+  document.getElementById('add-lieu-lib').value='';
+  document.getElementById('add-lieu-resp').value='';
+  renderLieux();toast('Lieu ajouté','ok');
+}
+
+/* ─ Workflow diagram ─ */
+function renderWorkflow(){
+  const nodes=[
+    {s:'BROUILLON',label:'Brouillon',desc:'Rédaction en cours'},
+    {s:'EN_REVUE', label:'En revue', desc:'Évaluation pertinence/adéquation'},
+    {s:'APPROUVE', label:'Approuvé', desc:'Validé, prêt à publier'},
+    {s:'APPLICABLE',label:'Applicable',desc:'Version en vigueur'},
+    {s:'OBSOLETE', label:'Obsolète',  desc:'Remplacée'},
+    {s:'ARCHIVE',  label:'Archivé',   desc:'Conservation légale'},
+  ];
+  const diagram=document.getElementById('wf-diagram');
+  diagram.innerHTML=nodes.map((n,i)=>`
+    <div class="wf-node">
+      <div class="wf-node-box nb-${n.s}">${n.label}</div>
+      <div class="wf-node-desc">${n.desc}</div>
+    </div>
+    ${i<nodes.length-1?`<div class="wf-arrow"><div class="wf-arrow-line"></div><div class="wf-arrow-lbl">${
+      i===0?'Soumettre':i===1?'Approuver':i===2?'Publier':i===3?'Auto':i===4?'Archiver':''
+    }</div></div>`:''}
+  `).join('');
+
+  const transitions=[
+    {from:'BROUILLON',to:'EN_REVUE',perm:'REVISION_SOUMETTRE_REVUE',auto:'Non'},
+    {from:'EN_REVUE',to:'APPROUVE',perm:'REVISION_REVOIR',auto:'Non'},
+    {from:'EN_REVUE',to:'BROUILLON',perm:'REVISION_REVOIR',auto:'Non'},
+    {from:'APPROUVE',to:'APPLICABLE',perm:'REVISION_APPROUVER',auto:'Non'},
+    {from:'APPROUVE',to:'BROUILLON',perm:'REVISION_APPROUVER',auto:'Non'},
+    {from:'APPLICABLE',to:'OBSOLETE',perm:'—',auto:'✅ Oui (trigger PostgreSQL)'},
+    {from:'OBSOLETE',to:'ARCHIVE',perm:'DOCUMENT_ARCHIVER',auto:'Non'},
+  ];
+  document.getElementById('wf-transitions-tbody').innerHTML=transitions.map(t=>`
+    <tr>
+      <td style="font-size:11.5px;font-weight:600">${{
+        'BROUILLON→EN_REVUE':'Soumettre à revue',
+        'EN_REVUE→APPROUVE':'Approuver la revue',
+        'EN_REVUE→BROUILLON':'Retourner en brouillon',
+        'APPROUVE→APPLICABLE':'Rendre applicable',
+        'APPROUVE→BROUILLON':'Retourner en brouillon',
+        'APPLICABLE→OBSOLETE':'Basculer en obsolète',
+        'OBSOLETE→ARCHIVE':'Archiver',
+      }[`${t.from}→${t.to}`]||`${t.from}→${t.to}`}</td>
+      <td><span class="st-badge st-${t.from}">${t.from}</span></td>
+      <td><span class="st-badge st-${t.to}">${t.to}</span></td>
+      <td><span style="font-family:var(--fc);font-size:10.5px;color:var(--navy)">${t.perm}</span></td>
+      <td>${t.auto}</td>
+    </tr>`).join('');
+}
+
+/* ─ Confidentialité ─ */
+const confData=[
+  {niv:1,lib:'Public',desc:'Accessible à tous, y compris visiteurs',perms:'Tous'},
+  {niv:2,lib:'Interne',desc:'Réservé aux employés ENSP',perms:'DOCUMENT_LIRE'},
+  {niv:3,lib:'Confidentiel',desc:'Accès restreint aux habilités',perms:'REVISION_LIRE_CONFIDENTIEL'},
+];
+function renderConf(){
+  document.getElementById('conf-tbody').innerHTML=confData.map((c,i)=>`
+    <tr>
+      <td><div style="width:26px;height:26px;border-radius:50%;background:${['#D1FAE5','#DBEAFE','#FEE2E2'][i]};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:${['#059669','#1D4ED8','#B91C1C'][i]}">${c.niv}</div></td>
+      <td><span class="ed-val" contenteditable="true" style="font-weight:700">${c.lib}</span></td>
+      <td><span class="ed-val" contenteditable="true" style="color:var(--muted)">${c.desc}</span></td>
+      <td><span style="font-family:var(--fc);font-size:10.5px;color:var(--navy);background:var(--surf2);padding:2px 7px;border-radius:3px">${c.perms}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="toast('Les niveaux de confidentialité ne peuvent pas être supprimés.')">—</button></td>
+    </tr>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function toast(msg,type=''){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${type==='ok'?'✅':'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},2800);
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+renderAudit();
+renderTypes();
+renderProcessus();
+renderLieux();
+renderConf();
+renderWorkflow();
+</script>
+</body>
+</html>
