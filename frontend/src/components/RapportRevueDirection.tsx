@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useToast } from '../contexts/ToastContext';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface Section {
   key: string;
@@ -118,8 +120,85 @@ ${s.find(x => x.key === 'doc' && x.on) ? `
     `;
   };
 
-  const exportPDF = () => {
+  const rapportRef = useRef<HTMLDivElement>(null);
+
+  const exportPDF = async () => {
     showToast('success', 'Génération du PDF en cours...');
+    if (!rapportRef.current) return;
+
+    try {
+      const canvas = await html2canvas(rapportRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#FFFFFF'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth * ratio * 0.55, imgHeight * ratio * 0.55);
+      pdf.save(`rapport-revue-direction-${period.replace(/\s/g, '-')}.pdf`);
+      showToast('success', 'PDF exporté avec succès ✓');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      showToast('success', 'Erreur lors de l\'export PDF');
+    }
+  };
+
+  const printReport = () => {
+    const printContent = rapportRef.current?.innerHTML;
+    if (!printContent) return;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow?.document.write(`
+      <html>
+        <head>
+          <title>Impression - Rapport de revue de direction</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background: #f4f4f4; }
+          </style>
+        </head>
+        <body>${printContent}</body>
+      </html>
+    `);
+    printWindow?.document.close();
+    printWindow?.print();
+  };
+
+  const sendEmail = async () => {
+    const email = prompt('Entrez l\'adresse email du destinataire:');
+    if (!email) return;
+    
+    const html = rapportRef.current?.innerHTML || '';
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/rapport/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: `Rapport de revue de direction - ${period}`,
+          html: `<h2>Rapport de revue de direction</h2><p>Période : ${period}</p>${html}`
+        })
+      });
+      
+      if (response.ok) {
+        showToast('success', `Email envoyé à ${email} ✓`);
+      } else {
+        showToast('success', 'Erreur lors de l\'envoi de l\'email');
+      }
+    } catch (error) {
+      console.error('Email error:', error);
+      showToast('success', 'Erreur lors de l\'envoi de l\'email');
+    }
   };
 
   const onFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -180,8 +259,8 @@ ${s.find(x => x.key === 'doc' && x.on) ? `
 
                 <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <button className="btn btn-p" style={{ width: '100%' }} onClick={exportPDF}>⬇ Exporter en PDF</button>
-                  <button className="btn btn-g" style={{ width: '100%' }} onClick={() => showToast('success', 'Impression lancée')}>🖨 Imprimer</button>
-                  <button className="btn btn-g" style={{ width: '100%' }} onClick={() => showToast('success', 'Email envoyé ✓')}>📧 Envoyer par email</button>
+                  <button className="btn btn-g" style={{ width: '100%' }} onClick={printReport}>🖨 Imprimer</button>
+                  <button className="btn btn-g" style={{ width: '100%' }} onClick={sendEmail}>📧 Envoyer par email</button>
                 </div>
               </div>
             </div>
@@ -192,12 +271,12 @@ ${s.find(x => x.key === 'doc' && x.on) ? `
             <div className="rrd-preview-bar">
               <span className="rrd-preview-bar-title">📄 Aperçu — Rapport de revue de direction · {period}</span>
               <div className="rrd-preview-actions">
-                <button className="rrd-preview-btn rpb-print" onClick={() => showToast('success', 'Impression...')}>🖨 Imprimer</button>
+                <button className="rrd-preview-btn rpb-print" onClick={printReport}>🖨 Imprimer</button>
                 <button className="rrd-preview-btn rpb-pdf" onClick={exportPDF}>⬇ PDF</button>
               </div>
             </div>
             <div className="rrd-preview-body">
-              <div className="rapport-doc" id="rapport-doc" dangerouslySetInnerHTML={{ __html: generateRapportHTML() }} />
+              <div className="rapport-doc" id="rapport-doc" ref={rapportRef} dangerouslySetInnerHTML={{ __html: generateRapportHTML() }} />
             </div>
           </div>
         </div>

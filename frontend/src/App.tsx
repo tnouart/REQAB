@@ -24,15 +24,16 @@ import type { WorkflowDocument, Revision } from './services/api';
 import { useUser } from './contexts/UserContext';
 import { fetchWorkflowDocuments } from './services/api';
 import { useToast } from './contexts/ToastContext';
+import PTW from './components/PTW';
 
-type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites';
+type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites' | 'ptw';
 
 const DEFAULT_VIEW: View = 'dashboard';
 
 const loadInitialView = (): View => {
   try {
     const stored = localStorage.getItem('ged_active_view');
-    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites'] as View[]).includes(stored as View)) {
+    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites','ptw'] as View[]).includes(stored as View)) {
       return stored as View;
     }
   } catch {
@@ -172,26 +173,28 @@ const App: React.FC = () => {
 
           {activeView === 'utilisateurs' && <Users />}
 
-          {activeView === 'non-conformites' && <NonConformities />}
+         {activeView === 'non-conformites' && <NonConformities />}
 
-        {activeView === 'notifications' && <Notifications />}
+         {activeView === 'ptw' && <PTW />}
 
-        {activeView === 'rapport' && <RapportRevueDirection />}
+         {activeView === 'notifications' && <Notifications />}
 
-{activeView === 'about' && <ISO9001 />}
+         {activeView === 'rapport' && <RapportRevueDirection />}
 
-          {activeView === 'aide' && <Help />}
+         {activeView === 'about' && <ISO9001 />}
 
-          {activeView === 'iso14001' && <ISO14001 />}
+         {activeView === 'aide' && <Help />}
 
-          {activeView === 'iso45001' && <ISO45001 />}
+         {activeView === 'iso14001' && <ISO14001 />}
+
+         {activeView === 'iso45001' && <ISO45001 />}
 
          {/* <footer className="global-footer">
            Developed by <strong>9310L - NT</strong>
          </footer> */}
-      </main>
-    </div>
-  );
-};
+       </main>
+     </div>
+   );
+ };
 
-export default App;
+ export default App;

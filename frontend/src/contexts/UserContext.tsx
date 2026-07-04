@@ -38,13 +38,30 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
-    if (stored) setUser(JSON.parse(stored));
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as User | null;
+        if (parsed && parsed.id) {
+          setUser({
+            id: parsed.id,
+            email: parsed.email,
+            prenom: parsed.prenom,
+            nom: parsed.nom,
+            roles: Array.isArray(parsed.roles) ? parsed.roles : [],
+          });
+        } else {
+          localStorage.removeItem('user');
+        }
+      } catch {
+        localStorage.removeItem('user');
+      }
+    }
   }, []);
 
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
-    setOnline(userData.id);
+    if (userData.id) setOnline(userData.id);
   };
 
   const logout = () => {

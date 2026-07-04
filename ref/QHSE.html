@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMI QHSE — ENSP · ISO 45001 / 14001 / 9001</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Palette industrielle ENSP */
+  --ink:         #1A1F2E;   /* fond principal */
+  --ink-2:       #252B3D;   /* fond secondaire */
+  --ink-3:       #2E3650;   /* hover fond sombre */
+  --orange:      #FF6B35;   /* orange sécurité — signature */
+  --orange-l:    #FFF3EE;
+  --orange-d:    #CC4E1A;
+  --teal:        #00D4AA;   /* validation / conforme */
+  --teal-l:      #E0FAF5;
+  --teal-d:      #009E7F;
+  --yellow:      #FFD700;   /* électrique / avertissement */
+  --yellow-l:    #FFFDE0;
+  --yellow-d:    #B8970A;
+  --blue-sst:    #4A90E2;   /* espace confiné */
+  --blue-sst-l:  #EBF3FC;
+  --green-haut:  #52C41A;   /* travaux en hauteur */
+  --green-haut-l:#F0FAE8;
+  --red:         #FF4D4F;   /* danger / critique */
+  --red-l:       #FFF1F0;
+  --red-d:       #CF1322;
+  --purple:      #722ED1;
+  --purple-l:    #F0E6FF;
+  --surf:        #F5F7FA;
+  --surf2:       #EAEDF2;
+  --bdr:         #DDE2EC;
+  --text:        #1A1F2E;
+  --muted:       #6B7280;
+  --light:       #9CA3AF;
+  --white:       #FFFFFF;
+  --fu:'Inter',sans-serif;
+  --fc:'Fira Code',monospace;
+  --sh1:0 1px 4px rgba(0,0,0,.08);
+  --sh2:0 4px 16px rgba(0,0,0,.12);
+  --sh3:0 8px 32px rgba(0,0,0,.18);
+}
+
+body{font-family:var(--fu);background:var(--surf);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:13px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* ══ TOPBAR ══════════════════════════════════════════ */
+.topbar{
+  background:var(--ink);
+  height:52px;display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;
+  border-bottom:2px solid var(--orange);
+}
+.logo{display:flex;align-items:center;gap:10px;margin-right:20px;text-decoration:none}
+.logo-ic{
+  width:30px;height:30px;background:var(--orange);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.logo-main{color:#fff;font-size:13.5px;font-weight:800;letter-spacing:.2px}
+.logo-sub{color:rgba(255,255,255,.35);font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-top:-2px}
+
+.tb-sep{width:1px;height:24px;background:rgba(255,255,255,.1);margin:0 12px}
+.tb-nav{display:flex;height:100%}
+.tb-tab{
+  display:flex;align-items:center;gap:6px;padding:0 16px;
+  color:rgba(255,255,255,.45);font-size:12.5px;font-weight:600;
+  cursor:pointer;border-bottom:3px solid transparent;
+  transition:all .15s;white-space:nowrap;user-select:none;
+}
+.tb-tab:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.05)}
+.tb-tab.active{color:#fff;border-bottom-color:var(--orange)}
+.tb-badge{
+  background:var(--red);color:#fff;font-size:9px;font-weight:800;
+  padding:1px 5px;border-radius:10px;margin-left:2px;
+}
+.tb-badge.orange{background:var(--orange)}
+.tb-badge.yellow{background:var(--yellow-d);color:#fff}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--teal-d);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.user-nm{color:rgba(255,255,255,.65);font-size:11.5px;font-weight:600}
+
+/* ══ LAYOUT ══════════════════════════════════════════ */
+.app{flex:1;display:flex;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:200px;min-width:200px;background:var(--ink-2);display:flex;flex-direction:column;flex-shrink:0}
+.snl{padding:14px 16px 4px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25)}
+.ni{
+  display:flex;align-items:center;gap:9px;padding:9px 16px;
+  color:rgba(255,255,255,.45);cursor:pointer;font-size:12.5px;font-weight:500;
+  transition:all .13s;position:relative;user-select:none;
+}
+.ni:hover{background:var(--ink-3);color:rgba(255,255,255,.8)}
+.ni.active{background:rgba(255,107,53,.12);color:var(--orange);font-weight:700}
+.ni.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange);border-radius:0 2px 2px 0}
+.ni-ic{font-size:14px;width:18px;text-align:center}
+.ni-bd{margin-left:auto;font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px;color:#fff}
+.bd-r{background:var(--red)}.bd-o{background:var(--orange)}.bd-y{background:var(--yellow-d)}
+.ni-new{
+  margin-left:auto;font-size:8px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.8px;
+  background:rgba(255,107,53,.2);color:var(--orange);
+  padding:1px 5px;border-radius:4px;
+}
+.sb-ft{margin-top:auto;padding:12px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.role-chip-dark{display:inline-flex;align-items:center;gap:5px;background:rgba(0,212,170,.12);color:var(--teal);font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px}
+
+/* ══ MAIN ════════════════════════════════════════════ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.view{flex:1;display:none;flex-direction:column;overflow:hidden}
+.view.active{display:flex}
+
+/* PAGE HEADER */
+.page-header{
+  background:var(--white);border-bottom:1px solid var(--bdr);
+  padding:14px 22px;display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.ph-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ph-title{font-size:15px;font-weight:800;flex:1}
+.ph-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.scroll-body{flex:1;overflow-y:auto;padding:18px 22px}
+.scroll-body::-webkit-scrollbar{width:5px}.scroll-body::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-family:var(--fu);font-size:12.5px;font-weight:700;border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--orange);color:#fff}.btn-primary:hover{background:var(--orange-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,107,53,.35)}
+.btn-teal{background:var(--teal);color:var(--ink)}.btn-teal:hover{background:var(--teal-d);color:#fff}
+.btn-ghost{background:var(--surf);color:var(--muted);border:1px solid var(--bdr)}.btn-ghost:hover{background:var(--surf2);color:var(--text)}
+.btn-danger{background:var(--red-l);color:var(--red-d);border:1px solid #FECACA}.btn-danger:hover{background:#FEE2E2}
+.btn-sm{padding:5px 11px;font-size:11.5px}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 1 — PERMIS DE TRAVAIL (PTW)
+══════════════════════════════════════════════════════ */
+
+/* Filtres rapides type PTW */
+.ptw-type-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.ptw-type-chip{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 14px;border-radius:8px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  border:2px solid transparent;transition:all .15s;user-select:none;
+}
+.ptw-type-chip.active{border-color:currentColor}
+.ptw-chip-chaud    {background:#FFF3EE;color:var(--orange-d)}
+.ptw-chip-electr   {background:var(--yellow-l);color:var(--yellow-d)}
+.ptw-chip-confine  {background:var(--blue-sst-l);color:#1D6DB5}
+.ptw-chip-hauteur  {background:var(--green-haut-l);color:#237804}
+.ptw-chip-general  {background:var(--surf2);color:var(--muted)}
+
+/* Kanban PTW */
+.ptw-kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.ptw-col{display:flex;flex-direction:column;gap:0}
+.ptw-col-head{
+  display:flex;align-items:center;gap:7px;
+  padding:9px 12px;border-radius:10px 10px 0 0;
+  border:1px solid var(--bdr);border-bottom:3px solid;
+  background:var(--white);
+}
+.ptw-col-head.statut-att    {border-bottom-color:#94A3B8}
+.ptw-col-head.statut-appro  {border-bottom-color:var(--yellow-d)}
+.ptw-col-head.statut-actif  {border-bottom-color:var(--teal)}
+.ptw-col-head.statut-clos   {border-bottom-color:var(--bdr)}
+.ptw-col-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;flex:1}
+.ptw-col-count{font-size:11px;font-weight:800;padding:1px 7px;border-radius:10px}
+.count-att   {background:var(--surf2);color:var(--muted)}
+.count-appro {background:var(--yellow-l);color:var(--yellow-d)}
+.count-actif {background:var(--teal-l);color:var(--teal-d)}
+.count-clos  {background:var(--surf2);color:var(--light)}
+
+.ptw-col-body{
+  border:1px solid var(--bdr);border-top:none;
+  border-radius:0 0 10px 10px;
+  background:var(--surf);min-height:140px;
+  padding:8px;display:flex;flex-direction:column;gap:7px;
+  overflow-y:auto;max-height:480px;
+}
+.ptw-col-body::-webkit-scrollbar{width:3px}
+.ptw-col-body::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* Carte PTW */
+.ptw-card{
+  background:var(--white);border-radius:10px;
+  overflow:hidden;cursor:pointer;
+  box-shadow:var(--sh1);
+  transition:box-shadow .15s,transform .12s;
+  border:1.5px solid var(--bdr);
+}
+.ptw-card:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.ptw-card.selected{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,53,.15)}
+
+/* Bande couleur type — LA SIGNATURE du module PTW */
+.ptw-card-stripe{height:4px;width:100%}
+.stripe-chaud  {background:var(--orange)}
+.stripe-electr {background:var(--yellow)}
+.stripe-confine{background:var(--blue-sst)}
+.stripe-hauteur{background:var(--green-haut)}
+.stripe-general{background:var(--bdr)}
+
+.ptw-card-body{padding:10px 12px}
+.ptw-card-num{font-family:var(--fc);font-size:9.5px;color:var(--muted);margin-bottom:4px}
+.ptw-card-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;line-height:1.35}
+.ptw-card-meta{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.ptw-type-badge{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:6px;display:inline-flex;align-items:center;gap:3px}
+.tb-chaud  {background:#FFF3EE;color:var(--orange-d)}
+.tb-electr {background:var(--yellow-l);color:var(--yellow-d)}
+.tb-confine{background:var(--blue-sst-l);color:#1D6DB5}
+.tb-hauteur{background:var(--green-haut-l);color:#237804}
+.tb-general{background:var(--surf2);color:var(--muted)}
+
+.ptw-card-footer{display:flex;align-items:center;gap:6px}
+.ptw-footer-info{font-size:10px;color:var(--light);flex:1}
+.ptw-urgence{
+  font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.urg-haute {background:var(--red-l);color:var(--red-d)}
+.urg-moy   {background:var(--orange-l);color:var(--orange-d)}
+.urg-norm  {background:var(--surf2);color:var(--muted)}
+
+/* Détail PTW (panneau latéral) */
+.detail-panel{
+  width:380px;min-width:380px;
+  border-left:1px solid var(--bdr);
+  background:var(--white);display:flex;flex-direction:column;overflow:hidden;
+  flex-shrink:0;
+}
+.dp-head{padding:16px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.dp-stripe{height:5px;border-radius:5px 5px 0 0;margin:-16px -16px 14px;width:calc(100% + 32px)}
+.dp-num{font-family:var(--fc);font-size:10px;color:var(--muted);background:var(--surf2);padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:5px}
+.dp-title{font-size:14px;font-weight:800;line-height:1.3;margin-bottom:8px}
+.dp-tags{display:flex;gap:6px;flex-wrap:wrap}
+.dp-body{flex:1;overflow-y:auto;padding:14px 16px}
+.dp-body::-webkit-scrollbar{width:4px}.dp-body::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+.dp-section{margin-bottom:16px}
+.dp-section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dp-section-title::after{content:'';flex:1;height:1px;background:var(--surf2)}
+.dp-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--surf2);font-size:11.5px}
+.dp-row:last-child{border-bottom:none}
+.dp-key{color:var(--muted)}.dp-val{font-weight:600;text-align:right}
+
+/* Checklist PTW */
+.ptw-checklist{display:flex;flex-direction:column;gap:6px}
+.cl-item{display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--surf);border-radius:7px;font-size:12px;cursor:pointer;transition:background .12s;border:1px solid transparent}
+.cl-item:hover{background:var(--surf2)}
+.cl-item.checked{background:var(--teal-l);border-color:rgba(0,212,170,.3)}
+.cl-check{
+  width:18px;height:18px;border-radius:4px;
+  border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;flex-shrink:0;transition:all .14s;
+}
+.cl-item.checked .cl-check{background:var(--teal);border-color:var(--teal);color:#fff}
+.cl-text{flex:1;line-height:1.35}
+.cl-item.checked .cl-text{text-decoration:line-through;color:var(--muted)}
+
+/* Actions PTW en bas */
+.dp-actions{padding:14px 16px;border-top:1px solid var(--bdr);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.dp-action-btn{
+  width:100%;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;
+  font-family:var(--fu);font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .14s;
+}
+.dab-approve{background:var(--teal);color:var(--ink)}.dab-approve:hover{background:var(--teal-d);color:#fff}
+.dab-start  {background:var(--orange);color:#fff}.dab-start:hover{background:var(--orange-d)}
+.dab-close  {background:var(--surf2);color:var(--muted);border:1px solid var(--bdr)}.dab-close:hover{background:var(--bdr);color:var(--text)}
+.dab-reject {background:var(--red-l);color:var(--red-d);border:1px solid #FECACA}.dab-reject:hover{background:#FEE2E2}
+
+/* Formulaire nouveau PTW */
+.ptw-form-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;padding:20px;box-shadow:var(--sh1);margin-bottom:20px}
+.ptw-form-title{font-size:14px;font-weight:800;margin-bottom:4px}
+.ptw-form-sub{font-size:11.5px;color:var(--muted);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--surf2)}
+
+/* Type selector PTW */
+.ptw-type-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
+.ptw-type-btn{
+  border:2px solid var(--bdr);border-radius:10px;padding:10px 8px;
+  text-align:center;cursor:pointer;transition:all .14s;background:var(--white);
+  position:relative;
+}
+.ptw-type-btn.sel{box-shadow:0 0 0 2px currentColor}
+.ptw-type-btn .pt-icon{font-size:20px;margin-bottom:5px}
+.ptw-type-btn .pt-label{font-size:10px;font-weight:700}
+.ptw-btn-chaud{color:var(--orange-d)}.ptw-btn-chaud.sel{background:#FFF3EE;border-color:var(--orange)}
+.ptw-btn-electr{color:var(--yellow-d)}.ptw-btn-electr.sel{background:var(--yellow-l);border-color:var(--yellow-d)}
+.ptw-btn-confine{color:#1D6DB5}.ptw-btn-confine.sel{background:var(--blue-sst-l);border-color:var(--blue-sst)}
+.ptw-btn-hauteur{color:#237804}.ptw-btn-hauteur.sel{background:var(--green-haut-l);border-color:var(--green-haut)}
+.ptw-btn-general{color:var(--muted)}.ptw-btn-general.sel{background:var(--surf2);border-color:var(--muted)}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.form-field input,.form-field select,.form-field textarea{
+  font-family:var(--fu);font-size:12.5px;color:var(--text);
+  background:var(--surf);border:1.5px solid var(--bdr);
+  border-radius:8px;padding:8px 10px;outline:none;
+  transition:border-color .14s,box-shadow .14s;width:100%;
+}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{
+  border-color:var(--orange);background:var(--white);
+  box-shadow:0 0 0 3px rgba(255,107,53,.12);
+}
+.form-field select{appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.form-field textarea{resize:vertical;min-height:70px}
+.form-full{grid-column:1/-1}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 2 — REGISTRE HIRA (Dangers / Risques SST)
+══════════════════════════════════════════════════════ */
+
+/* Matrice de risque 5×5 */
+.hira-layout{display:grid;grid-template-columns:1fr 340px;gap:14px}
+.hira-matrix-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.hira-matrix-head{padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.hira-matrix-title{font-size:12px;font-weight:800;flex:1}
+
+.risk-matrix{padding:14px 16px}
+.matrix-grid{display:grid;grid-template-columns:auto repeat(5,1fr);grid-template-rows:auto repeat(5,1fr);gap:3px;margin-bottom:8px}
+.matrix-label-top{font-size:9px;font-weight:700;text-align:center;color:var(--muted);padding:4px 2px;text-transform:uppercase;letter-spacing:.4px}
+.matrix-label-left{font-size:9px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;text-transform:uppercase;letter-spacing:.4px;text-align:right;line-height:1.2}
+.matrix-cell{
+  height:52px;border-radius:6px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;
+  transition:transform .12s,box-shadow .12s;font-size:11px;font-weight:800;
+  position:relative;
+}
+.matrix-cell:hover{transform:scale(1.06);box-shadow:var(--sh2);z-index:2}
+.rc-tolerable {background:#D4EDDA;color:#155724}
+.rc-faible    {background:#FFF3CD;color:#856404}
+.rc-modere    {background:#FFD6A5;color:#8A4A00}
+.rc-eleve     {background:#FFBEBE;color:#721C24}
+.rc-critique  {background:#FF4D4F;color:#fff}
+
+.matrix-cell .mc-count{
+  width:20px;height:20px;border-radius:50%;
+  background:rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;
+}
+.matrix-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.ml-item{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--muted)}
+.ml-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* Liste des dangers */
+.hira-list-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.hira-list-head{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--bdr)}
+.hl-title{font-size:12px;font-weight:800;flex:1}
+.hira-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.hira-table thead th{background:var(--ink);color:rgba(255,255,255,.7);padding:8px 12px;text-align:left;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+.hira-table tbody tr{border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s}
+.hira-table tbody tr:hover{background:var(--surf)}
+.hira-table tbody tr:last-child{border-bottom:none}
+.hira-table tbody td{padding:9px 12px;vertical-align:middle}
+.risk-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.rp-crit{background:#FF4D4F;color:#fff}
+.rp-elev{background:#FFBEBE;color:#721C24}
+.rp-mod {background:#FFD6A5;color:#8A4A00}
+.rp-fai {background:#FFF3CD;color:#856404}
+.rp-tol {background:#D4EDDA;color:#155724}
+
+/* Panneau détail HIRA */
+.hira-detail-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1);padding:16px}
+
+/* Contrôles hiérarchiques (BOW-TIE simplifié) */
+.hierarchy-strip{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin:12px 0;align-items:center}
+.hier-col{display:flex;flex-direction:column;gap:6px}
+.hier-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.hier-label.prevention{color:var(--teal-d)}.hier-label.protection{color:var(--orange-d)}
+.hier-item{display:flex;align-items:center;gap:6px;font-size:11px;padding:5px 8px;border-radius:6px;background:var(--surf)}
+.hi-check{width:14px;height:14px;border-radius:3px;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800}
+.hi-check.ok{background:var(--teal);border-color:var(--teal);color:#fff}
+.hier-danger{
+  text-align:center;padding:10px;background:var(--red-l);
+  border:2px solid var(--red);border-radius:10px;
+  font-size:12px;font-weight:800;color:var(--red-d);
+  margin:0 10px;
+}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 3 — ASPECTS / IMPACTS ENVIRONNEMENTAUX
+══════════════════════════════════════════════════════ */
+
+.aie-layout{display:grid;grid-template-columns:1fr 320px;gap:14px}
+
+/* Cards indicateurs environnementaux */
+.env-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.env-kpi{background:var(--white);border:1px solid var(--bdr);border-radius:12px;padding:14px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.env-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.env-kpi.water::before{background:var(--blue-sst)}
+.env-kpi.energy::before{background:var(--yellow-d)}
+.env-kpi.waste::before{background:var(--orange)}
+.env-kpi.emission::before{background:var(--muted)}
+.env-kpi-icon{font-size:20px;margin-bottom:6px}
+.env-kpi-lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.env-kpi-val{font-size:22px;font-weight:900;line-height:1;margin-bottom:2px}
+.env-kpi-sub{font-size:10px;color:var(--light)}
+.env-kpi-trend{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700}
+.trend-bad{color:var(--red)}.trend-good{color:var(--teal-d)}
+
+/* Table AEI */
+.aie-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.aie-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.aie-head-title{font-size:12px;font-weight:800;flex:1}
+.aie-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.aie-table thead th{background:var(--surf);padding:8px 12px;text-align:left;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--bdr)}
+.aie-table tbody tr{border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s}
+.aie-table tbody tr:hover{background:var(--surf)}
+.aie-table tbody td{padding:9px 12px;vertical-align:middle}
+.criticite-bar-wrap{width:80px;background:var(--surf2);border-radius:10px;height:6px;overflow:hidden}
+.criticite-bar{height:100%;border-radius:10px}
+.crit-low{background:var(--teal)}
+.crit-med{background:var(--yellow-d)}
+.crit-high{background:var(--orange)}
+.crit-very-high{background:var(--red)}
+.impact-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px}
+.it-eau    {background:var(--blue-sst-l);color:#1D6DB5}
+.it-air    {background:#F0E6FF;color:#722ED1}
+.it-sol    {background:var(--green-haut-l);color:#237804}
+.it-dechets{background:var(--orange-l);color:var(--orange-d)}
+.it-energie{background:var(--yellow-l);color:var(--yellow-d)}
+
+/* Panneau réglementaire */
+.regl-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.regl-head{padding:14px;border-bottom:1px solid var(--bdr)}
+.regl-head-title{font-size:12px;font-weight:800;margin-bottom:2px}
+.regl-head-sub{font-size:10.5px;color:var(--muted)}
+.regl-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s}
+.regl-item:last-child{border-bottom:none}
+.regl-item:hover{background:var(--surf)}
+.regl-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.rs-conf{background:var(--teal)}.rs-alert{background:var(--orange)}.rs-nc{background:var(--red)}
+.regl-content{flex:1}
+.regl-ref{font-family:var(--fc);font-size:10px;color:var(--muted);margin-bottom:2px}
+.regl-name{font-size:12px;font-weight:600;margin-bottom:2px}
+.regl-echeance{font-size:10.5px;color:var(--muted)}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 4 — INCIDENTS / ACCIDENTS DU TRAVAIL
+══════════════════════════════════════════════════════ */
+.inc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.inc-stat{background:var(--white);border:1px solid var(--bdr);border-radius:12px;padding:14px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.inc-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.inc-stat.tf::before{background:var(--red)}
+.inc-stat.tfp::before{background:var(--orange)}
+.inc-stat.pa::before{background:var(--yellow-d)}
+.inc-stat.tri::before{background:var(--teal)}
+.inc-stat-lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:6px}
+.inc-stat-val{font-size:26px;font-weight:900;line-height:1;margin-bottom:3px}
+.inc-stat.tf .inc-stat-val{color:var(--red)}
+.inc-stat.tfp .inc-stat-val{color:var(--orange)}
+.inc-stat.pa .inc-stat-val{color:var(--yellow-d)}
+.inc-stat.tri .inc-stat-val{color:var(--teal-d)}
+.inc-stat-sub{font-size:10px;color:var(--light)}
+
+/* Frise chronologique — LA SIGNATURE du module incidents */
+.inc-timeline-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1);margin-bottom:18px}
+.inc-timeline-head{padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.inc-timeline-title{font-size:12px;font-weight:800;flex:1}
+.inc-timeline-scroll{padding:24px 20px 16px;overflow-x:auto}
+.inc-timeline-track{position:relative;min-width:900px;height:100px}
+.inc-timeline-line{position:absolute;top:50px;left:0;right:0;height:2px;background:var(--bdr)}
+.inc-tl-point{position:absolute;top:50px;transform:translate(-50%,-50%);cursor:pointer;z-index:2}
+.inc-tl-dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--white);box-shadow:0 0 0 2px currentColor;transition:transform .15s}
+.inc-tl-point:hover .inc-tl-dot{transform:scale(1.3)}
+.inc-tl-label{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;white-space:nowrap;color:var(--muted)}
+.inc-tl-date{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:8.5px;color:var(--light);white-space:nowrap}
+
+/* Split liste + détail incidents */
+.inc-split{display:grid;grid-template-columns:1fr 400px;gap:14px}
+.inc-list-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.inc-list-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.inc-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.inc-table thead th{background:var(--surf);padding:8px 12px;text-align:left;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--bdr)}
+.inc-table tbody tr{border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s}
+.inc-table tbody tr:hover{background:var(--surf)}
+.inc-table tbody tr.sel{background:#FFF3EE;border-left:3px solid var(--orange)}
+.inc-table tbody td{padding:9px 12px;vertical-align:middle}
+.grav-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.gb-tf {background:var(--red);color:#fff}
+.gb-tfp{background:#FFBEBE;color:var(--red-d)}
+.gb-pa {background:var(--yellow-l);color:var(--yellow-d)}
+.gb-tri{background:var(--teal-l);color:var(--teal-d)}
+.inc-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.is-ouvert{background:var(--red-l);color:var(--red-d)}
+.is-cours {background:var(--orange-l);color:var(--orange-d)}
+.is-clos  {background:var(--teal-l);color:var(--teal-d)}
+
+/* Détail incident */
+.inc-detail-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1);display:flex;flex-direction:column}
+.inc-detail-head{padding:16px;border-bottom:1px solid var(--bdr)}
+.inc-detail-stripe{height:5px;border-radius:5px 5px 0 0;margin:-16px -16px 14px;width:calc(100% + 32px)}
+.inc-detail-body{flex:1;overflow-y:auto;padding:14px 16px;max-height:520px}
+.inc-detail-body::-webkit-scrollbar{width:4px}.inc-detail-body::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+
+/* Arbre des causes simplifié */
+.cause-tree{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.cause-level{display:flex;align-items:flex-start;gap:8px}
+.cause-connector{width:20px;flex-shrink:0;display:flex;justify-content:center;position:relative;top:2px}
+.cause-connector::before{content:'└';color:var(--bdr);font-size:16px;font-weight:800}
+.cause-box{flex:1;background:var(--surf);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:8px 10px;font-size:11.5px;line-height:1.4}
+.cause-box.root{border-left-color:var(--red);background:var(--red-l);font-weight:600}
+
+/* Actions correctives incident */
+.corr-action{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surf);border-radius:8px;margin-bottom:6px;font-size:11.5px}
+.corr-action.done{background:var(--teal-l)}
+.corr-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800}
+.corr-action.done .corr-check{background:var(--teal);border-color:var(--teal);color:#fff}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 5 — HABILITATIONS SST
+══════════════════════════════════════════════════════ */
+.hab-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.hab-stat{background:var(--white);border:1px solid var(--bdr);border-radius:12px;padding:14px;box-shadow:var(--sh1);text-align:center}
+.hab-stat-val{font-size:26px;font-weight:900;line-height:1;margin-bottom:4px}
+.hab-stat-lbl{font-size:10px;font-weight:700;color:var(--muted)}
+
+/* Grille de cartes d'habilitation — LA SIGNATURE */
+.hab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.hab-card{
+  background:var(--ink);border-radius:14px;overflow:hidden;
+  box-shadow:var(--sh2);position:relative;color:#fff;
+  border:1px solid rgba(255,255,255,.08);
+}
+.hab-card-top{
+  padding:14px 16px 12px;
+  background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 100%);
+  display:flex;align-items:center;gap:10px;
+  border-bottom:2px solid var(--orange);
+}
+.hab-avatar{width:38px;height:38px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.hab-name{font-size:13px;font-weight:800}
+.hab-role{font-size:10px;color:rgba(255,255,255,.45)}
+.hab-card-body{padding:12px 16px}
+.hab-comp-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.hab-comp-row:last-child{border-bottom:none}
+.hab-comp-name{font-size:11.5px;font-weight:600;flex:1}
+.hab-comp-exp{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.exp-ok  {background:rgba(0,212,170,.15);color:var(--teal)}
+.exp-soon{background:rgba(255,215,0,.15);color:var(--yellow)}
+.exp-late{background:rgba(255,77,79,.18);color:#FF7875}
+
+/* Liste habilitations à renouveler */
+.hab-alert-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1);margin-top:18px}
+.hab-alert-head{padding:12px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.hab-alert-title{font-size:12px;font-weight:800;flex:1}
+.hab-alert-item{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--surf2)}
+.hab-alert-item:last-child{border-bottom:none}
+.hab-alert-badge{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hab-alert-content{flex:1}
+.hab-alert-name{font-size:12px;font-weight:700}
+.hab-alert-comp{font-size:10.5px;color:var(--muted)}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 6 — INDICATEURS ENVIRONNEMENTAUX (séries temporelles)
+══════════════════════════════════════════════════════ */
+.ienv-layout{display:flex;flex-direction:column;gap:16px}
+.ienv-chart-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.ienv-chart-head{padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.ienv-chart-title{font-size:12px;font-weight:800;flex:1}
+.ienv-chart-body{padding:16px}
+
+/* Graphique en aires empilées SVG */
+.area-chart-legend{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
+.acl-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--muted)}
+.acl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+.ienv-grid-small{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+/* ══════════════════════════════════════════════════════
+   MODULE 7 — CONFORMITÉ LÉGALE (cycle de veille)
+══════════════════════════════════════════════════════ */
+.cl-cycle-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1);margin-bottom:18px}
+.cl-cycle-head{padding:14px 16px;border-bottom:1px solid var(--bdr)}
+.cl-cycle-title{font-size:12px;font-weight:800}
+.cl-cycle-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
+
+/* Cycle de vie réglementaire visuel — LA SIGNATURE */
+.cycle-steps{display:flex;align-items:center;padding:24px 20px;gap:0}
+.cycle-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;text-align:center}
+.cycle-step:not(:last-child)::after{
+  content:'';position:absolute;top:24px;left:50%;right:-50%;height:2px;
+  background:var(--bdr);z-index:0;
+}
+.cycle-step.done:not(:last-child)::after{background:var(--teal)}
+.cycle-dot{
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;position:relative;z-index:1;
+  border:3px solid var(--bdr);background:var(--white);
+  transition:all .2s;
+}
+.cycle-step.done .cycle-dot{background:var(--teal-l);border-color:var(--teal)}
+.cycle-step.active .cycle-dot{background:var(--orange-l);border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,107,53,.15)}
+.cycle-label{font-size:11px;font-weight:800;margin-top:10px}
+.cycle-count{font-size:9.5px;color:var(--muted);margin-top:2px}
+
+/* Table conformité légale complète */
+.cl-table-card{background:var(--white);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;box-shadow:var(--sh1)}
+.cl-table-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bdr)}
+.cl-table-title{font-size:12px;font-weight:800;flex:1}
+.cl-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.cl-table thead th{background:var(--ink);color:rgba(255,255,255,.7);padding:8px 12px;text-align:left;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.cl-table tbody tr{border-bottom:1px solid var(--surf2);cursor:pointer;transition:background .12s}
+.cl-table tbody tr:hover{background:var(--surf)}
+.cl-table tbody td{padding:9px 12px;vertical-align:middle}
+.dom-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px}
+.dom-env{background:var(--green-haut-l);color:#237804}
+.dom-sst{background:#FFF3EE;color:var(--orange-d)}
+.dom-qual{background:var(--blue-sst-l);color:#1D6DB5}
+.conf-status-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.csp-conf{background:var(--teal-l);color:var(--teal-d)}
+.csp-alert{background:var(--orange-l);color:var(--orange-d)}
+.csp-nc{background:var(--red-l);color:var(--red-d)}
+.csp-eval{background:var(--surf2);color:var(--muted)}
+
+
+.toast-c{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:9px;background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:12.5px;font-weight:600;box-shadow:var(--sh3);animation:slideUp .22s ease;pointer-events:all;min-width:240px}
+.toast.ok{background:var(--teal-d)}.toast.warn{background:var(--orange-d)}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-ic">⚙️</div>
+    <div>
+      <div class="logo-main">SMI QHSE · ENSP</div>
+      <div class="logo-sub">ISO 9001 · 14001 · 45001</div>
+    </div>
+  </div>
+  <div class="tb-sep"></div>
+  <nav class="tb-nav">
+    <div class="tb-tab active" onclick="showView('ptw',this)">🔶 Permis de travail <span class="tb-badge orange">7</span></div>
+    <div class="tb-tab" onclick="showView('hira',this)">⚠️ Dangers / HIRA <span class="tb-badge">3</span></div>
+    <div class="tb-tab" onclick="showView('env',this)">🌿 Aspects env.</div>
+    <div class="tb-tab" onclick="showView('form',this)">📝 Nouveau PTW</div>
+  </nav>
+  <div class="tb-right">
+    <div class="user-av">KB</div>
+    <div class="user-nm">K. Bouali · HSE</div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="snl">ISO 9001</div>
+    <div class="ni"><span class="ni-ic">📄</span> Documents qualité</div>
+    <div class="ni"><span class="ni-ic">🔄</span> Workflow <span class="ni-bd bd-r">4</span></div>
+    <div class="snl" style="margin-top:6px">ISO 45001 — SST</div>
+    <div class="ni active" id="ni-ptw" onclick="showView('ptw',null)">
+      <span class="ni-ic">🔶</span> Permis de travail <span class="ni-bd bd-o">7</span>
+    </div>
+    <div class="ni" id="ni-hira" onclick="showView('hira',null)">
+      <span class="ni-ic">⚠️</span> Dangers / HIRA <span class="ni-new">HIRA</span>
+    </div>
+    <div class="ni" id="ni-incidents" onclick="showView('incidents',null)"><span class="ni-ic">🚑</span> Incidents / AT <span class="ni-bd bd-r">2</span></div>
+    <div class="ni" id="ni-habilit" onclick="showView('habilit',null)"><span class="ni-ic">🎓</span> Habilitations SST <span class="ni-bd bd-o">3</span></div>
+    <div class="snl" style="margin-top:6px">ISO 14001 — ENV</div>
+    <div class="ni" id="ni-env" onclick="showView('env',null)">
+      <span class="ni-ic">🌿</span> Aspects / Impacts <span class="ni-new">AEI</span>
+    </div>
+    <div class="ni" id="ni-indic-env" onclick="showView('indicenv',null)"><span class="ni-ic">📊</span> Indicateurs env.</div>
+    <div class="ni" id="ni-conf-leg" onclick="showView('confleg',null)"><span class="ni-ic">⚖️</span> Conformité légale <span class="ni-bd bd-o">1</span></div>
+    <div class="snl" style="margin-top:6px">SMI</div>
+    <div class="ni"><span class="ni-ic">🔍</span> Audits internes</div>
+    <div class="ni"><span class="ni-ic">📋</span> Non-conformités <span class="ni-bd bd-r">3</span></div>
+    <div class="sb-ft">
+      <div style="font-size:9px;color:rgba(255,255,255,.25);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px">Rôle actif</div>
+      <div class="role-chip-dark">✅ Resp. QHSE</div>
+    </div>
+  </aside>
+
+  <div class="main">
+
+  <!-- ══════════════════════════════════════════════════
+       VUE 1 — PERMIS DE TRAVAIL
+  ═══════════════════════════════════════════════════ -->
+  <div class="view active" id="view-ptw">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#FFF3EE">🔶</div>
+      <div>
+        <div class="ph-title">Permis de travail (PTW)</div>
+        <div class="ph-sub">ISO 45001:2018 §8.1.3 — Gestion des travaux à risques élevés · ENSP</div>
+      </div>
+      <div class="ptw-type-bar" style="margin:0 8px">
+        <div class="ptw-type-chip ptw-chip-chaud active" onclick="filterPTW('chaud',this)">🔥 Feu chaud (3)</div>
+        <div class="ptw-type-chip ptw-chip-electr" onclick="filterPTW('electr',this)">⚡ Électrique (2)</div>
+        <div class="ptw-type-chip ptw-chip-confine" onclick="filterPTW('confine',this)">🔵 Espace confiné (1)</div>
+        <div class="ptw-type-chip ptw-chip-hauteur" onclick="filterPTW('hauteur',this)">🟢 Hauteur (1)</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="showView('form',null)">+ Nouveau PTW</button>
+    </div>
+
+    <div style="display:flex;flex:1;overflow:hidden">
+      <!-- Kanban + liste -->
+      <div style="flex:1;overflow-y:auto;padding:18px 18px 18px 20px">
+
+        <!-- Kanban PTW -->
+        <div class="ptw-kanban" id="ptw-kanban"></div>
+
+      </div>
+
+      <!-- Détail PTW -->
+      <div class="detail-panel" id="ptw-detail"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE 2 — HIRA
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-hira">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#FFF1F0">⚠️</div>
+      <div>
+        <div class="ph-title">Registre des dangers et évaluation des risques (HIRA)</div>
+        <div class="ph-sub">ISO 45001:2018 §6.1.2 — Identification des dangers, appréciation et maîtrise des risques</div>
+      </div>
+      <button class="btn btn-ghost btn-sm">⬇ Exporter</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('Nouveau danger créé','ok')">+ Ajouter un danger</button>
+    </div>
+    <div class="scroll-body">
+      <div class="hira-layout">
+
+        <!-- Matrice + liste -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="hira-matrix-card">
+            <div class="hira-matrix-head">
+              <span style="font-size:16px">🎯</span>
+              <div class="hira-matrix-title">Matrice de criticité des risques 5×5</div>
+              <span style="font-size:11px;color:var(--muted)">Probabilité × Gravité</span>
+            </div>
+            <div class="risk-matrix">
+              <div class="matrix-grid" id="risk-matrix-grid"></div>
+              <div class="matrix-legend">
+                <div class="ml-item"><div class="ml-dot" style="background:#D4EDDA"></div>Tolérable</div>
+                <div class="ml-item"><div class="ml-dot" style="background:#FFF3CD"></div>Faible</div>
+                <div class="ml-item"><div class="ml-dot" style="background:#FFD6A5"></div>Modéré</div>
+                <div class="ml-item"><div class="ml-dot" style="background:#FFBEBE"></div>Élevé</div>
+                <div class="ml-item"><div class="ml-dot" style="background:#FF4D4F"></div>Critique</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hira-list-card">
+            <div class="hira-list-head">
+              <span style="font-size:14px">📋</span>
+              <div class="hl-title">Dangers identifiés — 12 fiches actives</div>
+              <select style="font-size:11px;background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;outline:none">
+                <option>Tous les processus</option>
+                <option>Forage</option>
+                <option>Production</option>
+                <option>Maintenance</option>
+              </select>
+            </div>
+            <table class="hira-table">
+              <thead>
+                <tr>
+                  <th>Réf.</th>
+                  <th>Danger identifié</th>
+                  <th>Processus</th>
+                  <th>Probabilité</th>
+                  <th>Gravité</th>
+                  <th>Risque résiduel</th>
+                  <th>Contrôle prioritaire</th>
+                </tr>
+              </thead>
+              <tbody id="hira-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panneau détail HIRA -->
+        <div id="hira-detail"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE 3 — ASPECTS/IMPACTS ENVIRONNEMENTAUX
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-env">
+    <div class="page-header">
+      <div class="ph-icon" style="background:var(--green-haut-l)">🌿</div>
+      <div>
+        <div class="ph-title">Aspects et impacts environnementaux (AEI)</div>
+        <div class="ph-sub">ISO 14001:2015 §6.1.2 — Registre des aspects significatifs · Conformité réglementaire §9.1.2</div>
+      </div>
+      <button class="btn btn-ghost btn-sm">⬇ Exporter</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('Nouvel aspect AEI créé','ok')">+ Ajouter un aspect</button>
+    </div>
+    <div class="scroll-body">
+
+      <!-- KPIs environnementaux -->
+      <div class="env-kpis">
+        <div class="env-kpi water">
+          <div class="env-kpi-icon">💧</div>
+          <div class="env-kpi-lbl">Consommation eau</div>
+          <div class="env-kpi-val" style="color:var(--blue-sst)">4 820</div>
+          <div class="env-kpi-sub">m³ · S1 2025</div>
+          <div class="env-kpi-trend trend-good">↓ -8%</div>
+        </div>
+        <div class="env-kpi energy">
+          <div class="env-kpi-icon">⚡</div>
+          <div class="env-kpi-lbl">Énergie consommée</div>
+          <div class="env-kpi-val" style="color:var(--yellow-d)">12 340</div>
+          <div class="env-kpi-sub">MWh · S1 2025</div>
+          <div class="env-kpi-trend trend-bad">↑ +3%</div>
+        </div>
+        <div class="env-kpi waste">
+          <div class="env-kpi-icon">♻️</div>
+          <div class="env-kpi-lbl">Déchets produits</div>
+          <div class="env-kpi-val" style="color:var(--orange-d)">287</div>
+          <div class="env-kpi-sub">tonnes · S1 2025</div>
+          <div class="env-kpi-trend trend-good">↓ -12%</div>
+        </div>
+        <div class="env-kpi emission">
+          <div class="env-kpi-icon">💨</div>
+          <div class="env-kpi-lbl">Émissions CO₂eq</div>
+          <div class="env-kpi-val" style="color:var(--muted)">6 180</div>
+          <div class="env-kpi-sub">t·CO₂eq · S1 2025</div>
+          <div class="env-kpi-trend trend-bad">↑ +1%</div>
+        </div>
+      </div>
+
+      <div class="aie-layout">
+        <!-- Table AEI -->
+        <div class="aie-card">
+          <div class="aie-head">
+            <span style="font-size:14px">📋</span>
+            <div class="aie-head-title">Registre des aspects environnementaux — 24 aspects identifiés</div>
+            <select style="font-size:11px;background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;outline:none">
+              <option>Tous</option>
+              <option>Significatifs uniquement</option>
+              <option>Situation normale</option>
+              <option>Situation d'urgence</option>
+            </select>
+          </div>
+          <table class="aie-table">
+            <thead>
+              <tr>
+                <th>Réf.</th>
+                <th>Activité / Source</th>
+                <th>Aspect</th>
+                <th>Impact</th>
+                <th>Condition</th>
+                <th>Criticité</th>
+                <th>Significatif</th>
+              </tr>
+            </thead>
+            <tbody id="aie-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Panneau conformité réglementaire -->
+        <div class="regl-card">
+          <div class="regl-head">
+            <div class="regl-head-title">⚖️ Veille réglementaire</div>
+            <div class="regl-head-sub">ISO 14001 §9.1.2 — Évaluation de la conformité</div>
+          </div>
+          <div id="regl-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE — INCIDENTS / ACCIDENTS DU TRAVAIL
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-incidents">
+    <div class="page-header">
+      <div class="ph-icon" style="background:var(--red-l)">🚑</div>
+      <div>
+        <div class="ph-title">Incidents et accidents du travail</div>
+        <div class="ph-sub">ISO 45001:2018 §10.2 — Déclaration, investigation et actions correctives</div>
+      </div>
+      <button class="btn btn-ghost btn-sm">⬇ Exporter</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('Formulaire de déclaration ouvert','')">+ Déclarer un événement</button>
+    </div>
+    <div class="scroll-body">
+
+      <!-- Stats -->
+      <div class="inc-stats">
+        <div class="inc-stat tf">
+          <div class="inc-stat-lbl">Accidents avec arrêt (TF)</div>
+          <div class="inc-stat-val">1</div>
+          <div class="inc-stat-sub">Depuis janvier 2025</div>
+        </div>
+        <div class="inc-stat tfp">
+          <div class="inc-stat-lbl">Sans arrêt (TFP)</div>
+          <div class="inc-stat-val">2</div>
+          <div class="inc-stat-sub">Soins médicaux simples</div>
+        </div>
+        <div class="inc-stat pa">
+          <div class="inc-stat-lbl">Presqu'accidents</div>
+          <div class="inc-stat-val">8</div>
+          <div class="inc-stat-sub">Signalements proactifs</div>
+        </div>
+        <div class="inc-stat tri">
+          <div class="inc-stat-lbl">Taux de fréquence (Tf)</div>
+          <div class="inc-stat-val">3.2</div>
+          <div class="inc-stat-sub">Objectif : &lt; 5.0</div>
+        </div>
+      </div>
+
+      <!-- Frise chronologique -->
+      <div class="inc-timeline-card">
+        <div class="inc-timeline-head">
+          <span style="font-size:14px">📅</span>
+          <div class="inc-timeline-title">Chronologie des événements — 6 derniers mois</div>
+        </div>
+        <div class="inc-timeline-scroll">
+          <div class="inc-timeline-track" id="inc-timeline"></div>
+        </div>
+      </div>
+
+      <!-- Split liste + détail -->
+      <div class="inc-split">
+        <div class="inc-list-card">
+          <div class="inc-list-head">
+            <span style="font-size:14px">📋</span>
+            <div style="font-size:12px;font-weight:800;flex:1">Registre des événements</div>
+            <select style="font-size:11px;background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;outline:none">
+              <option>Tous les types</option>
+              <option>Accidents avec arrêt</option>
+              <option>Presqu'accidents</option>
+            </select>
+          </div>
+          <table class="inc-table">
+            <thead>
+              <tr><th>Réf.</th><th>Description</th><th>Gravité</th><th>Zone</th><th>Statut</th><th>Date</th></tr>
+            </thead>
+            <tbody id="inc-tbody"></tbody>
+          </table>
+        </div>
+        <div class="inc-detail-card" id="inc-detail"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE — HABILITATIONS SST
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-habilit">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#FFF3EE">🎓</div>
+      <div>
+        <div class="ph-title">Habilitations et compétences SST</div>
+        <div class="ph-sub">ISO 45001:2018 §7.2 — Compétences, formation et sensibilisation</div>
+      </div>
+      <button class="btn btn-ghost btn-sm">⬇ Exporter</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('Nouvelle habilitation enregistrée','ok')">+ Enregistrer une habilitation</button>
+    </div>
+    <div class="scroll-body">
+
+      <div class="hab-stats">
+        <div class="hab-stat">
+          <div class="hab-stat-val" style="color:var(--teal-d)">42</div>
+          <div class="hab-stat-lbl">Habilitations valides</div>
+        </div>
+        <div class="hab-stat">
+          <div class="hab-stat-val" style="color:var(--yellow-d)">6</div>
+          <div class="hab-stat-lbl">À renouveler (&lt;60j)</div>
+        </div>
+        <div class="hab-stat">
+          <div class="hab-stat-val" style="color:var(--red-d)">2</div>
+          <div class="hab-stat-lbl">Expirées</div>
+        </div>
+        <div class="hab-stat">
+          <div class="hab-stat-val" style="color:var(--ink)">18</div>
+          <div class="hab-stat-lbl">Agents habilités</div>
+        </div>
+      </div>
+
+      <!-- Grille de cartes -->
+      <div class="hab-grid" id="hab-grid"></div>
+
+      <!-- Alertes renouvellement -->
+      <div class="hab-alert-card">
+        <div class="hab-alert-head">
+          <span style="font-size:14px">⏰</span>
+          <div class="hab-alert-title">Habilitations à renouveler prioritairement</div>
+        </div>
+        <div id="hab-alert-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE — INDICATEURS ENVIRONNEMENTAUX
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-indicenv">
+    <div class="page-header">
+      <div class="ph-icon" style="background:var(--green-haut-l)">📊</div>
+      <div>
+        <div class="ph-title">Indicateurs de performance environnementale</div>
+        <div class="ph-sub">ISO 14001:2015 §9.1 — Surveillance, mesure, analyse et évaluation</div>
+      </div>
+      <select style="font-size:11.5px;background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;outline:none">
+        <option>12 derniers mois</option>
+        <option>Année 2024</option>
+        <option>Année 2025</option>
+      </select>
+      <button class="btn btn-ghost btn-sm">⬇ Exporter</button>
+    </div>
+    <div class="scroll-body">
+      <div class="ienv-layout">
+
+        <!-- Graphique aires empilées consommation -->
+        <div class="ienv-chart-card">
+          <div class="ienv-chart-head">
+            <span style="font-size:14px">💧⚡</span>
+            <div class="ienv-chart-title">Évolution des consommations — Eau & Énergie (12 mois)</div>
+          </div>
+          <div class="ienv-chart-body">
+            <svg width="100%" height="220" viewBox="0 0 900 220" id="area-chart-water-energy"></svg>
+            <div class="area-chart-legend">
+              <div class="acl-item"><div class="acl-dot" style="background:var(--blue-sst)"></div>Consommation eau (m³)</div>
+              <div class="acl-item"><div class="acl-dot" style="background:var(--yellow-d)"></div>Consommation énergie (MWh)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Graphique déchets/émissions -->
+        <div class="ienv-chart-card">
+          <div class="ienv-chart-head">
+            <span style="font-size:14px">♻️💨</span>
+            <div class="ienv-chart-title">Déchets produits & émissions CO₂eq (12 mois)</div>
+          </div>
+          <div class="ienv-chart-body">
+            <svg width="100%" height="220" viewBox="0 0 900 220" id="area-chart-waste-co2"></svg>
+            <div class="area-chart-legend">
+              <div class="acl-item"><div class="acl-dot" style="background:var(--orange)"></div>Déchets (tonnes)</div>
+              <div class="acl-item"><div class="acl-dot" style="background:var(--muted)"></div>Émissions CO₂eq (t)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini KPIs par processus -->
+        <div class="ienv-grid-small">
+          <div class="ienv-chart-card">
+            <div class="ienv-chart-head"><span style="font-size:13px">🏭</span><div class="ienv-chart-title">Intensité par processus</div></div>
+            <div class="ienv-chart-body" style="padding:12px 16px">
+              <div class="bar-chart" id="bar-env-proc"></div>
+            </div>
+          </div>
+          <div class="ienv-chart-card">
+            <div class="ienv-chart-head"><span style="font-size:13px">🎯</span><div class="ienv-chart-title">Objectifs 2025</div></div>
+            <div class="ienv-chart-body" style="padding:12px 16px;display:flex;flex-direction:column;gap:12px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="font-weight:600">Réduction eau -10%</span><span style="color:var(--teal-d);font-weight:700">80%</span></div>
+                <div style="height:6px;background:var(--surf2);border-radius:10px;overflow:hidden"><div style="width:80%;height:100%;background:var(--teal)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="font-weight:600">Réduction CO₂ -5%</span><span style="color:var(--orange-d);font-weight:700">35%</span></div>
+                <div style="height:6px;background:var(--surf2);border-radius:10px;overflow:hidden"><div style="width:35%;height:100%;background:var(--orange)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="font-weight:600">Valorisation déchets 60%</span><span style="color:var(--teal-d);font-weight:700">92%</span></div>
+                <div style="height:6px;background:var(--surf2);border-radius:10px;overflow:hidden"><div style="width:92%;height:100%;background:var(--teal)"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="ienv-chart-card">
+            <div class="ienv-chart-head"><span style="font-size:13px">📈</span><div class="ienv-chart-title">Synthèse annuelle</div></div>
+            <div class="ienv-chart-body" style="padding:12px 16px;font-size:11.5px;color:var(--muted);line-height:1.6">
+              La consommation d'eau diminue de <strong style="color:var(--teal-d)">8%</strong> grâce au recyclage des eaux de forage. Les émissions CO₂eq augmentent légèrement (<strong style="color:var(--red-d)">+1%</strong>) en raison de l'activité accrue sur le puits P-14.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE — CONFORMITÉ LÉGALE
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-confleg">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#F0E6FF">⚖️</div>
+      <div>
+        <div class="ph-title">Conformité légale et réglementaire</div>
+        <div class="ph-sub">ISO 9001 §? · 14001 §9.1.2 · 45001 §9.1.2 — Évaluation de la conformité aux obligations légales</div>
+      </div>
+      <button class="btn btn-ghost btn-sm">⬇ Exporter</button>
+      <button class="btn btn-primary btn-sm" onclick="toast('Nouveau texte réglementaire ajouté','ok')">+ Ajouter un texte</button>
+    </div>
+    <div class="scroll-body">
+
+      <!-- Cycle de veille réglementaire -->
+      <div class="cl-cycle-card">
+        <div class="cl-cycle-head">
+          <div class="cl-cycle-title">🔄 Cycle de veille réglementaire</div>
+          <div class="cl-cycle-sub">Processus de gestion de la conformité légale — de l'identification au suivi</div>
+        </div>
+        <div class="cycle-steps" id="cycle-steps"></div>
+      </div>
+
+      <!-- Table conformité -->
+      <div class="cl-table-card">
+        <div class="cl-table-head">
+          <span style="font-size:14px">📜</span>
+          <div class="cl-table-title">Registre des obligations légales — 18 textes suivis</div>
+          <select style="font-size:11px;background:var(--surf);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;outline:none">
+            <option>Tous les domaines</option>
+            <option>Environnement</option>
+            <option>Santé-Sécurité</option>
+            <option>Qualité</option>
+          </select>
+        </div>
+        <table class="cl-table">
+          <thead>
+            <tr><th>Référence</th><th>Domaine</th><th>Intitulé</th><th>Dernière évaluation</th><th>Prochaine échéance</th><th>Statut</th></tr>
+          </thead>
+          <tbody id="confleg-tbody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       VUE 4 — FORMULAIRE NOUVEAU PTW
+  ═══════════════════════════════════════════════════ -->
+  <div class="view" id="view-form">
+    <div class="page-header">
+      <div class="ph-icon" style="background:#FFF3EE">📝</div>
+      <div>
+        <div class="ph-title">Créer un permis de travail</div>
+        <div class="ph-sub">ISO 45001:2018 §8.1.3 — Formulaire standardisé ENSP</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showView('ptw',null)">← Retour</button>
+    </div>
+    <div class="scroll-body">
+      <div class="ptw-form-card">
+        <div class="ptw-form-title">Nouveau permis de travail</div>
+        <div class="ptw-form-sub">Remplir tous les champs obligatoires. Le PTW sera soumis pour approbation avant activation.</div>
+
+        <!-- Type de travail -->
+        <div style="margin-bottom:18px">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px">Type de travaux <span style="color:var(--red)">•</span></div>
+          <div class="ptw-type-grid">
+            <div class="ptw-type-btn ptw-btn-chaud sel" onclick="selectPTWType(this)">
+              <div class="pt-icon">🔥</div>
+              <div class="pt-label">Travaux à feu chaud</div>
+            </div>
+            <div class="ptw-type-btn ptw-btn-electr" onclick="selectPTWType(this)">
+              <div class="pt-icon">⚡</div>
+              <div class="pt-label">Travaux électriques</div>
+            </div>
+            <div class="ptw-type-btn ptw-btn-confine" onclick="selectPTWType(this)">
+              <div class="pt-icon">🔵</div>
+              <div class="pt-label">Espace confiné</div>
+            </div>
+            <div class="ptw-type-btn ptw-btn-hauteur" onclick="selectPTWType(this)">
+              <div class="pt-icon">🟢</div>
+              <div class="pt-label">Travaux en hauteur</div>
+            </div>
+            <div class="ptw-type-btn ptw-btn-general" onclick="selectPTWType(this)">
+              <div class="pt-icon">🔧</div>
+              <div class="pt-label">Travaux généraux</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Intitulé des travaux <span style="color:var(--red)">•</span></label>
+            <input type="text" placeholder="ex: Soudure bride puit P-14 zone A">
+          </div>
+          <div class="form-field">
+            <label>Zone / Installation <span style="color:var(--red)">•</span></label>
+            <select>
+              <option>— Sélectionner —</option>
+              <option>Zone forage — Puits P-14</option>
+              <option>Zone production — Séparateur</option>
+              <option>Atelier maintenance</option>
+              <option>Zone stockage</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Date début <span style="color:var(--red)">•</span></label>
+            <input type="datetime-local">
+          </div>
+          <div class="form-field">
+            <label>Date fin prévue <span style="color:var(--red)">•</span></label>
+            <input type="datetime-local">
+          </div>
+          <div class="form-field">
+            <label>Responsable des travaux <span style="color:var(--red)">•</span></label>
+            <select>
+              <option>— Sélectionner —</option>
+              <option>T. Hamza (DMI)</option>
+              <option>R. Kaci (DPE)</option>
+              <option>F. Aissaoui (DQHSE)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Niveau d'urgence <span style="color:var(--red)">•</span></label>
+            <select>
+              <option>Normale</option>
+              <option>Moyenne</option>
+              <option>Haute — intervention rapide requise</option>
+            </select>
+          </div>
+          <div class="form-field form-full">
+            <label>Description des travaux <span style="color:var(--red)">•</span></label>
+            <textarea placeholder="Décrire précisément les travaux à réaliser, les équipements concernés, les méthodes utilisées…" rows="4"></textarea>
+          </div>
+          <div class="form-field form-full">
+            <label>Risques identifiés et mesures de prévention</label>
+            <textarea placeholder="Lister les risques principaux et les mesures de maîtrise prévues (EPI requis, consignation, surveillance…)" rows="3"></textarea>
+          </div>
+          <div class="form-field">
+            <label>EPI requis</label>
+            <input type="text" placeholder="ex: Casque, lunettes, harnais, détecteur gaz">
+          </div>
+          <div class="form-field">
+            <label>Effectif prévu</label>
+            <input type="number" placeholder="Nombre d'intervenants" min="1">
+          </div>
+          <div class="form-field form-full" style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+            <button class="btn btn-ghost" onclick="showView('ptw',null)">Annuler</button>
+            <button class="btn btn-ghost" onclick="toast('PTW sauvegardé en brouillon','')">💾 Sauvegarder brouillon</button>
+            <button class="btn btn-primary" onclick="showView('ptw',null);toast('PTW-2025-008 créé — en attente d\'approbation ✓','ok')">
+              📤 Soumettre pour approbation →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<div class="toast-c" id="toasts"></div>
+
+<script>
+/* ═══ DATA ══════════════════════════════════════════ */
+const PTW_DATA = [
+  {id:'PTW-2025-042',type:'chaud',titre:'Soudure bride puits P-14',zone:'Zone forage P-14',statut:'ACTIF',urgence:'haute',resp:'T. Hamza',debut:'07/07 08h00',fin:'07/07 16h00',
+    risques:['Incendie / explosion gaz','Brûlures thermiques','Inhalation fumées'],
+    epi:['Écran facial','Gants cuir','Vêtements ignifuges','Détecteur gaz H₂S'],
+    checks:[
+      {label:'Zone délimitée et balisée',ok:true},
+      {label:'Extinction incendie positionnée',ok:true},
+      {label:'Analyse atmosphérique effectuée',ok:true},
+      {label:'Consignation équipements validée',ok:false},
+      {label:'Communication urgence testée',ok:false},
+    ]},
+  {id:'PTW-2025-041',type:'electr',titre:'Remplacement disjoncteur tableau électrique',zone:'Atelier maintenance',statut:'APPROUVE',urgence:'moy',resp:'R. Kaci',debut:'07/07 14h00',fin:'07/07 18h00',
+    risques:['Électrocution','Arcs électriques','Blessures mains'],
+    epi:['Gants isolants classe 4','Écran facial','EPI isolant HTA'],
+    checks:[
+      {label:'Consignation LOTO effectuée',ok:true},
+      {label:'VAT vérification absence tension',ok:true},
+      {label:'Zone de travail isolée',ok:false},
+      {label:'Habilitation électrique vérifiée',ok:false},
+    ]},
+  {id:'PTW-2025-040',type:'confine',titre:'Nettoyage intérieur citerne T-07',zone:'Zone stockage',statut:'ATTENTE',urgence:'haute',resp:'F. Aissaoui',debut:'08/07 07h00',fin:'08/07 12h00',
+    risques:['Asphyxie O₂ déficient','Intoxication vapeurs','Explosion vapeurs'],
+    epi:['ARI (air comprimé)','Harnais sécurité','Trépied évacuation'],
+    checks:[
+      {label:'Analyse O₂ ≥ 19,5%',ok:false},
+      {label:'LEL < 10% vérifié',ok:false},
+      {label:'Surveillant de surface désigné',ok:false},
+      {label:'Moyen de récupération opérationnel',ok:false},
+    ]},
+  {id:'PTW-2025-039',type:'hauteur',titre:'Inspection toiture bâtiment administratif',zone:'Bâtiment admin',statut:'CLOS',urgence:'norm',resp:'T. Hamza',debut:'05/07 09h00',fin:'05/07 11h00',
+    risques:['Chute de hauteur','Chute d\'objets'],
+    epi:['Harnais antichute','Casque','Chaussures de sécurité'],
+    checks:[{label:'Point d\'ancrage vérifié',ok:true},{label:'Filet de sécurité installé',ok:true},{label:'Zone de travail balisée',ok:true}]},
+  {id:'PTW-2025-038',type:'chaud',titre:'Soudure canalisation gaz naturel',zone:'Zone production',statut:'ATTENTE',urgence:'moy',resp:'R. Kaci',debut:'09/07 08h00',fin:'09/07 14h00',
+    risques:['Incendie/explosion','Brûlures','Projection matière fondue'],
+    epi:['Masque soudage','Gants cuir','Tablier protection'],
+    checks:[{label:'Purge canalisation validée',ok:false},{label:'Permis d\'atmosphère explosible',ok:false}]},
+  {id:'PTW-2025-037',type:'electr',titre:'Test protection relais différentiel',zone:'Salle électrique HTA',statut:'APPROUVE',urgence:'norm',resp:'T. Hamza',debut:'08/07 09h00',fin:'08/07 12h00',
+    risques:['Électrocution HTA','Arc électrique'],
+    epi:['EPI HTA complet','Écran facial classe 2'],
+    checks:[{label:'Consignation validée responsable',ok:true},{label:'Procédure de test approuvée',ok:true}]},
+  {id:'PTW-2025-036',type:'chaud',titre:'Réparation chaudière production vapeur',zone:'Zone production',statut:'CLOS',urgence:'haute',resp:'F. Aissaoui',debut:'04/07 07h00',fin:'04/07 17h00',
+    risques:['Brûlures vapeur haute pression','Incendie'],
+    epi:['Combinaison anti-brûlure','Gants isolants'],
+    checks:[{label:'Purge vapeur complète',ok:true},{label:'Refroidissement confirmé',ok:true},{label:'Zone interdite balisée',ok:true}]},
+];
+
+const HIRA_DATA = [
+  {id:'D-001',danger:'Atmosphère explosible (hydrocarbures)',proc:'Forage',proba:3,gravite:5,residuel:'Élevé',controle:'Détection gaz permanente',doc:'PRO.HSE.FOG.001'},
+  {id:'D-002',danger:'Chute de hauteur (travaux en élévation)',proc:'Maintenance',proba:2,gravite:4,residuel:'Modéré',controle:'Harnais antichute obligatoire',doc:'INS.HSE.HAU.003'},
+  {id:'D-003',danger:'Électrocution (HTA / BT)',proc:'Maintenance',proba:2,gravite:5,residuel:'Élevé',controle:'LOTO systématique + VAT',doc:'PRO.HSE.ELE.002'},
+  {id:'D-004',danger:'Exposition H₂S (gaz toxique)',proc:'Production',proba:3,gravite:5,residuel:'Critique',controle:'ARI + détecteur individuel',doc:'INS.HSE.GAZ.001'},
+  {id:'D-005',danger:'Projection haute pression (fluide)',proc:'Forage',proba:2,gravite:3,residuel:'Faible',controle:'EPI + procédure dépressurisation',doc:'MOD.HSE.PRE.004'},
+  {id:'D-006',danger:'Asphyxie (espace confiné)',proc:'Production',proba:2,gravite:5,residuel:'Élevé',controle:'Analyse atmosphérique + ARI',doc:'PRO.HSE.ESC.001'},
+  {id:'D-007',danger:'Incendie feu de nappe',proc:'Production',proba:1,gravite:5,residuel:'Modéré',controle:'Plan urgence + extincteurs',doc:'PRO.HSE.INC.002'},
+  {id:'D-008',danger:'Bruit (exposition sonore)',proc:'Production',proba:4,gravite:2,residuel:'Faible',controle:'Protections auditives',doc:'INS.HSE.BRU.001'},
+];
+
+const AEI_DATA = [
+  {id:'AEI-001',activite:'Forage puits',aspect:'Consommation eau de forage',impact:'Épuisement ressource hydrique',condition:'Normale',crit:75,significatif:true,type:'eau'},
+  {id:'AEI-002',activite:'Production hydrocarbures',aspect:'Torchage gaz associé',impact:'Émissions CO₂, CH₄, NOₓ',condition:'Normale',crit:92,significatif:true,type:'air'},
+  {id:'AEI-003',activite:'Nettoyage équipements',aspect:'Rejets eaux huileuses',impact:'Contamination sol/nappe',condition:'Normale',crit:68,significatif:true,type:'sol'},
+  {id:'AEI-004',activite:'Maintenance',aspect:'Déchets dangereux (huiles usées)',impact:'Pollution sol',condition:'Normale',crit:55,significatif:true,type:'dechets'},
+  {id:'AEI-005',activite:'Transport',aspect:'Consommation carburant',impact:'Émissions CO₂',condition:'Normale',crit:42,significatif:false,type:'air'},
+  {id:'AEI-006',activite:'Bureaux / bâtiments',aspect:'Consommation électrique',impact:'Émissions indirectes CO₂',condition:'Normale',crit:28,significatif:false,type:'energie'},
+  {id:'AEI-007',activite:'Incident puits',aspect:'Déversement accidentel hydrocarbures',impact:'Pollution sol + nappe',condition:'Urgence',crit:95,significatif:true,type:'sol'},
+  {id:'AEI-008',activite:'Forage',aspect:'Déchets de forage (boues)',impact:'Pollution sol',condition:'Normale',crit:60,significatif:true,type:'dechets'},
+];
+
+const REGL_DATA = [
+  {ref:'Décret exécutif 06-141',nom:'Protection de l\'environnement — normes rejets liquides',echeance:'Permanente',statut:'conf'},
+  {ref:'Loi 03-10 Art.52',nom:'Gestion des déchets spéciaux dangereux',echeance:'Permanente',statut:'conf'},
+  {ref:'Arrêté 2025-04',nom:'Valeurs limites émissions torchage gaz ENSP',echeance:'31/12/2025',statut:'alert'},
+  {ref:'ISO 14001:2015 §9.1.2',nom:'Évaluation de la conformité — rapport annuel',echeance:'31/01/2026',statut:'conf'},
+  {ref:'Décret 11-335',nom:'Prévention risques majeurs hydrocarbures',echeance:'Permanente',statut:'conf'},
+  {ref:'Arrêté 2024-11',nom:'Plan de surveillance qualité des eaux souterraines',echeance:'30/09/2025',statut:'nc'},
+];
+
+let selectedPTW = PTW_DATA[0];
+let currentPTWFilter = null;
+
+/* ═══ UTILS ══════════════════════════════════════════ */
+function toast(msg,type=''){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${type==='ok'?'✅':type==='warn'?'⚠️':'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},3000);
+}
+
+function showView(id,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tb-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  const ni=document.getElementById('ni-'+id);
+  if(ni) ni.classList.add('active');
+}
+
+/* ═══ PTW ════════════════════════════════════════════ */
+const TYPE_LABELS={chaud:'🔥 Feu chaud',electr:'⚡ Électrique',confine:'🔵 Espace confiné',hauteur:'🟢 Hauteur',general:'🔧 Général'};
+const TYPE_BADGE ={chaud:'tb-chaud',electr:'tb-electr',confine:'tb-confine',hauteur:'tb-hauteur',general:'tb-general'};
+const TYPE_STRIPE={chaud:'stripe-chaud',electr:'stripe-electr',confine:'stripe-confine',hauteur:'stripe-hauteur',general:'stripe-general'};
+const STATUTS_PTW={ACTIF:{lbl:'Actif',col:'count-actif',hd:'statut-actif'},APPROUVE:{lbl:'Approuvé',col:'count-appro',hd:'statut-appro'},ATTENTE:{lbl:'En attente',col:'count-att',hd:'statut-att'},CLOS:{lbl:'Clôturé',col:'count-clos',hd:'statut-clos'}};
+const URGENCE_CLS={haute:'urg-haute',moy:'urg-moy',norm:'urg-norm'};
+const URGENCE_LBL={haute:'URGENT',moy:'Moyen',norm:'Normal'};
+
+function filterPTW(type,el){
+  document.querySelectorAll('.ptw-type-chip').forEach(c=>c.classList.remove('active'));
+  if(currentPTWFilter===type){currentPTWFilter=null;}
+  else{currentPTWFilter=type;el.classList.add('active');}
+  renderPTWKanban();
+}
+
+function getFilteredPTW(){
+  if(!currentPTWFilter) return PTW_DATA;
+  return PTW_DATA.filter(p=>p.type===currentPTWFilter);
+}
+
+function renderPTWKanban(){
+  const filtered=getFilteredPTW();
+  const cols=['ATTENTE','APPROUVE','ACTIF','CLOS'];
+  document.getElementById('ptw-kanban').innerHTML=cols.map(statut=>{
+    const items=filtered.filter(p=>p.statut===statut);
+    const st=STATUTS_PTW[statut];
+    return `<div class="ptw-col">
+      <div class="ptw-col-head ${st.hd}">
+        <div class="ptw-col-title">${st.lbl}</div>
+        <div class="ptw-col-count ${st.col}">${items.length}</div>
+      </div>
+      <div class="ptw-col-body">
+        ${items.length===0?`<div style="padding:20px;text-align:center;color:var(--light);font-size:12px">Aucun PTW</div>`:
+          items.map(p=>`
+          <div class="ptw-card ${selectedPTW?.id===p.id?'selected':''}" onclick="selectPTW('${p.id}')">
+            <div class="ptw-card-stripe ${TYPE_STRIPE[p.type]}"></div>
+            <div class="ptw-card-body">
+              <div class="ptw-card-num">${p.id}</div>
+              <div class="ptw-card-title">${p.titre}</div>
+              <div class="ptw-card-meta">
+                <span class="ptw-type-badge ${TYPE_BADGE[p.type]}">${TYPE_LABELS[p.type]}</span>
+              </div>
+              <div class="ptw-card-footer">
+                <div class="ptw-footer-info">${p.zone}</div>
+                <div class="ptw-urgence ${URGENCE_CLS[p.urgence]}">${URGENCE_LBL[p.urgence]}</div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectPTW(id){
+  selectedPTW=PTW_DATA.find(p=>p.id===id);
+  renderPTWKanban();
+  renderPTWDetail();
+}
+
+function renderPTWDetail(){
+  const p=selectedPTW;
+  if(!p){document.getElementById('ptw-detail').innerHTML='';return;}
+  const totalChecks=p.checks.length;
+  const doneChecks=p.checks.filter(c=>c.ok).length;
+  const pct=Math.round(doneChecks/totalChecks*100);
+
+  const actBtns={
+    ATTENTE:`<button class="dp-action-btn dab-approve" onclick="approvePTW()">✅ Approuver le PTW</button>
+             <button class="dp-action-btn dab-reject" onclick="toast('PTW refusé — retour à l\\'émetteur','warn')" style="margin-top:4px">✕ Refuser</button>`,
+    APPROUVE:`<button class="dp-action-btn dab-start" onclick="startPTW()">▶ Activer les travaux</button>`,
+    ACTIF:`<button class="dp-action-btn dab-close" onclick="closePTW()">✓ Clôturer les travaux</button>`,
+    CLOS:`<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">PTW clôturé — archivé</div>`
+  };
+
+  document.getElementById('ptw-detail').innerHTML=`
+    <div class="dp-head">
+      <div class="dp-stripe ${TYPE_STRIPE[p.type]}"></div>
+      <div class="dp-num">${p.id}</div>
+      <div class="dp-title">${p.titre}</div>
+      <div class="dp-tags">
+        <span class="ptw-type-badge ${TYPE_BADGE[p.type]}">${TYPE_LABELS[p.type]}</span>
+        <span class="ptw-urgence ${URGENCE_CLS[p.urgence]}">${URGENCE_LBL[p.urgence]}</span>
+      </div>
+    </div>
+    <div class="dp-body">
+      <div class="dp-section">
+        <div class="dp-section-title">📋 Informations</div>
+        <div class="dp-row"><span class="dp-key">Zone</span><span class="dp-val">${p.zone}</span></div>
+        <div class="dp-row"><span class="dp-key">Responsable</span><span class="dp-val">${p.resp}</span></div>
+        <div class="dp-row"><span class="dp-key">Début</span><span class="dp-val">${p.debut}</span></div>
+        <div class="dp-row"><span class="dp-key">Fin prévue</span><span class="dp-val">${p.fin}</span></div>
+      </div>
+
+      <div class="dp-section">
+        <div class="dp-section-title">⚠️ Risques identifiés</div>
+        ${p.risques.map(r=>`<div style="display:flex;gap:7px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--surf2)">
+          <span style="color:var(--red);font-weight:800;flex-shrink:0">›</span>${r}</div>`).join('')}
+      </div>
+
+      <div class="dp-section">
+        <div class="dp-section-title">🦺 EPI requis</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${p.epi.map(e=>`<span style="font-size:10.5px;font-weight:600;background:var(--surf2);padding:2px 8px;border-radius:6px;color:var(--text)">${e}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="dp-section">
+        <div class="dp-section-title">✅ Checklist de sécurité — ${doneChecks}/${totalChecks} (${pct}%)</div>
+        <div style="background:var(--surf2);border-radius:10px;height:5px;margin-bottom:10px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${pct===100?'var(--teal)':pct>50?'var(--orange)':'var(--red)'};border-radius:10px;transition:width .4s"></div>
+        </div>
+        <div class="ptw-checklist">
+          ${p.checks.map((c,i)=>`
+          <div class="cl-item ${c.ok?'checked':''}" onclick="toggleCheck(${i})">
+            <div class="cl-check">${c.ok?'✓':''}</div>
+            <div class="cl-text">${c.label}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="dp-actions">${actBtns[p.statut]}</div>`;
+}
+
+function toggleCheck(i){
+  if(!selectedPTW) return;
+  selectedPTW.checks[i].ok=!selectedPTW.checks[i].ok;
+  renderPTWDetail();
+}
+
+function approvePTW(){
+  if(!selectedPTW) return;
+  selectedPTW.statut='APPROUVE';
+  renderPTWKanban();renderPTWDetail();
+  toast(`${selectedPTW.id} approuvé ✓`,'ok');
+}
+function startPTW(){
+  if(!selectedPTW) return;
+  selectedPTW.statut='ACTIF';
+  renderPTWKanban();renderPTWDetail();
+  toast(`${selectedPTW.id} activé — travaux en cours`,'ok');
+}
+function closePTW(){
+  if(!selectedPTW) return;
+  selectedPTW.statut='CLOS';
+  renderPTWKanban();renderPTWDetail();
+  toast(`${selectedPTW.id} clôturé et archivé ✓`,'ok');
+}
+
+function selectPTWType(el){
+  document.querySelectorAll('.ptw-type-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+/* ═══ HIRA ═══════════════════════════════════════════ */
+const RISK_LEVELS=[
+  [1,2,3,4,5],
+  [2,4,6,8,10],
+  [3,6,9,12,15],
+  [4,8,12,16,20],
+  [5,10,15,20,25]
+];
+
+function riskClass(val){
+  if(val>=20) return 'rc-critique';
+  if(val>=12) return 'rc-eleve';
+  if(val>=6)  return 'rc-modere';
+  if(val>=3)  return 'rc-faible';
+  return 'rc-tolerable';
+}
+
+function renderRiskMatrix(){
+  const graviteLabels=['Insignifiant','Mineur','Modéré','Grave','Catastrophique'];
+  const probaLabels  =['Rare','Peu probable','Possible','Probable','Très probable'];
+  let html='<div></div>'; // coin vide
+  // En-têtes gravité
+  graviteLabels.forEach(g=>{ html+=`<div class="matrix-label-top">${g}</div>`; });
+  // Lignes
+  for(let p=4;p>=0;p--){
+    html+=`<div class="matrix-label-left">${probaLabels[p]}</div>`;
+    for(let g=0;g<5;g++){
+      const val=(p+1)*(g+1);
+      const count=HIRA_DATA.filter(d=>d.proba===(p+1)&&d.gravite===(g+1)).length;
+      html+=`<div class="matrix-cell ${riskClass(val)}" onclick="filterHIRAByCell(${p+1},${g+1})">
+        ${val}${count>0?`<div class="mc-count">${count}</div>`:''}
+      </div>`;
+    }
+  }
+  document.getElementById('risk-matrix-grid').innerHTML=html;
+}
+
+function filterHIRAByCell(p,g){
+  const items=HIRA_DATA.filter(d=>d.proba===p&&d.gravite===g);
+  if(items.length) renderHIRADetail(items[0]);
+}
+
+const RESIDUEL_CLS={Critique:'rp-crit',Élevé:'rp-elev',Modéré:'rp-mod',Faible:'rp-fai',Tolérable:'rp-tol'};
+
+function renderHIRATable(){
+  document.getElementById('hira-tbody').innerHTML=HIRA_DATA.map(d=>`
+    <tr onclick="renderHIRADetail(HIRA_DATA.find(x=>x.id==='${d.id}'))">
+      <td><span style="font-family:var(--fc);font-size:10px;color:var(--muted)">${d.id}</span></td>
+      <td style="font-weight:600;max-width:180px">${d.danger}</td>
+      <td style="color:var(--muted)">${d.proc}</td>
+      <td style="text-align:center;font-weight:700">${d.proba}</td>
+      <td style="text-align:center;font-weight:700">${d.gravite}</td>
+      <td><span class="risk-pill ${RESIDUEL_CLS[d.residuel]||'rp-fai'}">${d.residuel}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${d.controle}</td>
+    </tr>`).join('');
+}
+
+function renderHIRADetail(d){
+  document.getElementById('hira-detail').innerHTML=`
+    <div class="hira-detail-card">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--surf2)">
+        <div style="font-size:28px">⚠️</div>
+        <div>
+          <div style="font-size:11px;font-family:var(--fc);color:var(--muted);margin-bottom:3px">${d.id}</div>
+          <div style="font-size:13px;font-weight:800;line-height:1.3">${d.danger}</div>
+          <div style="margin-top:6px"><span class="risk-pill ${RESIDUEL_CLS[d.residuel]||'rp-fai'} " style="font-size:11px">${d.residuel}</span></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        <div style="background:var(--surf);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:4px">Probabilité</div>
+          <div style="font-size:24px;font-weight:900;color:var(--orange)">${d.proba}/5</div>
+        </div>
+        <div style="background:var(--surf);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:4px">Gravité</div>
+          <div style="font-size:24px;font-weight:900;color:var(--red)">${d.gravite}/5</div>
+        </div>
+      </div>
+
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Mesures de maîtrise (Bow-Tie simplifié)</div>
+
+      <div class="hierarchy-strip">
+        <div class="hier-col">
+          <div class="hier-label prevention">🛡 Prévention</div>
+          <div class="hier-item"><div class="hi-check ok">✓</div>${d.controle}</div>
+          <div class="hier-item"><div class="hi-check ok">✓</div>Procédure documentée</div>
+          <div class="hier-item"><div class="hi-check">?</div>Formation spécifique</div>
+        </div>
+        <div class="hier-danger">${d.danger.split(' ')[0]}</div>
+        <div class="hier-col">
+          <div class="hier-label protection">🚨 Protection</div>
+          <div class="hier-item"><div class="hi-check ok">✓</div>EPI adapté</div>
+          <div class="hier-item"><div class="hi-check ok">✓</div>Plan d'urgence</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--surf2)">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:6px">Document de référence</div>
+        <div style="font-family:var(--fc);font-size:11px;background:var(--surf2);padding:5px 10px;border-radius:6px;color:var(--ink);cursor:pointer" onclick="toast('Ouverture '+this.textContent,'')">
+          ${d.doc}
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" style="flex:1;background:var(--orange)" onclick="toast('Révision HIRA initiée ✓','ok')">📝 Réviser</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('PTW créé depuis HIRA ✓','ok')">🔶 Créer PTW</button>
+      </div>
+    </div>`;
+}
+
+/* ═══ AEI ════════════════════════════════════════════ */
+const TYPE_IMPACT={eau:'it-eau',air:'it-air',sol:'it-sol',dechets:'it-dechets',energie:'it-energie'};
+const TYPE_IMPACT_LBL={eau:'💧 Eau',air:'💨 Air',sol:'🌱 Sol',dechets:'♻️ Déchets',energie:'⚡ Énergie'};
+
+function getCritClass(v){
+  if(v>=80) return 'crit-very-high';
+  if(v>=60) return 'crit-high';
+  if(v>=40) return 'crit-med';
+  return 'crit-low';
+}
+
+function renderAEI(){
+  document.getElementById('aie-tbody').innerHTML=AEI_DATA.map(a=>`
+    <tr>
+      <td><span style="font-family:var(--fc);font-size:10px;color:var(--muted)">${a.id}</span></td>
+      <td style="font-size:12px;color:var(--muted);max-width:120px">${a.activite}</td>
+      <td style="font-weight:600;max-width:160px;font-size:12px">${a.aspect}</td>
+      <td><span class="impact-tag ${TYPE_IMPACT[a.type]}">${TYPE_IMPACT_LBL[a.type]}</span></td>
+      <td><span style="font-size:10.5px;background:${a.condition==='Urgence'?'var(--red-l)':'var(--surf2)'};color:${a.condition==='Urgence'?'var(--red-d)':'var(--muted)'};padding:2px 7px;border-radius:6px;font-weight:600">${a.condition}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="criticite-bar-wrap"><div class="criticite-bar ${getCritClass(a.crit)}" style="width:${a.crit}%"></div></div>
+          <span style="font-size:11px;font-weight:700;color:var(--text);width:28px">${a.crit}</span>
+        </div>
+      </td>
+      <td style="text-align:center">
+        ${a.significatif
+          ?`<span style="font-size:10px;font-weight:800;background:var(--orange-l);color:var(--orange-d);padding:2px 8px;border-radius:10px">⚠️ Significatif</span>`
+          :`<span style="font-size:10px;color:var(--light)">—</span>`}
+      </td>
+    </tr>`).join('');
+}
+
+function renderRegl(){
+  const cls={conf:'rs-conf',alert:'rs-alert',nc:'rs-nc'};
+  const lbl={conf:'Conforme',alert:'Alerte',nc:'Non conforme'};
+  document.getElementById('regl-list').innerHTML=REGL_DATA.map(r=>`
+    <div class="regl-item">
+      <div class="regl-status ${cls[r.statut]}"></div>
+      <div class="regl-content">
+        <div class="regl-ref">${r.ref}</div>
+        <div class="regl-name">${r.nom}</div>
+        <div class="regl-echeance">Échéance : ${r.echeance} · <strong style="color:${r.statut==='nc'?'var(--red-d)':r.statut==='alert'?'var(--orange-d)':'var(--teal-d)'}">${lbl[r.statut]}</strong></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   MODULE — INCIDENTS / ACCIDENTS DU TRAVAIL
+══════════════════════════════════════════════════════ */
+const INCIDENTS_DATA = [
+  {id:'INC-2025-014',desc:'Chute de plain-pied sur sol glissant (fuite huile) atelier maintenance',grav:'TFP',zone:'Atelier maintenance',statut:'CLOS',date:'2025-06-28',
+   causes:{immediate:'Sol glissant non signalé',contrib:'Fuite huile non détectée à temps',racine:'Absence de ronde de contrôle sol atelier'},
+   actions:[{label:'Nettoyage immédiat de la zone',done:true},{label:'Mise en place rondes quotidiennes',done:true},{label:'Signalétique sol glissant permanente',done:false}]},
+  {id:'INC-2025-013',desc:'Presqu\'accident : chute d\'outil depuis plateforme derrick',grav:'PA',zone:'Zone forage P-14',statut:'CLOS',date:'2025-06-20',
+   causes:{immediate:'Outil non attaché (sans longe)',contrib:'Absence de vérification avant montée',racine:'Procédure de travail en hauteur non appliquée strictement'},
+   actions:[{label:'Rappel procédure longes outils',done:true},{label:'Audit inopiné travaux hauteur',done:true}]},
+  {id:'INC-2025-012',desc:'Accident avec arrêt : entorse cheville lors de manutention manuelle',grav:'TF',zone:'Zone stockage',statut:'EN_COURS',date:'2025-06-10',
+   causes:{immediate:'Charge mal répartie lors du levage',contrib:'Absence d\'aide mécanique disponible',racine:'Sous-effectif chariot élévateur sur le site'},
+   actions:[{label:'Déclaration CNAS effectuée',done:true},{label:'Investigation terrain réalisée',done:true},{label:'Acquisition transpalette supplémentaire',done:false},{label:'Formation gestes et postures',done:false}]},
+  {id:'INC-2025-011',desc:'Presqu\'accident : détection fuite gaz mineure sur raccord',grav:'PA',zone:'Zone production',statut:'CLOS',date:'2025-05-22',
+   causes:{immediate:'Joint raccord usé',contrib:'Maintenance préventive dépassée',racine:'Planification maintenance insuffisante sur cette ligne'},
+   actions:[{label:'Remplacement joint effectué',done:true},{label:'Révision plan maintenance préventive',done:true}]},
+  {id:'INC-2025-010',desc:'Accident sans arrêt : coupure main lors d\'opération de découpe',grav:'TFP',zone:'Atelier maintenance',statut:'CLOS',date:'2025-04-15',
+   causes:{immediate:'Gant inadapté à l\'opération',contrib:'EPI standard non spécifique',racine:'Analyse de risque de poste incomplète'},
+   actions:[{label:'Soins prodigués — 3 points de suture',done:true},{label:'EPI anti-coupure fournis',done:true},{label:'Mise à jour analyse de risque poste',done:true}]},
+  {id:'INC-2025-009',desc:'Presqu\'accident : véhicule de service frôle piéton en zone industrielle',grav:'PA',zone:'Voie de circulation',statut:'CLOS',date:'2025-03-08',
+   causes:{immediate:'Angle mort véhicule + vitesse excessive',contrib:'Signalisation piétonne insuffisante',racine:'Plan de circulation site à revoir'},
+   actions:[{label:'Limitation vitesse renforcée',done:true},{label:'Marquage au sol zones piétonnes',done:true}]},
+];
+
+const GRAV_LABELS={TF:'🔴 Accident avec arrêt',TFP:'🟠 Sans arrêt',PA:'🟡 Presqu\'accident',TRI:'🔵 Incident mineur'};
+const GRAV_CLS={TF:'gb-tf',TFP:'gb-tfp',PA:'gb-pa',TRI:'gb-tri'};
+const GRAV_COLOR={TF:'#FF4D4F',TFP:'#FF6B35',PA:'#B8970A',TRI:'#4A90E2'};
+const INC_STATUT_CLS={OUVERT:'is-ouvert',EN_COURS:'is-cours',CLOS:'is-clos'};
+const INC_STATUT_LBL={OUVERT:'● Ouvert',EN_COURS:'◐ En cours',CLOS:'✓ Clos'};
+
+let selectedIncident=INCIDENTS_DATA[2];
+
+function fmtDateShort(s){const[y,m,d]=s.split('-');return`${d}/${m}`}
+function fmtDateFull(s){const[y,m,d]=s.split('-');return`${d}/${m}/${y}`}
+
+function renderIncTimeline(){
+  const sorted=[...INCIDENTS_DATA].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const dates=sorted.map(i=>new Date(i.date).getTime());
+  const min=Math.min(...dates), max=Math.max(...dates);
+  const range=max-min||1;
+  const w=900,margin=40;
+  let html=`<div class="inc-timeline-line" style="left:${margin}px;right:${margin}px"></div>`;
+  sorted.forEach(inc=>{
+    const t=(new Date(inc.date).getTime()-min)/range;
+    const x=margin+t*(w-2*margin);
+    html+=`<div class="inc-tl-point" style="left:${x}px" onclick="selectIncident('${inc.id}')" title="${inc.desc}">
+      <div class="inc-tl-dot" style="background:${GRAV_COLOR[inc.grav]};color:${GRAV_COLOR[inc.grav]}"></div>
+      <div class="inc-tl-label">${inc.id.split('-')[2]}</div>
+      <div class="inc-tl-date">${fmtDateShort(inc.date)}</div>
+    </div>`;
+  });
+  document.getElementById('inc-timeline').innerHTML=html;
+}
+
+function renderIncTable(){
+  document.getElementById('inc-tbody').innerHTML=INCIDENTS_DATA.map(inc=>`
+    <tr class="${selectedIncident?.id===inc.id?'sel':''}" onclick="selectIncident('${inc.id}')">
+      <td><span style="font-family:var(--fc);font-size:10px;color:var(--muted)">${inc.id}</span></td>
+      <td style="max-width:220px"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">${inc.desc}</div></td>
+      <td><span class="grav-badge ${GRAV_CLS[inc.grav]}">${GRAV_LABELS[inc.grav]}</span></td>
+      <td style="color:var(--muted)">${inc.zone}</td>
+      <td><span class="inc-status ${INC_STATUT_CLS[inc.statut]}">${INC_STATUT_LBL[inc.statut]}</span></td>
+      <td style="font-size:10.5px;color:var(--muted)">${fmtDateFull(inc.date)}</td>
+    </tr>`).join('');
+}
+
+function selectIncident(id){
+  selectedIncident=INCIDENTS_DATA.find(i=>i.id===id);
+  renderIncTable();
+  renderIncDetail();
+}
+
+function renderIncDetail(){
+  const inc=selectedIncident;
+  if(!inc){document.getElementById('inc-detail').innerHTML='';return;}
+  const doneActions=inc.actions.filter(a=>a.done).length;
+  document.getElementById('inc-detail').innerHTML=`
+    <div class="inc-detail-head">
+      <div class="inc-detail-stripe" style="background:${GRAV_COLOR[inc.grav]}"></div>
+      <div style="font-family:var(--fc);font-size:10px;color:var(--muted);margin-bottom:5px">${inc.id}</div>
+      <div style="font-size:13.5px;font-weight:800;line-height:1.35;margin-bottom:8px">${inc.desc}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="grav-badge ${GRAV_CLS[inc.grav]}">${GRAV_LABELS[inc.grav]}</span>
+        <span class="inc-status ${INC_STATUT_CLS[inc.statut]}">${INC_STATUT_LBL[inc.statut]}</span>
+      </div>
+    </div>
+    <div class="inc-detail-body">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:8px 0;border-bottom:1px solid var(--surf2);margin-bottom:10px">
+        <span style="color:var(--muted)">Zone</span><span style="font-weight:600">${inc.zone}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:0 0 12px;border-bottom:1px solid var(--surf2);margin-bottom:12px">
+        <span style="color:var(--muted)">Date</span><span style="font-weight:600">${fmtDateFull(inc.date)}</span>
+      </div>
+
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px">🌳 Arbre des causes</div>
+      <div class="cause-tree">
+        <div class="cause-box root">Cause racine : ${inc.causes.racine}</div>
+        <div class="cause-level"><div class="cause-connector"></div><div class="cause-box">Cause contributive : ${inc.causes.contrib}</div></div>
+        <div class="cause-level"><div class="cause-connector"></div><div class="cause-box">Cause immédiate : ${inc.causes.immediate}</div></div>
+      </div>
+
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin:14px 0 8px">✅ Actions correctives — ${doneActions}/${inc.actions.length}</div>
+      ${inc.actions.map((a,i)=>`
+        <div class="corr-action ${a.done?'done':''}" onclick="toggleIncAction(${i})" style="cursor:pointer">
+          <div class="corr-check">${a.done?'✓':''}</div>
+          <div style="flex:1">${a.label}</div>
+        </div>`).join('')}
+
+      ${inc.statut!=='CLOS'?`
+      <button class="btn btn-primary" style="width:100%;margin-top:14px;background:var(--orange)" onclick="closeIncident()">
+        ✓ Clôturer l'événement
+      </button>`:''}
+    </div>`;
+}
+
+function toggleIncAction(i){
+  selectedIncident.actions[i].done=!selectedIncident.actions[i].done;
+  renderIncDetail();
+}
+function closeIncident(){
+  selectedIncident.statut='CLOS';
+  renderIncTable();renderIncDetail();
+  toast(`${selectedIncident.id} clôturé ✓`,'ok');
+}
+
+/* ══════════════════════════════════════════════════════
+   MODULE — HABILITATIONS SST
+══════════════════════════════════════════════════════ */
+const HABILITATIONS_DATA = [
+  {nom:'A. Ferhat',role:'Technicien HSE',init:'AF',comps:[
+    {label:'Travail en hauteur',exp:'2026-03-15',statut:'ok'},
+    {label:'Espace confiné',exp:'2025-08-10',statut:'soon'},
+    {label:'Sauveteur secouriste (SST)',exp:'2026-01-20',statut:'ok'},
+  ]},
+  {nom:'T. Hamza',role:'Chef maintenance',init:'TH',comps:[
+    {label:'Habilitation électrique B2V-BR',exp:'2025-07-25',statut:'soon'},
+    {label:'Consignation LOTO',exp:'2026-05-01',statut:'ok'},
+    {label:'Travail en hauteur',exp:'2025-06-01',statut:'late'},
+  ]},
+  {nom:'R. Kaci',role:'Opérateur production',init:'RK',comps:[
+    {label:'Détection gaz H₂S',exp:'2026-02-14',statut:'ok'},
+    {label:'Permis de feu',exp:'2025-09-30',statut:'ok'},
+    {label:'Espace confiné',exp:'2025-07-05',statut:'soon'},
+  ]},
+  {nom:'F. Aissaoui',role:'Superviseur HSE',init:'FA',comps:[
+    {label:'Sauveteur secouriste (SST)',exp:'2026-04-12',statut:'ok'},
+    {label:'Espace confiné — Superviseur',exp:'2026-01-08',statut:'ok'},
+    {label:'Habilitation électrique BC',exp:'2025-05-15',statut:'late'},
+  ]},
+  {nom:'H. Meddah',role:'Rédacteur qualité',init:'HM',comps:[
+    {label:'Sensibilisation HSE générale',exp:'2026-06-01',statut:'ok'},
+    {label:'Premiers secours',exp:'2025-11-20',statut:'ok'},
+  ]},
+  {nom:'N. Amrani',role:'Resp. Achats/Log.',init:'NA',comps:[
+    {label:'Sensibilisation HSE générale',exp:'2025-08-01',statut:'soon'},
+    {label:'Conduite chariot élévateur',exp:'2026-03-01',statut:'ok'},
+  ]},
+];
+
+const EXP_CLS={ok:'exp-ok',soon:'exp-soon',late:'exp-late'};
+const EXP_LBL={ok:'✓ Valide',soon:'⏰ Bientôt',late:'✕ Expirée'};
+
+function renderHabGrid(){
+  document.getElementById('hab-grid').innerHTML=HABILITATIONS_DATA.map(h=>`
+    <div class="hab-card">
+      <div class="hab-card-top">
+        <div class="hab-avatar">${h.init}</div>
+        <div>
+          <div class="hab-name">${h.nom}</div>
+          <div class="hab-role">${h.role}</div>
+        </div>
+      </div>
+      <div class="hab-card-body">
+        ${h.comps.map(c=>`
+          <div class="hab-comp-row">
+            <div class="hab-comp-name">${c.label}</div>
+            <div class="hab-comp-exp ${EXP_CLS[c.statut]}">${EXP_LBL[c.statut]}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderHabAlerts(){
+  const alerts=[];
+  HABILITATIONS_DATA.forEach(h=>{
+    h.comps.forEach(c=>{
+      if(c.statut!=='ok') alerts.push({...c,nom:h.nom,init:h.init});
+    });
+  });
+  alerts.sort((a,b)=>new Date(a.exp)-new Date(b.exp));
+  document.getElementById('hab-alert-list').innerHTML=alerts.map(a=>`
+    <div class="hab-alert-item">
+      <div class="hab-alert-badge" style="background:${a.statut==='late'?'var(--red-l)':'var(--yellow-l)'}">${a.statut==='late'?'🔴':'🟡'}</div>
+      <div class="hab-alert-content">
+        <div class="hab-alert-name">${a.nom} — ${a.label}</div>
+        <div class="hab-alert-comp">${a.statut==='late'?'Expirée depuis le':'Expire le'} ${fmtDateFull(a.exp)}</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="toast('Renouvellement planifié pour ${a.nom} ✓','ok')">📅 Planifier</button>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   MODULE — INDICATEURS ENVIRONNEMENTAUX
+══════════════════════════════════════════════════════ */
+function renderAreaChart(svgId,seriesA,seriesB,colorA,colorB,maxA,maxB){
+  const svg=document.getElementById(svgId);
+  const w=900,h=220,pad={l:10,r:10,t:20,b:24};
+  const chartW=w-pad.l-pad.r, chartH=h-pad.t-pad.b;
+  const n=seriesA.length;
+  const stepX=chartW/(n-1);
+
+  function pathFor(series,max){
+    const pts=series.map((v,i)=>{
+      const x=pad.l+i*stepX;
+      const y=pad.t+chartH-(v/max*chartH);
+      return [x,y];
+    });
+    let d=`M ${pts[0][0]} ${pad.t+chartH} L `+pts.map(p=>`${p[0]} ${p[1]}`).join(' L ')+` L ${pts[n-1][0]} ${pad.t+chartH} Z`;
+    return d;
+  }
+  function lineFor(series,max){
+    const pts=series.map((v,i)=>{
+      const x=pad.l+i*stepX;
+      const y=pad.t+chartH-(v/max*chartH);
+      return `${x} ${y}`;
+    });
+    return 'M '+pts.join(' L ');
+  }
+
+  let html=`
+    <line x1="${pad.l}" y1="${pad.t+chartH}" x2="${w-pad.r}" y2="${pad.t+chartH}" stroke="#EAEDF2" stroke-width="1"/>
+    <path d="${pathFor(seriesA,maxA)}" fill="${colorA}" opacity="0.15"/>
+    <path d="${lineFor(seriesA,maxA)}" fill="none" stroke="${colorA}" stroke-width="2.5"/>
+    <path d="${pathFor(seriesB,maxB)}" fill="${colorB}" opacity="0.12"/>
+    <path d="${lineFor(seriesB,maxB)}" fill="none" stroke="${colorB}" stroke-width="2.5" stroke-dasharray="5,3"/>
+  `;
+  seriesA.forEach((v,i)=>{
+    const x=pad.l+i*stepX, y=pad.t+chartH-(v/maxA*chartH);
+    html+=`<circle cx="${x}" cy="${y}" r="3" fill="${colorA}"/>`;
+  });
+  document.getElementById(svgId).innerHTML=html;
+}
+
+const MONTHS_12=['Jui','Aoû','Sep','Oct','Nov','Déc','Jan','Fév','Mar','Avr','Mai','Jun'];
+const WATER_DATA =[920,880,910,860,830,800,780,820,790,760,740,720];
+const ENERGY_DATA=[1850,1920,1980,2010,2050,2100,2080,2150,2180,2200,2230,2260];
+const WASTE_DATA =[52,48,55,50,44,42,46,40,38,45,41,38];
+const CO2_DATA   =[980,1010,1050,1020,1080,1100,1090,1120,1080,1150,1130,1140];
+
+function renderEnvCharts(){
+  renderAreaChart('area-chart-water-energy',WATER_DATA,ENERGY_DATA,'#4A90E2','#B8970A',1000,2400);
+  renderAreaChart('area-chart-waste-co2',WASTE_DATA,CO2_DATA,'#FF6B35','#6B7280',60,1300);
+
+  document.getElementById('bar-env-proc').innerHTML=[
+    ['Forage',42,'#4A90E2'],['Production',68,'#FF6B35'],['Maintenance',24,'#B8970A'],['Transport',15,'#722ED1']
+  ].map(([lbl,v,c])=>`
+    <div class="bar-row">
+      <div class="bar-row__label" style="width:70px">${lbl}</div>
+      <div class="bar-row__track"><div class="bar-row__fill" style="width:${v}%;background:${c}"></div></div>
+      <div class="bar-row__num">${v}%</div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   MODULE — CONFORMITÉ LÉGALE
+══════════════════════════════════════════════════════ */
+const CONFLEG_DATA = [
+  {ref:'Décret exécutif 06-141',domaine:'env',nom:'Protection environnement — normes rejets liquides',eval:'2025-01-15',echeance:'2026-01-15',statut:'conf'},
+  {ref:'Loi 03-10 Art.52',domaine:'env',nom:'Gestion des déchets spéciaux dangereux',eval:'2025-02-01',echeance:'2026-02-01',statut:'conf'},
+  {ref:'Arrêté 2025-04',domaine:'env',nom:'Valeurs limites émissions torchage gaz ENSP',eval:'2025-04-10',echeance:'2025-12-31',statut:'alert'},
+  {ref:'Décret 11-335',domaine:'sst',nom:'Prévention risques majeurs hydrocarbures',eval:'2025-01-20',echeance:'2026-01-20',statut:'conf'},
+  {ref:'Loi 88-07 SST',domaine:'sst',nom:'Hygiène, sécurité et médecine du travail',eval:'2025-03-05',echeance:'2025-09-05',statut:'alert'},
+  {ref:'Décret 05-09',domaine:'sst',nom:'Comité d\'hygiène et de sécurité (CHS)',eval:'2025-01-10',echeance:'2026-01-10',statut:'conf'},
+  {ref:'Arrêté 2024-11',domaine:'env',nom:'Plan de surveillance qualité des eaux souterraines',eval:'2024-09-30',echeance:'2025-09-30',statut:'nc'},
+  {ref:'ISO 9001:2015 §8.4',domaine:'qual',nom:'Maîtrise des fournisseurs externes',eval:'2025-05-01',echeance:'2026-05-01',statut:'conf'},
+  {ref:'Loi 09-03 Protection consommateur',domaine:'qual',nom:'Exigences qualité produits/services',eval:'2025-02-15',echeance:'2026-02-15',statut:'conf'},
+  {ref:'Décret 07-144',domaine:'sst',nom:'Appareils à pression de gaz — inspection périodique',eval:'2025-06-01',echeance:'2025-08-01',statut:'eval'},
+  {ref:'Arrêté interministériel 2023',domaine:'env',nom:'Gestion des eaux usées industrielles',eval:'2025-03-15',echeance:'2026-03-15',statut:'conf'},
+  {ref:'Loi 04-20 Risques majeurs',domaine:'sst',nom:'Prévention des risques majeurs et catastrophes',eval:'2025-01-25',echeance:'2026-01-25',statut:'conf'},
+];
+
+const DOM_CLS={env:'dom-env',sst:'dom-sst',qual:'dom-qual'};
+const DOM_LBL={env:'🌿 Environnement',sst:'⚠️ SST',qual:'📋 Qualité'};
+const CONF_CLS={conf:'csp-conf',alert:'csp-alert',nc:'csp-nc',eval:'csp-eval'};
+const CONF_LBL={conf:'✓ Conforme',alert:'⚠️ À réévaluer',nc:'✕ Non conforme',eval:'◐ En évaluation'};
+
+function renderCycleSteps(){
+  const steps=[
+    {ic:'🔍',lbl:'Identification',count:'18 textes suivis',state:'done'},
+    {ic:'📊',lbl:'Évaluation',count:'1 en cours',state:'active'},
+    {ic:'✅',lbl:'Mise en conformité',count:'15 conformes',state:'done'},
+    {ic:'⚠️',lbl:'Traitement écarts',count:'1 non conforme',state:'todo'},
+    {ic:'🔄',lbl:'Suivi continu',count:'Révision annuelle',state:'todo'},
+  ];
+  document.getElementById('cycle-steps').innerHTML=steps.map(s=>`
+    <div class="cycle-step ${s.state==='done'?'done':s.state==='active'?'active':''}">
+      <div class="cycle-dot">${s.ic}</div>
+      <div class="cycle-label">${s.lbl}</div>
+      <div class="cycle-count">${s.count}</div>
+    </div>`).join('');
+}
+
+function renderConfLeg(){
+  document.getElementById('confleg-tbody').innerHTML=CONFLEG_DATA.map(c=>`
+    <tr onclick="toast('Ouverture de la fiche ${c.ref}','')">
+      <td><span style="font-family:var(--fc);font-size:10.5px;color:var(--ink)">${c.ref}</span></td>
+      <td><span class="dom-badge ${DOM_CLS[c.domaine]}">${DOM_LBL[c.domaine]}</span></td>
+      <td style="font-weight:500;max-width:220px">${c.nom}</td>
+      <td style="color:var(--muted);font-size:11px">${fmtDateFull(c.eval)}</td>
+      <td style="color:var(--muted);font-size:11px">${fmtDateFull(c.echeance)}</td>
+      <td><span class="conf-status-pill ${CONF_CLS[c.statut]}">${CONF_LBL[c.statut]}</span></td>
+    </tr>`).join('');
+}
+
+/* ═══ INIT ═══════════════════════════════════════════ */
+renderPTWKanban();
+renderPTWDetail();
+renderRiskMatrix();
+renderHIRATable();
+renderHIRADetail(HIRA_DATA[3]); // H₂S par défaut (le plus critique)
+renderAEI();
+renderRegl();
+renderIncTimeline();
+renderIncTable();
+renderIncDetail();
+renderHabGrid();
+renderHabAlerts();
+renderEnvCharts();
+renderCycleSteps();
+renderConfLeg();
+</script>
+</body>
+</html>

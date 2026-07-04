@@ -541,9 +541,10 @@ export const login = async (matricule: string, password: string): Promise<{ toke
   }
 };
 
-export const setOnline = async (userId: number): Promise<boolean> => {
+export const setOnline = async (userId: number | undefined | null): Promise<boolean> => {
+  if (!userId && userId !== 0) return false;
   try {
-    const response = await fetch(`${API_BASE}/auth/online/${userId}`, { method: 'POST' });
+    const response = await fetch(`${API_BASE}/auth/online/${encodeURIComponent(userId)}`, { method: 'POST' });
     return response.ok;
   } catch (error) {
     return false;
@@ -836,5 +837,114 @@ export const generateRapportPDF = async (period?: string): Promise<Blob | null> 
   } catch (error) {
     console.error('Erreur generate PDF:', error);
     return null;
+  }
+};
+
+export const fetchMonthlyActivity = async (): Promise<{ month: string; revisions_count: number }[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/reports/activity-monthly`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch monthly activity:', error);
+    return [];
+  }
+};
+
+export const sendRapportEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/rapport/send-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject, html })
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur envoi email rapport:', error);
+    return false;
+  }
+};
+
+// ── PTW API ────────────────────────────────
+export interface PTWRecord {
+  id: number;
+  numero_ptw: string;
+  type_travail: string;
+  titre: string;
+  zone: string;
+  description: string;
+  responsable: string;
+  date_debut: string;
+  date_fin: string;
+  urgence: string;
+  statut: string;
+  risques: string[];
+  epi: string[];
+  checks: { label: string; ok: boolean }[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchPTW = async (): Promise<PTWRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch PTW:', error);
+    return [];
+  }
+};
+
+export const fetchPTWStats = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw/stats`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch PTW stats:', error);
+    return {};
+  }
+};
+
+export const createPTW = async (data: Partial<PTWRecord>): Promise<PTWRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create PTW:', error);
+    return null;
+  }
+};
+
+export const updatePTW = async (id: number, data: Partial<PTWRecord>): Promise<PTWRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur update PTW:', error);
+    return null;
+  }
+};
+
+export const deletePTW = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur delete PTW:', error);
+    return false;
   }
 };
