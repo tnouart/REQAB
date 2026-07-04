@@ -70,6 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   const extensionItems = [
     { id: 'non-conformites', label: 'Non-conformités', icon: '⚠️' },
     { id: 'ptw', label: 'Permis de travail', icon: '🔶' },
+    { id: 'hira', label: 'Dangers / HIRA', icon: '⚠️' },
   ];
 
   const rapportItems = [

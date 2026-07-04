@@ -24,6 +24,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/non-conformites', require('./routes/nonconformities'));
 app.use('/api/ptw', require('./routes/ptw'));
+app.use('/api/hira', require('./routes/hira'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/rapport', require('./routes/rapport'));
 app.use('/api/reports', require('./routes/reports'));

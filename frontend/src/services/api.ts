@@ -851,6 +851,96 @@ export const fetchMonthlyActivity = async (): Promise<{ month: string; revisions
   }
 };
 
+// ── HIRA API ────────────────────────────────
+export interface HIRADanger {
+  id: number;
+  reference: string;
+  danger: string;
+  processus: string;
+  probabilite: number;
+  gravite: number;
+  risque_residuel: string;
+  controle_prioritaire: string;
+  document_ref: string | null;
+  checks: { label: string; ok: boolean }[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchHIRA = async (): Promise<HIRADanger[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/hira`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch HIRA:', error);
+    return [];
+  }
+};
+
+export const fetchHIRAStats = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE}/hira/stats`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch HIRA stats:', error);
+    return {};
+  }
+};
+
+export const fetchHIRAMatrix = async (): Promise<Record<string, number>> => {
+  try {
+    const response = await fetch(`${API_BASE}/hira/matrix`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch HIRA matrix:', error);
+    return {};
+  }
+};
+
+export const createHIRA = async (data: Partial<HIRADanger>): Promise<HIRADanger | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/hira`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create HIRA:', error);
+    return null;
+  }
+};
+
+export const updateHIRA = async (id: number, data: Partial<HIRADanger>): Promise<HIRADanger | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/hira/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur update HIRA:', error);
+    return null;
+  }
+};
+
+export const deleteHIRA = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/hira/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur delete HIRA:', error);
+    return false;
+  }
+};
+
 export const sendRapportEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
   try {
     const response = await fetch(`${API_BASE}/rapport/send-email`, {

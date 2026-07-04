@@ -3059,3 +3059,33 @@ body,
 .urg-haute { background: var(--danger-light); color: var(--danger); }
 .urg-moy { background: var(--amber-l); color: var(--amber-d); }
 .urg-norm { background: var(--surface-2); color: var(--muted); }
+
+/* ── HIRA styles ─────────────────────────── */
+.matrix-label-top { font-size: 9px; font-weight: 700; text-align: center; color: var(--text-muted); padding: 4px 2px; text-transform: uppercase; letter-spacing: .4px; }
+.matrix-label-left { font-size: 9px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; text-transform: uppercase; letter-spacing: .4px; text-align: right; line-height: 1.2; }
+.matrix-cell { height: 44px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform .12s, box-shadow .12s; font-size: 10px; font-weight: 800; position: relative; }
+.matrix-cell:hover { transform: scale(1.06); box-shadow: var(--shadow-md); z-index: 2; }
+.rc-tolerable { background: #D4EDDA; color: #155724; }
+.rc-faible { background: #FFF3CD; color: #856404; }
+.rc-modere { background: #FFD6A5; color: #8A4A00; }
+.rc-eleve { background: #FFBEBE; color: #721C24; }
+.rc-critique { background: #FF4D4F; color: #fff; }
+.matrix-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.ml-item { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; color: var(--text-muted); }
+.ml-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.mc-count { width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.15); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; }
+
+.hira-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.hira-table thead th { background: var(--ink); color: rgba(255,255,255,.7); padding: 8px 12px; text-align: left; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; white-space: nowrap; }
+.hira-table tbody tr { border-bottom: 1px solid var(--surface-2); cursor: pointer; transition: background .12s; }
+.hira-table tbody tr:hover { background: var(--surface); }
+.hira-table tbody tr:last-child { border-bottom: none; }
+.hira-table tbody td { padding: 9px 12px; vertical-align: middle; }
+.hira-table tbody tr.selected { background: #FFF3EE; border-left: 3px solid var(--orange); }
+
+.risk-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.rp-crit { background: #FF4D4F; color: #fff; }
+.rp-elev { background: #FFBEBE; color: #721C24; }
+.rp-mod { background: #FFD6A5; color: #8A4A00; }
+.rp-fai { background: #FFF3CD; color: #856404; }
+.rp-tol { background: #D4EDDA; color: #155724; }

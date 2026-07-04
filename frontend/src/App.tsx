@@ -25,15 +25,16 @@ import { useUser } from './contexts/UserContext';
 import { fetchWorkflowDocuments } from './services/api';
 import { useToast } from './contexts/ToastContext';
 import PTW from './components/PTW';
+import HIRA from './components/HIRA';
 
-type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites' | 'ptw';
+type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites' | 'ptw' | 'hira';
 
 const DEFAULT_VIEW: View = 'dashboard';
 
 const loadInitialView = (): View => {
   try {
     const stored = localStorage.getItem('ged_active_view');
-    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites','ptw'] as View[]).includes(stored as View)) {
+    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites','ptw','hira'] as View[]).includes(stored as View)) {
       return stored as View;
     }
   } catch {
@@ -176,6 +177,8 @@ const App: React.FC = () => {
          {activeView === 'non-conformites' && <NonConformities />}
 
          {activeView === 'ptw' && <PTW />}
+
+         {activeView === 'hira' && <HIRA />}
 
          {activeView === 'notifications' && <Notifications />}
 

@@ -71,10 +71,14 @@ router.post('/', async (req, res) => {
     const maxN = parseInt(maxResult.rows[0].max_ptw?.split('-')[2] || '0');
     const nextNum = `PTW-${year}-${String(maxN + 1).padStart(3, '0')}`;
 
+    const risqueStr = JSON.stringify(risques || []);
+    const epiStr = JSON.stringify(epi || []);
+    const checksStr = JSON.stringify(checks || []);
+
     const result = await pool.query(
       `INSERT INTO permis_travail 
        (numero_ptw, type_travail, titre, zone, description, responsable, date_debut, date_fin, urgence, statut, risques, epi, checks)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::text[], $12::text[], $13::jsonb)
        RETURNING *`,
       [
         nextNum,
@@ -87,9 +91,9 @@ router.post('/', async (req, res) => {
         date_fin,
         urgence || 'norm',
         statut || 'ATTENTE',
-        risques || [],
-        epi || [],
-        checks || []
+        risqueStr,
+        epiStr,
+        checksStr
       ]
     );
 
@@ -115,7 +119,7 @@ router.put('/:id', async (req, res) => {
     const result = await pool.query(
       `UPDATE permis_travail 
        SET statut = COALESCE($1, statut),
-           checks = COALESCE($2, checks),
+           checks = COALESCE($2::jsonb, checks),
            titre = COALESCE($3, titre),
            zone = COALESCE($4, zone),
            responsable = COALESCE($5, responsable),
@@ -123,12 +127,12 @@ router.put('/:id', async (req, res) => {
            date_fin = COALESCE($7, date_fin),
            urgence = COALESCE($8, urgence),
            description = COALESCE($9, description),
-           risques = COALESCE($10, risques),
-           epi = COALESCE($11, epi),
+           risques = COALESCE($10::jsonb, risques),
+           epi = COALESCE($11::jsonb, epi),
            updated_at = NOW()
        WHERE id = $12
        RETURNING *`,
-      [statut, checks, titre, zone, responsable, date_debut, date_fin, urgence, description, risques, epi, id]
+      [statut, checks ? JSON.stringify(checks) : null, titre, zone, responsable, date_debut, date_fin, urgence, description, risques ? JSON.stringify(risques) : null, epi ? JSON.stringify(epi) : null, id]
     );
 
     if (result.rows.length === 0) return res.status(404).json({ error: 'PTW non trouvé' });
