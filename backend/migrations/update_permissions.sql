@@ -1,0 +1,1 @@
+UPDATE role SET permissions = '{"read": true}'::jsonb WHERE permissions IS NULL;

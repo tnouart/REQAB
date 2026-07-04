@@ -67,6 +67,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
     { id: 'rapports', label: 'Rapports', icon: '📊' },
   ];
 
+  const extensionItems = [
+    { id: 'non-conformites', label: 'Non-conformités', icon: '⚠️' },
+  ];
+
+  const rapportItems = [
+    { id: 'rapport', label: 'Rapport Revue', icon: '📑' },
+    { id: 'notifications', label: 'Notifications', icon: '🔔' },
+  ];
+
   const adminItems = [
     { id: 'utilisateurs', label: 'Utilisateurs', icon: '👥' },
     { id: 'referentiels', label: 'Référentiels', icon: '⚙️' },
@@ -106,6 +115,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
 
         <div className="nav-section-label" style={{ marginTop: '8px' }}>Supervision</div>
         {superviseItems.map(renderNavItem)}
+
+        <div className="nav-section-label" style={{ marginTop: '8px' }}>Extensions</div>
+        {extensionItems.map(renderNavItem)}
+
+        <div className="nav-section-label" style={{ marginTop: '8px' }}>Rapport</div>
+        {rapportItems.map(renderNavItem)}
 
         <div className="nav-section-label" style={{ marginTop: '8px' }}>Administration</div>
         {adminItems.map(renderNavItem)}

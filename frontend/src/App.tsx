@@ -17,19 +17,22 @@ import ISO9001 from './components/ISO9001';
 import ISO14001 from './components/ISO14001';
 import ISO45001 from './components/ISO45001';
 import Help from './components/Help';
+import NonConformities from './components/NonConformities';
+import Notifications from './components/Notifications';
+import RapportRevueDirection from './components/RapportRevueDirection';
 import type { WorkflowDocument, Revision } from './services/api';
 import { useUser } from './contexts/UserContext';
 import { fetchWorkflowDocuments } from './services/api';
 import { useToast } from './contexts/ToastContext';
 
-type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001';
+type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites';
 
 const DEFAULT_VIEW: View = 'dashboard';
 
 const loadInitialView = (): View => {
   try {
     const stored = localStorage.getItem('ged_active_view');
-    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','utilisateurs','referentiels','new','about','aide','iso14001','iso45001'] as View[]).includes(stored as View)) {
+    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites'] as View[]).includes(stored as View)) {
       return stored as View;
     }
   } catch {
@@ -165,9 +168,15 @@ const App: React.FC = () => {
 
         {activeView === 'rapports' && <Reports />}
 
-        {activeView === 'referentiels' && <References />}
+{activeView === 'referentiels' && <References />}
 
-         {activeView === 'utilisateurs' && <Users />}
+          {activeView === 'utilisateurs' && <Users />}
+
+          {activeView === 'non-conformites' && <NonConformities />}
+
+        {activeView === 'notifications' && <Notifications />}
+
+        {activeView === 'rapport' && <RapportRevueDirection />}
 
 {activeView === 'about' && <ISO9001 />}
 

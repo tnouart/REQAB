@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { UserRole } from '../services/api';
+import { setOnline } from '../services/api';
 
 interface User {
+  id: number;
   email: string;
   prenom: string;
   nom: string;
@@ -42,12 +44,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    setOnline(userData.id);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
+
+  useEffect(() => {
+    if (user) {
+      const interval = setInterval(() => setOnline(user.id), 60000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const hasPermission = (permission: string) => {
     if (!user) return false;

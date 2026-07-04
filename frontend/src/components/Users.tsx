@@ -8,6 +8,7 @@ interface UserData {
   prenom: string;
   nom: string;
   email: string;
+  matricule: string;
   processus_id: number | null;
   processus: string | null;
   fonction_responsable_id: number | null;
@@ -95,6 +96,7 @@ const Users: React.FC = () => {
   const [showCreatePassword, setShowCreatePassword] = useState(false);
   const { hasPermission } = useUser();
   const { showToast } = useToast();
+  const [processusList, setProcessusList] = useState<Array<{ id: number; code: string; libelle?: string }>>([]);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -114,7 +116,12 @@ const Users: React.FC = () => {
       }
       setLoading(false);
     };
+    const loadProcessus = async () => {
+      const data = await fetchProcessusList();
+      setProcessusList(data);
+    };
     loadUsers();
+    loadProcessus();
   }, []);
 
   const filteredUsers = useMemo(() => {
@@ -193,10 +200,9 @@ const Users: React.FC = () => {
       nom: editNom,
       email: editEmail,
       matricule: editMatricule,
-      processus: editProcessus || selectedUser.processus
+      processus_id: processusList.find(p => p.code === editProcessus)?.id || null
     });
     if (success) {
-      // Si un nouveau mot de passe est fourni, le mettre à jour séparément
       if (editPassword) {
         const pwSuccess = await updateUserPassword(selectedUser.id, editPassword);
         if (!pwSuccess) {
@@ -204,7 +210,7 @@ const Users: React.FC = () => {
           return;
         }
       }
-      const updated = users.map(x => x.id === selectedUser.id ? { ...x, prenom: editPrenom, nom: editNom, email: editEmail, matricule: editMatricule, processus: editProcessus || selectedUser.processus } : x);
+      const updated = users.map(x => x.id === selectedUser.id ? { ...x, prenom: editPrenom, nom: editNom, email: editEmail, matricule: editMatricule, processus_id: processusList.find(p => p.code === editProcessus)?.id || null, processus: editProcessus || selectedUser.processus } : x);
       setUsers(updated);
       setSelectedUser({ ...selectedUser, prenom: editPrenom, nom: editNom, email: editEmail, matricule: editMatricule, processus: editProcessus || selectedUser.processus });
       setEditPassword('');
@@ -293,16 +299,16 @@ const Users: React.FC = () => {
 
       <div className="content-split">
         {/* USER LIST */}
-        <div className="user-list-pane">
-          <div className="list-header">
-            <div className={`filter-chip ${filterRole === '' ? 'active' : ''}`} onClick={() => setFilterRole('')}>Tous</div>
-            <div className={`filter-chip ${filterRole === 'ADMIN' ? 'active' : ''}`} onClick={() => setFilterRole('ADMIN')}>Admin</div>
-            <div className={`filter-chip ${filterRole === 'RESPONSABLE_QUALITE' ? 'active' : ''}`} onClick={() => setFilterRole('RESPONSABLE_QUALITE')}>Resp. Q.</div>
-            <div className={`filter-chip ${filterRole === 'REDACTEUR' ? 'active' : ''}`} onClick={() => setFilterRole('REDACTEUR')}>Rédacteurs</div>
-            <div className={`filter-chip ${filterRole === 'LECTEUR' ? 'active' : ''}`} onClick={() => setFilterRole('LECTEUR')}>Lecteurs</div>
-            <div className="list-count">{filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''}</div>
-          </div>
-          <div className="user-list">
+<div className="user-list-pane">
+            <div className="list-header" style={{ overflowX: 'auto' }}>
+              <div className={`filter-chip ${filterRole === '' ? 'active' : ''}`} onClick={() => setFilterRole('')}>Tous</div>
+              <div className={`filter-chip ${filterRole === 'ADMIN' ? 'active' : ''}`} onClick={() => setFilterRole('ADMIN')}>Admin</div>
+              <div className={`filter-chip ${filterRole === 'RESPONSABLE_QUALITE' ? 'active' : ''}`} onClick={() => setFilterRole('RESPONSABLE_QUALITE')}>Resp. Q.</div>
+              <div className={`filter-chip ${filterRole === 'REDACTEUR' ? 'active' : ''}`} onClick={() => setFilterRole('REDACTEUR')}>Rédacteurs</div>
+              <div className={`filter-chip ${filterRole === 'LECTEUR' ? 'active' : ''}`} onClick={() => setFilterRole('LECTEUR')}>Lecteurs</div>
+              <div className="list-count">{filteredUsers.length} utilisateur{filteredUsers.length > 1 ? 's' : ''}</div>
+            </div>
+            <div className="user-list" style={{ flex: 1, overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' }}>
             {filteredUsers.map(u => {
               const r = mainRole(u);
               return (
@@ -312,23 +318,23 @@ const Users: React.FC = () => {
                   <div className={`user-av ${u.online ? 'av-online' : 'av-offline'}`} style={{ background: u.color }}>
                     {initials(u)}
                   </div>
-                  <div className="user-info">
-                    <div className="user-name">{u.prenom} {u.nom}</div>
-                    <div className="user-email">{u.email}</div>
-                    <div className="user-matricule">Mat: {u.matricule}</div>
-                    <div className="user-meta">
-                      {u.roles.map((rid) => (
-                        <span key={rid.id} className={`role-badge ${ROLES[rid.code]?.cls || 'rb-lec'}`}>
-                          {ROLES[rid.code]?.emoji} {ROLES[rid.code]?.label || rid.code}
-                        </span>
-                      ))}
-                      <span className="proc-tag">{u.processus}</span>
-                    </div>
-                  </div>
-                  <div className="user-last">
-                    <div style={{ fontSize: 10, color: 'var(--light)' }}>{u.actif ? (u.derniere_connexion || 'récemment') : 'Inactif'}</div>
-                    <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2, textAlign: 'right' }}>{u.docs} docs</div>
-                  </div>
+<div className="user-info">
+                     <div className="user-name">{u.prenom} {u.nom}</div>
+                     <div className="user-email">{u.email}</div>
+                     <div className="user-meta">
+                       {u.roles.map((rid) => (
+                         <span key={rid.id} className={`role-badge ${ROLES[rid.code]?.cls || 'rb-lec'}`}>
+                           {ROLES[rid.code]?.emoji} {ROLES[rid.code]?.label || rid.code}
+                         </span>
+                       ))}
+                       <span className="proc-tag">{u.processus}</span>
+                     </div>
+                   </div>
+                   <div className="user-last">
+                     <div style={{ fontSize: 10, color: 'var(--light)' }}><span style={{ color: 'var(--muted)', fontWeight: 400 }}>Mat: {u.matricule}</span></div>
+                     <div style={{ fontSize: 10, color: 'var(--light)', marginTop: 2 }}>{u.actif ? (u.derniere_connexion || 'récemment') : 'Inactif'}</div>
+                     <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2, textAlign: 'right' }}>{u.docs} docs</div>
+                   </div>
                 </div>
               );
             })}
@@ -543,8 +549,9 @@ const Users: React.FC = () => {
                 <div className="form-field"><label>Processus / Direction</label>
                   <select id="m-proc">
                     <option value="">— Sélectionner —</option>
-                    <option>DQHSE</option><option>DAL</option><option>DRH</option>
-                    <option>DMI</option><option>DPE</option><option>DG</option>
+                    {processusList.map(p => (
+                      <option key={p.id} value={p.code}>{p.libelle || p.code}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="form-field"><label>Rôle initial <span style={{ color: 'var(--red)' }}>•</span></label>
@@ -600,12 +607,9 @@ const Users: React.FC = () => {
                 <div className="form-field"><label>Processus / Direction</label>
                   <select value={editProcessus} onChange={e => setEditProcessus(e.target.value)}>
                     <option value="">— Sélectionner —</option>
-                    <option value="DQHSE">DQHSE</option>
-                    <option value="DAL">DAL</option>
-                    <option value="DRH">DRH</option>
-                    <option value="DMI">DMI</option>
-                    <option value="DPE">DPE</option>
-                    <option value="DG">DG</option>
+                    {processusList.map(p => (
+                      <option key={p.id} value={p.code}>{p.libelle || p.code}</option>
+                    ))}
                   </select>
                 </div>
               </div>

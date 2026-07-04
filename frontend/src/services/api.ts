@@ -523,6 +523,33 @@ export const generateChecksum = async (documentId: number): Promise<string | nul
   }
 };
 
+export const login = async (matricule: string, password: string): Promise<{ token: string; user: UserData } | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matricule, password }),
+    });
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Erreur de connexion');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Erreur login:', error);
+    return null;
+  }
+};
+
+export const setOnline = async (userId: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/auth/online/${userId}`, { method: 'POST' });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
 // ── USERS API ────────────────────────────────
 export interface UserRole {
   id: number;
@@ -675,5 +702,139 @@ export const fetchProcessusList = async (): Promise<{ id: number; code: string; 
   } catch (error) {
     console.error('Erreur fetch processus:', error);
     return [];
+  }
+};
+
+// ── NON-CONFORMITIES API ──────────────────────────────────
+export interface NonConformity {
+  id: number;
+  numero_nc: string;
+  type_nc: string;
+  criticite: 'CRITIQUE' | 'MAJEURE' | 'MINEURE';
+  description: string;
+  document_id: number | null;
+  document_code: string | null;
+  document_titre: string | null;
+  statut: 'OUVERTE' | 'EN_COURS' | 'CLOTUREE';
+  detecte_lors_de: string;
+  responsable_traitement: string;
+  delai_traitement: string;
+  jours_retard: number;
+  action_corrective: string | null;
+}
+
+export const fetchNonConformities = async (): Promise<NonConformity[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/non-conformites`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch NC:', error);
+    return [];
+  }
+};
+
+export const fetchNonConformityStats = async (): Promise<{ critiques: number; majeures: number; mineures: number; cloturees: number }> => {
+  try {
+    const response = await fetch(`${API_BASE}/non-conformites/stats`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch NC stats:', error);
+    return { critiques: 0, majeures: 0, mineures: 0, cloturees: 0 };
+  }
+};
+
+export const createNonConformity = async (data: {
+  type_nc: string;
+  criticite: string;
+  description: string;
+  document_id?: number | null;
+  detecte_lors_de: string;
+  responsable_traitement: string;
+  delai_traitement: string;
+}): Promise<NonConformity | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/non-conformites`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create NC:', error);
+    return null;
+  }
+};
+
+export const updateNonConformity = async (
+  id: number,
+  data: { action_corrective?: string; statut?: string }
+): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/non-conformites/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur update NC:', error);
+    return false;
+  }
+};
+
+// ── NOTIFICATIONS API ────────────────────────────────
+export interface Notification {
+  document: string;
+  title: string;
+  processus: string;
+  echeance: string;
+  jours: number;
+  type: 'RETARD' | 'URGENT' | 'ANTICIPE';
+}
+
+export const fetchNotifications = async (): Promise<Notification[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/notifications`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch notifications:', error);
+    return [];
+  }
+};
+
+// ── RAPPORT REVUE DIRECTION API ────────────────────────
+export interface RapportSection {
+  key: string;
+  label: string;
+  ref: string;
+  on: boolean;
+}
+
+export const fetchRapport = async (period?: string): Promise<string> => {
+  try {
+    const url = period ? `${API_BASE}/rapport?period=${encodeURIComponent(period)}` : `${API_BASE}/rapport`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.text();
+  } catch (error) {
+    console.error('Erreur fetch rapport:', error);
+    return '';
+  }
+};
+
+export const generateRapportPDF = async (period?: string): Promise<Blob | null> => {
+  try {
+    const url = period ? `${API_BASE}/rapport/pdf?period=${encodeURIComponent(period)}` : `${API_BASE}/rapport/pdf`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return await response.blob();
+  } catch (error) {
+    console.error('Erreur generate PDF:', error);
+    return null;
   }
 };

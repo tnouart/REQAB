@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
 import type { UserRole } from '../services/api';
+import { login, fetchUsers } from '../services/api';
 
 interface LoginProps {
-  onLogin: (user: { email: string; prenom: string; nom: string; roles: UserRole[] }) => void;
+  onLogin: (user: { id: number; email: string; prenom: string; nom: string; roles: UserRole[] }) => void;
 }
-
-const DEMO_USERS = [
-  { matricule: '0000A', email: 'admin@qualite.com', prenom: 'Karim', nom: 'Bouali', roles: [{ id: 1, code: 'ADMIN', libelle: 'Administrateur', description: '' }] as UserRole[] },
-  { matricule: '0001', email: 'qualite@qualite.com', prenom: 'Nadia', nom: 'Amrani', roles: [{ id: 2, code: 'RESPONSABLE_QUALITE', libelle: 'Responsable Qualité', description: '' }] as UserRole[] },
-  { matricule: '0002A', email: 'user@qualite.com', prenom: 'Amina', nom: 'Ferhat', roles: [{ id: 3, code: 'REDACTEUR', libelle: 'Rédacteur', description: '' }] as UserRole[] },
-  { matricule: '0003', email: 'viewer@qualite.com', prenom: 'Sara', nom: 'Benali', roles: [{ id: 4, code: 'LECTEUR', libelle: 'Lecteur', description: '' }] as UserRole[] },
-];
 
 const isValidMatricule = (matricule: string): boolean => {
   const m = matricule.trim().toUpperCase();
@@ -21,20 +15,27 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [matricule, setMatricule] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [demoUsers, setDemoUsers] = useState<Array<{ matricule: string; email: string; prenom: string; nom: string }>>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    fetchUsers().then(users => {
+      setDemoUsers(users.map(u => ({ matricule: u.matricule, email: u.email, prenom: u.prenom, nom: u.nom })));
+    });
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanMatricule = matricule.trim().toUpperCase();
     if (!isValidMatricule(cleanMatricule)) {
       setError('Le matricule doit comporter 5 caractères alphanumériques.');
       return;
     }
-    const user = DEMO_USERS.find(u => u.matricule === cleanMatricule);
-    if (user) {
+    const result = await login(cleanMatricule, password);
+    if (result) {
       setError(null);
-      onLogin(user);
+      onLogin({ id: result.user.id, email: result.user.email, prenom: result.user.prenom, nom: result.user.nom, roles: result.user.roles });
     } else {
-      setError('Matricule inconnu. Utilisez un compte démo ci-dessous.');
+      setError('Matricule inconnu ou mot de passe incorrect.');
     }
   };
 
@@ -61,7 +62,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             type="text"
             value={matricule}
             onChange={(e) => setMatricule(e.target.value.toUpperCase())}
-            placeholder="Ex: ADMIN1 ou 00000"
+            placeholder="Ex: 9310L ou 00000"
             autoComplete="username"
             required
           />
@@ -85,14 +86,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </button>
 
         <div className="login-demo">
-          <span className="login-demo-label">Comptes démo</span>
+          <span className="login-demo-label">Comptes disponibles</span>
           <div className="login-demo-chips">
-            {DEMO_USERS.map(u => (
+            {demoUsers.map(u => (
               <button
                 type="button"
                 key={u.matricule}
                 className="login-demo-chip"
                 onClick={() => { setMatricule(u.matricule); setPassword('demo'); setError(null); }}
+                title={`${u.prenom} ${u.nom}`}
               >
                 {u.matricule}
               </button>

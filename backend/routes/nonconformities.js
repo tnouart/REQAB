@@ -6,10 +6,11 @@ router.get('/', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT nc.id, nc.numero_nc, nc.description, nc.criticite, nc.statut, nc.date_detection, nc.delai_traitement, nc.jours_retard,
-             nc.document_id, d.codification as document_code, d.titre as document_titre,
+             nc.document_id, d.codification as document_code, r.titre as document_titre,
              nc.detecte_lors_de, nc.responsable_traitement, nc.action_corrective, nc.type_nc
       FROM non_conformite nc
       LEFT JOIN document d ON nc.document_id = d.id
+      LEFT JOIN revision_document r ON d.id = r.document_id AND r.numero_revision = 0
       ORDER BY nc.date_detection DESC
     `);
     res.json(result.rows);
@@ -52,10 +53,12 @@ router.post('/', async (req, res) => {
     } = req.body;
     
     const maxResult = await pool.query(
-      `SELECT MAX(numero_nc) as max_nc FROM non_conformite WHERE EXTRACT(YEAR FROM date_detection) = EXTRACT(YEAR FROM CURRENT_DATE)`
+      `SELECT MAX(numero_nc) as max_nc FROM non_conformite`
     );
-    const nextNum = (maxResult.rows[0].max_nc || 0) + 1;
-    
+    const year = new Date().getFullYear();
+    const maxN = parseInt(maxResult.rows[0].max_nc?.split('-')[2] || '0');
+    const nextNum = `NC-${year}-${String(maxN + 1).padStart(3, '0')}`;
+
     const result = await pool.query(
       `INSERT INTO non_conformite 
        (type_nc, criticite, description, document_id, detecte_lors_de, responsable_traitement, delai_traitement, numero_nc, statut)

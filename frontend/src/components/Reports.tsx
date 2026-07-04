@@ -153,18 +153,20 @@ const Reports: React.FC = () => {
 
   return (
     <div className="detail-pane">
-      <div className="view-header">
-        <div>
-          <div className="vh-title">📊 Rapports de conformité</div>
-          <div className="vh-sub">Tableau de bord qualité — période : Janvier – Mai 2025</div>
-        </div>
-        <select className="af-sel">
-          <option>Janvier – Mai 2025</option>
-          <option>2024 (annuel)</option>
-          <option>2023 (annuel)</option>
-        </select>
-        <button className="btn btn-primary btn-sm">⬇ Exporter PDF</button>
-      </div>
+<div className="view-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+         <div>
+           <div className="vh-title">📊 Rapports de conformité</div>
+           <div className="vh-sub" style={{ marginTop: 8 }}>Tableau de bord qualité — période : Janvier – Mai 2025</div>
+         </div>
+         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+           <select className="af-sel">
+             <option>Janvier – Mai 2025</option>
+             <option>2024 (annuel)</option>
+             <option>2023 (annuel)</option>
+           </select>
+           <button className="btn btn-primary btn-sm">⬇ Exporter PDF</button>
+         </div>
+       </div>
 
       <div className="vscroll">
         <div className="rpt-grid-top">

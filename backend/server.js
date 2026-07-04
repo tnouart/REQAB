@@ -23,6 +23,8 @@ app.use('/api/destructions', require('./routes/destructions'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/non-conformites', require('./routes/nonconformities'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/rapport', require('./routes/rapport'));
 app.use('/uploads', express.static('uploads'));
 
 app.get('/api/documents/files/:filename', (req, res) => {

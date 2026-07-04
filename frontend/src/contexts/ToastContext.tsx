@@ -71,3 +71,4 @@ const getIcon = (type: ToastType) => {
       return null;
   }
 };
+export default ToastContext;
