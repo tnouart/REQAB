@@ -1039,6 +1039,60 @@ export const deletePTW = async (id: number): Promise<boolean> => {
   }
 };
 
+export interface PTWArchive extends PTWRecord {
+  archived_at: string | null;
+}
+
+export const fetchPTWArchives = async (filters?: {
+  search?: string;
+  type_travail?: string;
+  responsable?: string;
+  date_from?: string;
+  date_to?: string;
+  archived_from?: string;
+  archived_to?: string;
+}): Promise<PTWArchive[]> => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.type_travail) params.append('type_travail', filters.type_travail);
+    if (filters?.responsable) params.append('responsable', filters.responsable);
+    if (filters?.date_from) params.append('date_from', filters.date_from);
+    if (filters?.date_to) params.append('date_to', filters.date_to);
+    if (filters?.archived_from) params.append('archived_from', filters.archived_from);
+    if (filters?.archived_to) params.append('archived_to', filters.archived_to);
+    const url = `${API_BASE}/ptw/archives${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch archives PTW:', error);
+    return [];
+  }
+};
+
+export const archivePTW = async (id: number): Promise<PTWRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw/${id}/archive`, { method: 'PUT' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur archive PTW:', error);
+    return null;
+  }
+};
+
+export const restorePTW = async (id: number): Promise<PTWRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/ptw/${id}/restore`, { method: 'PUT' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur restore PTW:', error);
+    return null;
+  }
+};
+
 // ── AEI API ────────────────────────────────
 export interface AEIRecord {
   id: number;
