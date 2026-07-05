@@ -71,6 +71,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
     { id: 'non-conformites', label: 'Non-conformités', icon: '⚠️' },
     { id: 'ptw', label: 'Permis de travail', icon: '🔶' },
     { id: 'hira', label: 'Dangers / HIRA', icon: '⚠️' },
+    { id: 'aei', label: 'Aspects / Impacts', icon: '🌿' },
+    { id: 'incidents', label: 'Incidents / AT', icon: '🚑' },
+    { id: 'habilitations', label: 'Habilitations SST', icon: '🎓' },
+    { id: 'indicateurs-env', label: 'Indicateurs env.', icon: '📊' },
+    { id: 'conformite-legale', label: 'Conformité légale', icon: '⚖️' },
   ];
 
   const rapportItems = [

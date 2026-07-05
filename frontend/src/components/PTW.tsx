@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  fetchPTW, createPTW, updatePTW, deletePTW, fetchPTWStats, type PTWRecord
+  fetchPTW, createPTW, updatePTW, deletePTW, fetchPTWStats, fetchProcessus, type PTWRecord
 } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 
@@ -19,6 +19,7 @@ const PTW: React.FC = () => {
     zone: '',
     description: '',
     responsable: '',
+    processus: '',
     date_debut: '',
     date_fin: '',
     urgence: 'norm',
@@ -26,11 +27,48 @@ const PTW: React.FC = () => {
     epi: ''
   });
 
+  const [processusList, setProcessusList] = useState<{ id: number; label: string }[]>([]);
+  const [checkItems, setCheckItems] = useState<{ label: string; ok: boolean }[]>([]);
+  const [checkInput, setCheckInput] = useState('');
+
+  const DEFAULT_CHECKLISTS: Record<string, { label: string; ok: boolean }[]> = {
+    chaud: [
+      { label: 'Zone délimitée et balisée', ok: false },
+      { label: 'Extinction incendi positionnée', ok: false },
+      { label: 'Analyse atmosphérique effectuée', ok: false },
+      { label: 'Consignation équipements vérifiée', ok: false },
+      { label: 'Communication urgence testée', ok: false },
+    ],
+    electr: [
+      { label: 'Consignation LOTO effectuée', ok: false },
+      { label: 'VAT vérification absence tension', ok: false },
+      { label: 'Zone de travail isolée', ok: false },
+      { label: 'Habilitation électrique vérifiée', ok: false },
+    ],
+    confine: [
+      { label: 'Analyse O2 ≥ 19,5%', ok: false },
+      { label: 'LEL < 10% vérifié', ok: false },
+      { label: 'Surveillant de surface désigné', ok: false },
+      { label: 'Moyen de récupération opérationnel', ok: false },
+    ],
+    hauteur: [
+      { label: 'Point d\'ancrage vérifié', ok: false },
+      { label: 'Harnais antichute porté', ok: false },
+      { label: 'Filet de sécurité installé', ok: false },
+      { label: 'Zone de travail balisée', ok: false },
+    ],
+    general: [
+      { label: 'Zone de travail délimitée', ok: false },
+      { label: 'Consignes de sécurité lues', ok: false },
+      { label: 'EPI vérifiés', ok: false },
+    ],
+  };
+
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
-    const [ptwsData, statsData] = await Promise.all([fetchPTW(), fetchPTWStats()]);
+    const [ptwsData, statsData, processusData] = await Promise.all([fetchPTW(), fetchPTWStats(), fetchProcessus()]);
     const normalized = ptwsData.map((p: any) => ({
       ...p,
       risques: Array.isArray(p.risques) ? p.risques : (() => { try { return JSON.parse(p.risques || '[]'); } catch { return []; } })(),
@@ -39,8 +77,16 @@ const PTW: React.FC = () => {
     }));
     setPtws(normalized);
     setStats(statsData);
+    setProcessusList(processusData);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (showForm) {
+      setCheckItems(DEFAULT_CHECKLISTS[form.type_travail] ? JSON.parse(JSON.stringify(DEFAULT_CHECKLISTS[form.type_travail])) : []);
+      setCheckInput('');
+    }
+  }, [showForm, form.type_travail]);
 
   const filtered = filterType === 'all' ? ptws : ptws.filter(p => p.type_travail === filterType);
 
@@ -63,7 +109,7 @@ const PTW: React.FC = () => {
       ...form,
       risques: form.risques.split('\n').filter(Boolean),
       epi: form.epi.split('\n').filter(Boolean),
-      checks: [],
+      checks: checkItems,
     };
     const result = await createPTW({
       ...payload,
@@ -73,7 +119,9 @@ const PTW: React.FC = () => {
     if (result) {
       showToast('success', `PTW ${result.numero_ptw} créé — en attente d'approbation ✓`);
       setShowForm(false);
-      setForm({ type_travail: 'chaud', titre: '', zone: '', description: '', responsable: '', date_debut: '', date_fin: '', urgence: 'norm', risques: '', epi: '' });
+      setForm({ type_travail: 'chaud', titre: '', zone: '', description: '', responsable: '', processus: '', date_debut: '', date_fin: '', urgence: 'norm', risques: '', epi: '' });
+      setCheckItems([]);
+      setCheckInput('');
       loadData();
     }
   };
@@ -265,9 +313,13 @@ const PTW: React.FC = () => {
 
       {showForm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
-          <div style={{ background: 'var(--white)', borderRadius: 14, padding: 24, width: 640, maxHeight: '90vh', overflowY: 'auto', boxShadow: 'var(--sh3)' }}>
+          <div style={{ background: 'var(--white)', borderRadius: 14, width: 640, maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--sh3)' }}>
+            <div style={{ padding: 24, borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Nouveau permis de travail</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Remplir tous les champs obligatoires.</div>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
             <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Nouveau permis de travail</div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18 }}>Remplir tous les champs obligatoires.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="form-field">
                 <label>Type <span style={{ color: 'var(--danger)' }}>•</span></label>
@@ -292,6 +344,13 @@ const PTW: React.FC = () => {
                 <input value={form.responsable} onChange={e => setForm({ ...form, responsable: e.target.value })} placeholder="Responsable des travaux" />
               </div>
               <div className="form-field">
+                <label>Processus</label>
+                <select value={form.processus} onChange={e => setForm({ ...form, processus: e.target.value })}>
+                  <option value="">-- Sélectionner --</option>
+                  {processusList.map(p => <option key={p.id} value={p.label}>{p.label}</option>)}
+                </select>
+              </div>
+              <div className="form-field">
                 <label>Date début <span style={{ color: 'var(--danger)' }}>•</span></label>
                 <input type="datetime-local" value={form.date_debut} onChange={e => setForm({ ...form, date_debut: e.target.value })} />
               </div>
@@ -312,16 +371,52 @@ const PTW: React.FC = () => {
                 <textarea rows={3} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
               </div>
               <div className="form-field">
-                <label>Risques (1 par ligne)</label>
-                <textarea rows={3} value={form.risques} onChange={e => setForm({ ...form, risques: e.target.value })} />
-              </div>
-              <div className="form-field">
                 <label>EPI (1 par ligne)</label>
                 <textarea rows={3} value={form.epi} onChange={e => setForm({ ...form, epi: e.target.value })} />
               </div>
+              <div className="form-field">
+                <label>Risques (1 par ligne)</label>
+                <textarea rows={3} value={form.risques} onChange={e => setForm({ ...form, risques: e.target.value })} />
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 16 }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => { setShowForm(false); setForm({ type_travail: 'chaud', titre: '', zone: '', description: '', responsable: '', date_debut: '', date_fin: '', urgence: 'norm', risques: '', epi: '' }); }}>Annuler</button>
+            <div className="form-field form-full">
+                <label>
+                  Checklist de vérification avant approbation
+                  <span style={{ color: 'var(--danger)' }}>•</span>
+                </label>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 8 }}>
+                  Vérifications obligatoires avant activation du permis. Appliquez un modèle par défaut, puis ajustez les items.
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 12, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 10, padding: 12 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.6px', color: 'var(--muted)' }}>Modèle par défaut</div>
+                    <button type="button" className="btn btn-p btn-sm" onClick={() => { if (DEFAULT_CHECKLISTS[form.type_travail]) setCheckItems(JSON.parse(JSON.stringify(DEFAULT_CHECKLISTS[form.type_travail]))); showToast('success', 'Checklist par défaut appliquée'); }}>📋 Appliquer le modèle</button>
+                    <div style={{ fontSize: 10, color: 'var(--muted)', lineHeight: 1.5 }}>
+                      Applique un modèle standardisé selon le type de travaux sélectionné en haut. Vous pourrez ensuite modifier, ajouter ou supprimer des items dans la zone de droite.
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.6px', color: 'var(--muted)' }}>Checklist courante</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input value={checkInput} onChange={e => setCheckInput(e.target.value)} placeholder="ex: Zone délimitée et balisée" onKeyDown={e => { if (e.key === 'Enter') { if (!checkInput.trim()) return; setCheckItems([...checkItems, { label: checkInput.trim(), ok: false }]); setCheckInput(''); }}} />
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => { if (!checkInput.trim()) return; setCheckItems([...checkItems, { label: checkInput.trim(), ok: false }]); setCheckInput(''); }}>+ Ajouter</button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 180, overflowY: 'auto' }}>
+                      {checkItems.map((c, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: c.ok ? 'var(--teal-l)' : 'var(--white)', borderRadius: 7, fontSize: 12, border: `1px solid ${c.ok ? 'rgba(0,212,170,.3)' : 'var(--border)'}` }}>
+                          <div style={{ width: 16, height: 16, borderRadius: 3, border: `2px solid ${c.ok ? 'var(--teal)' : 'var(--border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, background: c.ok ? 'var(--teal)' : 'transparent', color: c.ok ? '#fff' : 'transparent', cursor: 'pointer', flexShrink: 0 }} onClick={() => setCheckItems(checkItems.map((x, idx) => idx === i ? { ...x, ok: !x.ok } : x))}>{c.ok ? '✓' : ''}</div>
+                          <div style={{ flex: 1, textDecoration: c.ok ? 'line-through' : 'none', color: c.ok ? 'var(--muted)' : 'var(--text)' }}>{c.label}</div>
+                          <button type="button" className="btn btn-ghost btn-sm" style={{ padding: '2px 8px', fontSize: 10 }} onClick={() => setCheckItems(checkItems.filter((_, idx) => idx !== i))}>✕</button>
+                        </div>
+                      ))}
+                      {checkItems.length === 0 && <div style={{ fontSize: 11, color: 'var(--light)', textAlign: 'center', padding: 10 }}>Aucun item de checklist</div>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div style={{ padding: 24, borderTop: '1px solid var(--border)', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button className="btn btn-ghost btn-sm" onClick={() => { setShowForm(false); setForm({ type_travail: 'chaud', titre: '', zone: '', description: '', responsable: '', processus: '', date_debut: '', date_fin: '', urgence: 'norm', risques: '', epi: '' }); setCheckItems([]); setCheckInput(''); }}>Annuler</button>
               <button className="btn btn-p btn-sm" onClick={handleCreate}>📤 Soumettre pour approbation</button>
             </div>
           </div>

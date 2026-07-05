@@ -10,14 +10,6 @@ const RESIDUEL_CLS: Record<string, string> = {
   Tolérable: 'rp-tol',
 };
 
-const RISK_LEVELS = [
-  [1, 2, 3, 4, 5],
-  [2, 4, 6, 8, 10],
-  [3, 6, 9, 12, 15],
-  [4, 8, 12, 16, 20],
-  [5, 10, 15, 20, 25],
-];
-
 const riskClass = (val: number) => {
   if (val >= 20) return 'rc-critique';
   if (val >= 12) return 'rc-eleve';
@@ -25,6 +17,9 @@ const riskClass = (val: number) => {
   if (val >= 3) return 'rc-faible';
   return 'rc-tolerable';
 };
+
+const graviteLabels = ['Insignifiant', 'Mineur', 'Modéré', 'Grave', 'Catastrophique'];
+const probaLabels = ['Rare', 'Peu probable', 'Possible', 'Probable', 'Très probable'];
 
 const HIRA: React.FC = () => {
   const { showToast } = useToast();
@@ -60,16 +55,12 @@ const HIRA: React.FC = () => {
 
   const filtered = filterProcess === 'all' ? dangers : dangers.filter(d => d.processus === filterProcess);
 
-  const graviteLabels = ['Insignifiant', 'Mineur', 'Modéré', 'Grave', 'Catastrophique'];
-  const probaLabels = ['Rare', 'Peu probable', 'Possible', 'Probable', 'Très probable'];
-
   const handleCreate = async () => {
     if (!formDanger.trim() || !formProcessus) {
       showToast('warning', 'Danger et processus sont obligatoires.');
       return;
     }
     const payload: Partial<HIRADanger> = {
-      reference: `D-${String(dangers.length + 1).padStart(3, '0')}`,
       danger: formDanger.trim(),
       processus: formProcessus,
       probabilite: Number(formProba),
@@ -113,7 +104,7 @@ const HIRA: React.FC = () => {
   if (loading) return <div className="detail-pane"><p>Chargement…</p></div>;
 
   return (
-    <div className="detail-pane" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div className="detail-pane">
       <div className="page-header">
         <div className="ph-icon" style={{ background: '#FFF1F0' }}>⚠️</div>
         <div>
@@ -130,127 +121,131 @@ const HIRA: React.FC = () => {
         </div>
       </div>
 
-      <div className="kanban-area">
-        <div className="kanban-scroll">
-          <div style={{ minWidth: 340, flexShrink: 0, background: 'var(--white)', border: '1px solid var(--bdr)', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--sh1)' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--bdr)', fontWeight: 800, fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--blue)' }}></span>
-              Matrice de criticité 5×5
-            </div>
-            <div style={{ padding: 12 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'auto repeat(5, 1fr)', gap: 3, marginBottom: 6 }}>
-                <div></div>
-                {graviteLabels.map(g => <div key={g} className="matrix-label-top" style={{ fontSize: 9 }}>{g}</div>)}
-                {[5,4,3,2,1].map((p, pi) => (
-                  <React.Fragment key={p}>
-                    <div className="matrix-label-left" style={{ fontSize: 9 }}>{probaLabels[pi]}</div>
-                    {[1,2,3,4,5].map(g => {
-                      const val = p * g;
-                      const count = matrix[`${p}-${g}`] || 0;
-                      return (
-                        <div key={g} className={`matrix-cell ${riskClass(val)}`} style={{ height: 44, fontSize: 10 }} onClick={() => {}}>
-                          {val}
-                          {count > 0 && <div className="mc-count">{count}</div>}
-                        </div>
-                      );
-                    })}
-                  </React.Fragment>
-                ))}
+      <div className="scroll-body">
+        <div className="hira-layout">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="hira-matrix-card">
+              <div className="hira-matrix-head">
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--blue-sst)' }}></span>
+                <div className="hira-matrix-title">Matrice de criticité 5×5</div>
               </div>
-              <div className="matrix-legend" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <div className="ml-item"><div className="ml-dot" style={{ background: '#D4EDDA' }}></div>Tolérable</div>
-                <div className="ml-item"><div className="ml-dot" style={{ background: '#FFF3CD' }}></div>Faible</div>
-                <div className="ml-item"><div className="ml-dot" style={{ background: '#FFD6A5' }}></div>Modéré</div>
-                <div className="ml-item"><div className="ml-dot" style={{ background: '#FFBEBE' }}></div>Élevé</div>
-                <div className="ml-item"><div className="ml-dot" style={{ background: '#FF4D4F' }}></div>Critique</div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ minWidth: 420, flexShrink: 0, background: 'var(--white)', border: '1px solid var(--bdr)', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--sh1)', marginLeft: 14 }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--bdr)', fontWeight: 800, fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }}></span>
-              Dangers identifiés — {filtered.length} fiches actives
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="hira-table">
-                <thead>
-                  <tr>
-                    <th>Réf.</th>
-                    <th>Danger identifié</th>
-                    <th>Processus</th>
-                    <th>P</th>
-                    <th>G</th>
-                    <th>Résiduel</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length === 0 ? (
-                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--text-light)' }}>Aucun danger</td></tr>
-                  ) : filtered.map(d => (
-                    <tr key={d.id} className={selectedDanger?.id === d.id ? 'selected' : ''} onClick={() => setSelectedDanger(d)} style={{ cursor: 'pointer' }}>
-                      <td><span style={{ fontFamily: 'var(--font-code)', fontSize: 10, color: 'var(--text-muted)' }}>{d.reference}</span></td>
-                      <td style={{ fontWeight: 600, maxWidth: 220 }}>{d.danger}</td>
-                      <td style={{ color: 'var(--text-muted)' }}>{d.processus}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 700 }}>{d.probabilite}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 700 }}>{d.gravite}</td>
-                      <td><span className={`risk-pill ${RESIDUEL_CLS[d.risque_residuel] || 'rp-fai'}`}>{d.risque_residuel}</span></td>
-                    </tr>
+              <div className="risk-matrix">
+                <div className="matrix-grid">
+                  <div></div>
+                  {graviteLabels.map(g => <div key={g} className="matrix-label-top">{g}</div>)}
+                  {[5,4,3,2,1].map((p, pi) => (
+                    <React.Fragment key={p}>
+                      <div className="matrix-label-left">{probaLabels[pi]}</div>
+                      {[1,2,3,4,5].map(g => {
+                        const val = p * g;
+                        const count = matrix[`${p}-${g}`] || 0;
+                        return (
+                          <div key={g} className={`matrix-cell ${riskClass(val)}`} onClick={() => {}}>
+                            {val}
+                            {count > 0 && <div className="mc-count">{count}</div>}
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div className={`detail-panel ${selectedDanger ? 'open' : ''}`}>
-          {selectedDanger ? (
-            <div id="dp-inner" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-              <div style={{ padding: 14, borderBottom: '1px solid var(--bdr)', flexShrink: 0 }}>
-                <div style={{ fontFamily: 'var(--font-code)', fontSize: 10, color: 'var(--text-muted)', marginBottom: 3 }}>{selectedDanger.reference}</div>
-                <div style={{ fontSize: 13, fontWeight: 800, lineHeight: 1.3, marginBottom: 6 }}>{selectedDanger.danger}</div>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 6, background: 'var(--surface-2)', color: 'var(--text-muted)' }}>{selectedDanger.processus}</span>
-                  <span className={`risk-pill ${RESIDUEL_CLS[selectedDanger.risque_residuel] || 'rp-fai'}`}>{selectedDanger.risque_residuel}</span>
+                </div>
+                <div className="matrix-legend">
+                  <div className="ml-item"><div className="ml-dot" style={{ background: '#D4EDDA' }}></div>Tolérable</div>
+                  <div className="ml-item"><div className="ml-dot" style={{ background: '#FFF3CD' }}></div>Faible</div>
+                  <div className="ml-item"><div className="ml-dot" style={{ background: '#FFD6A5' }}></div>Modéré</div>
+                  <div className="ml-item"><div className="ml-dot" style={{ background: '#FFBEBE' }}></div>Élevé</div>
+                  <div className="ml-item"><div className="ml-dot" style={{ background: '#FF4D4F' }}></div>Critique</div>
                 </div>
               </div>
-              <div style={{ flex: 1, overflowY: 'auto', padding: 14, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ display: 'flex', gap: 8 }}>
+            </div>
+
+            <div className="hira-list-card">
+              <div className="hira-list-head">
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }}></span>
+                <div className="hl-title">Dangers identifiés — {filtered.length} fiches actives</div>
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="hira-table">
+                  <thead>
+                    <tr>
+                      <th>Réf.</th>
+                      <th>Danger identifié</th>
+                      <th>Processus</th>
+                      <th>P</th>
+                      <th>G</th>
+                      <th>Résiduel</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.length === 0 ? (
+                      <tr><td colSpan={6} style={{ textAlign: 'center', padding: 30, color: 'var(--light)' }}>Aucun danger</td></tr>
+                    ) : filtered.map(d => (
+                      <tr key={d.id} className={selectedDanger?.id === d.id ? 'selected' : ''} onClick={() => setSelectedDanger(d)}>
+                        <td><span style={{ fontFamily: 'var(--font-code)', fontSize: 10, color: 'var(--muted)' }}>{d.reference}</span></td>
+                        <td style={{ fontWeight: 600, maxWidth: 220 }}>{d.danger}</td>
+                        <td style={{ color: 'var(--muted)' }}>{d.processus}</td>
+                        <td style={{ textAlign: 'center', fontWeight: 700 }}>{d.probabilite}</td>
+                        <td style={{ textAlign: 'center', fontWeight: 700 }}>{d.gravite}</td>
+                        <td><span className={`risk-pill ${RESIDUEL_CLS[d.risque_residuel] || 'rp-fai'}`}>{d.risque_residuel}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            {selectedDanger ? (
+              <div className="hira-detail-card">
+                <div style={{ padding: 14, borderBottom: '1px solid var(--bdr)', flexShrink: 0, marginBottom: 14 }}>
+                  <div style={{ fontFamily: 'var(--font-code)', fontSize: 10, color: 'var(--muted)', marginBottom: 3 }}>{selectedDanger.reference}</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, lineHeight: 1.3, marginBottom: 6 }}>{selectedDanger.danger}</div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 6, background: 'var(--surface-2)', color: 'var(--muted)' }}>{selectedDanger.processus}</span>
+                    <span className={`risk-pill ${RESIDUEL_CLS[selectedDanger.risque_residuel] || 'rp-fai'}`}>{selectedDanger.risque_residuel}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
                   <div style={{ flex: 1, textAlign: 'center', background: 'var(--surface)', borderRadius: 8, padding: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--text-muted)', marginBottom: 4 }}>Probabilité</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--muted)', marginBottom: 4 }}>Probabilité</div>
                     <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--orange)' }}>{selectedDanger.probabilite}/5</div>
                   </div>
                   <div style={{ flex: 1, textAlign: 'center', background: 'var(--surface)', borderRadius: 8, padding: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--text-muted)', marginBottom: 4 }}>Gravité</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--muted)', marginBottom: 4 }}>Gravité</div>
                     <div style={{ fontSize: 22, fontWeight: 900, color: 'var(--danger)' }}>{selectedDanger.gravite}/5</div>
                   </div>
                 </div>
 
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--text-muted)', marginBottom: 6 }}>Contrôle prioritaire</div>
-                  <div style={{ fontSize: 12, padding: '6px 10px', background: 'var(--surface-2)', borderRadius: 7 }}>{selectedDanger.controle_prioritaire}</div>
+                <div className="hierarchy-strip">
+                  <div className="hier-col">
+                    <div className="hier-label prevention">Prévention</div>
+                    <div className="hier-item">🛡️ {selectedDanger.controle_prioritaire}</div>
+                  </div>
+                  <div className="hier-danger">⚠️ {selectedDanger.danger}</div>
+                  <div className="hier-col">
+                    <div className="hier-label protection">Protection</div>
+                    <div className="hier-item">👷 {selectedDanger.processus}</div>
+                  </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--text-muted)', marginBottom: 8 }}>Checklist — {selectedDanger.checks.filter(c => c.ok).length}/{selectedDanger.checks.length}</div>
+                  <div style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.7px', color: 'var(--muted)', marginBottom: 8 }}>Checklist</div>
                   {selectedDanger.checks.map((c, i) => (
-                    <div key={i} onClick={() => handleCheckToggle(selectedDanger, i)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', background: c.ok ? 'var(--teal-l)' : 'var(--surface)', borderRadius: 7, fontSize: 12, cursor: 'pointer', border: `1px solid ${c.ok ? 'rgba(0,212,170,.3)' : 'transparent'}`, userSelect: 'none', transition: 'background .15s, border-color .15s' }}>
-                      <div style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${c.ok ? 'var(--teal)' : 'var(--bdr)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, background: c.ok ? 'var(--teal)' : 'transparent', color: c.ok ? '#fff' : 'transparent', transition: 'all .15s' }}>{c.ok ? '✓' : ''}</div>
-                      <div style={{ flex: 1, textDecoration: c.ok ? 'line-through' : 'none', color: c.ok ? 'var(--text-muted)' : 'var(--text)', transition: 'color .15s' }}>{c.label}</div>
+                    <div key={i} onClick={() => handleCheckToggle(selectedDanger, i)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', background: c.ok ? 'var(--teal-l)' : 'var(--surface)', borderRadius: 7, fontSize: 12, cursor: 'pointer', border: `1px solid ${c.ok ? 'rgba(0,212,170,.3)' : 'transparent'}`, userSelect: 'none', marginBottom: 6 }}>
+                      <div className={`hi-check ${c.ok ? 'ok' : ''}`}>{c.ok ? '✓' : ''}</div>
+                      <div style={{ flex: 1, textDecoration: c.ok ? 'line-through' : 'none', color: c.ok ? 'var(--muted)' : 'var(--text)' }}>{c.label}</div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div style={{ padding: 14, borderTop: '1px solid var(--bdr)', display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
-                <button className="btn btn-p btn-sm" style={{ flex: 1, background: 'var(--accent)' }} onClick={() => showToast('success', 'Révision HIRA initiée ✓')}>📝 Réviser</button>
-                <button className="btn btn-ghost btn-sm" onClick={() => handleDelete(selectedDanger)}>🗑 Supprimer</button>
+            ) : (
+              <div className="hira-detail-card" style={{ alignItems: 'center', justifyContent: 'center', color: 'var(--light)', fontSize: 12 }}>
+                Sélectionnez un danger pour voir les détails
               </div>
-            </div>
-          ) : (
-            <div style={{ padding: 24, color: 'var(--text-light)', textAlign: 'center', fontSize: 12 }}>
-              Sélectionnez un danger pour voir les détails
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -258,7 +253,7 @@ const HIRA: React.FC = () => {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
           <div style={{ background: 'var(--white)', borderRadius: 14, padding: 24, width: 640, maxHeight: '90vh', overflowY: 'auto', boxShadow: 'var(--sh3)' }}>
             <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Nouveau danger HIRA</div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 18 }}>Ajouter un danger au registre des risques SST.</div>
+            <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 18 }}>Ajouter un danger au registre des risques SST.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="form-field">
                 <label>Danger <span style={{ color: 'var(--danger)' }}>•</span></label>

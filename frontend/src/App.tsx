@@ -26,15 +26,20 @@ import { fetchWorkflowDocuments } from './services/api';
 import { useToast } from './contexts/ToastContext';
 import PTW from './components/PTW';
 import HIRA from './components/HIRA';
+import AEI from './components/AEI';
+import Incidents from './components/Incidents';
+import Habilitations from './components/Habilitations';
+import IndicateursEnv from './components/IndicateursEnv';
+import ConformiteLegale from './components/ConformiteLegale';
 
-type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites' | 'ptw' | 'hira';
+type View = 'dashboard' | 'documents' | 'workflow' | 'revisions' | 'audit' | 'rapports' | 'rapport' | 'notifications' | 'utilisateurs' | 'referentiels' | 'new' | 'about' | 'aide' | 'iso14001' | 'iso45001' | 'non-conformites' | 'ptw' | 'hira' | 'aei' | 'incidents' | 'habilitations' | 'indicateurs-env' | 'conformite-legale';
 
 const DEFAULT_VIEW: View = 'dashboard';
 
 const loadInitialView = (): View => {
   try {
     const stored = localStorage.getItem('ged_active_view');
-    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites','ptw','hira'] as View[]).includes(stored as View)) {
+    if (stored && (['dashboard','documents','workflow','revisions','audit','rapports','rapport','notifications','utilisateurs','referentiels','new','about','aide','iso14001','iso45001','non-conformites','ptw','hira','aei','incidents','habilitations','indicateurs-env','conformite-legale'] as View[]).includes(stored as View)) {
       return stored as View;
     }
   } catch {
@@ -179,6 +184,16 @@ const App: React.FC = () => {
          {activeView === 'ptw' && <PTW />}
 
          {activeView === 'hira' && <HIRA />}
+
+         {activeView === 'aei' && <AEI />}
+
+         {activeView === 'incidents' && <Incidents />}
+
+         {activeView === 'habilitations' && <Habilitations />}
+
+         {activeView === 'indicateurs-env' && <IndicateursEnv />}
+
+         {activeView === 'conformite-legale' && <ConformiteLegale />}
 
          {activeView === 'notifications' && <Notifications />}
 

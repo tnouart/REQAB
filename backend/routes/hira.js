@@ -80,13 +80,21 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { reference, danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checks } = req.body;
+    const { danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checks } = req.body;
+
+    const maxResult = await pool.query(`SELECT MAX(reference) as max_ref FROM hira_dangers`);
+    const maxRef = maxResult.rows[0]?.max_ref || 'D-000';
+    const maxN = parseInt(maxRef.split('-')[1] || '0', 10);
+    const nextRef = `D-${String(maxN + 1).padStart(3, '0')}`;
+
+    const checksStr = JSON.stringify(checks || []);
+
     const result = await pool.query(
       `INSERT INTO hira_dangers 
        (reference, danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checks)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
        RETURNING *`,
-      [reference, danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checks || []]
+      [nextRef, danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checksStr]
     );
     const r = result.rows[0];
     const normalized = {
@@ -104,6 +112,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checks } = req.body;
+    const checksStr = JSON.stringify(checks || []);
     const result = await pool.query(
       `UPDATE hira_dangers 
        SET danger = COALESCE($1, danger),
@@ -113,11 +122,11 @@ router.put('/:id', async (req, res) => {
            risque_residuel = COALESCE($5, risque_residuel),
            controle_prioritaire = COALESCE($6, controle_prioritaire),
            document_ref = COALESCE($7, document_ref),
-           checks = COALESCE($8, checks),
+           checks = COALESCE($8::jsonb, checks),
            updated_at = NOW()
        WHERE id = $9
        RETURNING *`,
-      [danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checks, id]
+      [danger, processus, probabilite, gravite, risque_residuel, controle_prioritaire, document_ref, checksStr, id]
     );
     if (result.rows.length === 0) return res.status(404).json({ error: 'Danger non trouvé' });
     const r = result.rows[0];

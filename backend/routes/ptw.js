@@ -91,9 +91,9 @@ router.post('/', async (req, res) => {
         date_fin,
         urgence || 'norm',
         statut || 'ATTENTE',
-        risqueStr,
-        epiStr,
-        checksStr
+        risques || [],
+        epi || [],
+        JSON.stringify(checks || [])
       ]
     );
 
@@ -127,12 +127,12 @@ router.put('/:id', async (req, res) => {
            date_fin = COALESCE($7, date_fin),
            urgence = COALESCE($8, urgence),
            description = COALESCE($9, description),
-           risques = COALESCE($10::jsonb, risques),
-           epi = COALESCE($11::jsonb, epi),
+           risques = COALESCE($10::text[], risques),
+           epi = COALESCE($11::text[], epi),
            updated_at = NOW()
        WHERE id = $12
        RETURNING *`,
-      [statut, checks ? JSON.stringify(checks) : null, titre, zone, responsable, date_debut, date_fin, urgence, description, risques ? JSON.stringify(risques) : null, epi ? JSON.stringify(epi) : null, id]
+      [statut, checks ? JSON.stringify(checks) : null, titre, zone, responsable, date_debut, date_fin, urgence, description, risques || null, epi || null, id]
     );
 
     if (result.rows.length === 0) return res.status(404).json({ error: 'PTW non trouvé' });

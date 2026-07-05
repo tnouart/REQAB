@@ -1038,3 +1038,340 @@ export const deletePTW = async (id: number): Promise<boolean> => {
     return false;
   }
 };
+
+// ── AEI API ────────────────────────────────
+export interface AEIRecord {
+  id: number;
+  reference: string;
+  activite: string;
+  aspect: string;
+  impact: string;
+  condition: string;
+  criticite: number;
+  significatif: boolean;
+  etape: string;
+  checks: { label: string; ok: boolean }[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchAEI = async (): Promise<AEIRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/aei`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch AEI:', error);
+    return [];
+  }
+};
+
+export const fetchAEIStats = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE}/aei/stats`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch AEI stats:', error);
+    return {};
+  }
+};
+
+export const createAEI = async (data: Partial<AEIRecord>): Promise<AEIRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/aei`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create AEI:', error);
+    return null;
+  }
+};
+
+export const updateAEI = async (id: number, data: Partial<AEIRecord>): Promise<AEIRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/aei/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur update AEI:', error);
+    return null;
+  }
+};
+
+export const deleteAEI = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/aei/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur delete AEI:', error);
+    return false;
+  }
+};
+
+// ── Incidents API ──────────────────────────
+export interface IncidentRecord {
+  id: number;
+  reference: string;
+  description: string;
+  gravite: string;
+  zone: string;
+  statut: string;
+  date: string;
+  type: string;
+  checks: { label: string; ok: boolean }[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchIncidents = async (): Promise<IncidentRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/incidents`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch incidents:', error);
+    return [];
+  }
+};
+
+export const fetchIncidentStats = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE}/incidents/stats`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch incident stats:', error);
+    return {};
+  }
+};
+
+export const createIncident = async (data: Partial<IncidentRecord>): Promise<IncidentRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/incidents`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create incident:', error);
+    return null;
+  }
+};
+
+export const updateIncident = async (id: number, data: Partial<IncidentRecord>): Promise<IncidentRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/incidents/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur update incident:', error);
+    return null;
+  }
+};
+
+export const deleteIncident = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/incidents/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur delete incident:', error);
+    return false;
+  }
+};
+
+// ── Habilitations API ──────────────────────
+export interface HabilitationRecord {
+  id: number;
+  reference: string;
+  nom: string;
+  prenom: string;
+  competences: string[];
+  date_expiration: string;
+  statut: string;
+  checks: { label: string; ok: boolean }[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchHabilitations = async (): Promise<HabilitationRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/habilitations`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch habilitations:', error);
+    return [];
+  }
+};
+
+export const fetchHabilitationStats = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE}/habilitations/stats`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch habilitation stats:', error);
+    return {};
+  }
+};
+
+export const createHabilitation = async (data: Partial<HabilitationRecord>): Promise<HabilitationRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/habilitations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create habilitation:', error);
+    return null;
+  }
+};
+
+export const updateHabilitation = async (id: number, data: Partial<HabilitationRecord>): Promise<HabilitationRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/habilitations/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur update habilitation:', error);
+    return null;
+  }
+};
+
+export const deleteHabilitation = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/habilitations/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur delete habilitation:', error);
+    return false;
+  }
+};
+
+// ── Indicateurs environnementaux API ───────
+export interface IndicateurEnvRecord {
+  id: number;
+  type: string;
+  valeur: number;
+  unite: string;
+  mois: string;
+  tendance: string;
+  created_at: string;
+}
+
+export const fetchIndicateursEnv = async (): Promise<IndicateurEnvRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/indicateurs-env`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch indicateurs env:', error);
+    return [];
+  }
+};
+
+export const createIndicateurEnv = async (data: Partial<IndicateurEnvRecord>): Promise<IndicateurEnvRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/indicateurs-env`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create indicateur env:', error);
+    return null;
+  }
+};
+
+// ── Conformité légale API ──────────────────
+export interface ConformiteRecord {
+  id: number;
+  reference: string;
+  domaine: string;
+  intitule: string;
+  derniere_evaluation: string;
+  prochaine_echeance: string;
+  statut: string;
+  checks: { label: string; ok: boolean }[];
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchConformites = async (): Promise<ConformiteRecord[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/conformites`);
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur fetch conformites:', error);
+    return [];
+  }
+};
+
+export const createConformite = async (data: Partial<ConformiteRecord>): Promise<ConformiteRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/conformites`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur create conformite:', error);
+    return null;
+  }
+};
+
+export const updateConformite = async (id: number, data: Partial<ConformiteRecord>): Promise<ConformiteRecord | null> => {
+  try {
+    const response = await fetch(`${API_BASE}/conformites/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return response.json();
+  } catch (error) {
+    console.error('Erreur update conformite:', error);
+    return null;
+  }
+};
+
+export const deleteConformite = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE}/conformites/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error('Erreur delete conformite:', error);
+    return false;
+  }
+};
