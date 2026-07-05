@@ -300,33 +300,29 @@ const PTW: React.FC = () => {
 
   if (loading) return <div className="detail-pane"><p>Chargement…</p></div>;
 
-  return (
+return (
     <div className="detail-pane" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div className="page-header" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-  {/* BLOC GAUCHE : Icône et Titres */}
-  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-    <div className="ph-icon" style={{ background: '#FFF3EE', padding: '8px', borderRadius: '8px' }}>🔶</div>
-    <div>
-      <div className="ph-title" style={{ fontWeight: 'bold' }}>Permis de travail (PTW)</div>
-      <div className="ph-sub" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>ISO 45001:2018 §8.1.3 — Gestion des travaux à risques élevés · ENSP</div>
-    </div>
-  </div>
-
-  {/* BLOC DROITE : Filtre et Boutons (poussés tout à droite) */}
-  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
-    <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ fontSize: 11, background: 'var(--surf)', border: '1px solid var(--bdr)', borderRadius: 6, padding: '4px 8px', outline: 'none' }}>
-      <option value="all">Tous types</option>
-      <option value="chaud">🔥 Feu chaud</option>
-      <option value="electr">⚡ Électrique</option>
-      <option value="confine">🔵 Espace confiné</option>
-      <option value="hauteur">🟢 Hauteur</option>
-      <option value="general">🔧 Général</option>
-    </select>
-    <button className="btn btn-ghost btn-sm" onClick={() => { setShowArchives(true); setSelectedPTW(null); }}>📦 Archives</button>
-    <button className="btn btn-p btn-sm" onClick={() => { setEditingId(null); setShowForm(true); }}>+ Nouveau PTW</button>
-  </div>
-</div>
-
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="ph-icon" style={{ background: '#FFF3EE', padding: '8px', borderRadius: '8px' }}>🔶</div>
+          <div>
+            <div className="ph-title" style={{ fontWeight: 'bold' }}>Permis de travail (PTW)</div>
+            <div className="ph-sub" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>ISO 45001:2018 §8.1.3 — Gestion des travaux à risques élevés · ENSP</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
+          <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ fontSize: 11, background: 'var(--surf)', border: '1px solid var(--bdr)', borderRadius: 6, padding: '4px 8px', outline: 'none' }}>
+            <option value="all">Tous types</option>
+            <option value="chaud">🔥 Feu chaud</option>
+            <option value="electr">⚡ Électrique</option>
+            <option value="confine">🔵 Espace confiné</option>
+            <option value="hauteur">🟢 Hauteur</option>
+            <option value="general">🔧 Général</option>
+          </select>
+          <button className="btn btn-ghost btn-sm" onClick={() => { setShowArchives(true); setSelectedPTW(null); }}>📦 Archives</button>
+          <button className="btn btn-p btn-sm" onClick={() => { setEditingId(null); setShowForm(true); }}>+ Nouveau PTW</button>
+        </div>
+      </div>
       <div className="kanban-area">
         <div className="kanban-scroll">
           {cols.map(c => {
@@ -577,81 +573,116 @@ const PTW: React.FC = () => {
         </div>
       )}
 
-      {showArchives && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
-          <div style={{ background: 'var(--white)', borderRadius: 14, padding: 24, width: 860, maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--sh3)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Archives PTW</div>
-                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Permis de travail archivés. Vous pouvez consulter, filtrer ou restaurer.</div>
-              </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowArchives(false)}>Fermer</button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 14 }}>
-              <input value={archiveSearch} onChange={e => setArchiveSearch(e.target.value)} placeholder="Recherche: numéro, titre, zone, responsable..." />
-              <select value={archiveFilterType} onChange={e => setArchiveFilterType(e.target.value)}>
-                <option value="">Tous types</option>
-                <option value="chaud">🔥 Feu chaud</option>
-                <option value="electr">⚡ Électrique</option>
-                <option value="confine">🔵 Espace confiné</option>
-                <option value="hauteur">🟢 Hauteur</option>
-                <option value="general">🔧 Général</option>
-              </select>
-              <input type="date" value={archiveDateFrom} onChange={e => setArchiveDateFrom(e.target.value)} placeholder="Date début from" />
-              <input type="date" value={archiveDateTo} onChange={e => setArchiveDateTo(e.target.value)} placeholder="Date fin to" />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 14 }}>
-              <input value={archiveFilterResponsable} onChange={e => setArchiveFilterResponsable(e.target.value)} placeholder="Responsable" />
-              <input type="datetime-local" value={archiveArchivedFrom} onChange={e => setArchiveArchivedFrom(e.target.value)} placeholder="Archivé depuis" />
-              <input type="datetime-local" value={archiveArchivedTo} onChange={e => setArchiveArchivedTo(e.target.value)} placeholder="Archivé jusqu'à" />
-            </div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <button className="btn btn-p btn-sm" onClick={loadArchives}>🔍 Rechercher</button>
-              <button className="btn btn-ghost btn-sm" onClick={() => { setArchiveSearch(''); setArchiveFilterType(''); setArchiveFilterResponsable(''); setArchiveDateFrom(''); setArchiveDateTo(''); setArchiveArchivedFrom(''); setArchiveArchivedTo(''); loadArchives(); }}>Réinitialiser</button>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8 }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-                <thead>
-                  <tr style={{ background: 'var(--surface-2)', textAlign: 'left' }}>
-                    <th style={{ padding: '8px 10px' }}>Numéro</th>
-                    <th style={{ padding: '8px 10px' }}>Type</th>
-                    <th style={{ padding: '8px 10px' }}>Titre</th>
-                    <th style={{ padding: '8px 10px' }}>Zone</th>
-                    <th style={{ padding: '8px 10px' }}>Responsable</th>
-                    <th style={{ padding: '8px 10px' }}>Dates</th>
-                    <th style={{ padding: '8px 10px' }}>Statut</th>
-                    <th style={{ padding: '8px 10px' }}>Archivé le</th>
-                    <th style={{ padding: '8px 10px' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {archiveLoading ? (
-                    <tr><td colSpan={9} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>Chargement...</td></tr>
-                  ) : archives.length === 0 ? (
-                    <tr><td colSpan={9} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>Aucun PTW archivé</td></tr>
-                  ) : archives.map(a => (
-                    <tr key={a.id} style={{ borderBottom: '1px solid var(--surface-2)', cursor: 'pointer' }} onClick={() => { setSelectedPTW(a); setShowForm(false); setShowArchives(false); }}>
-                      <td style={{ padding: '8px 10px', fontFamily: 'var(--font-code)', fontWeight: 700 }}>{a.numero_ptw}</td>
-                      <td style={{ padding: '8px 10px' }}>{typeIcons[a.type_travail]} {typeLabels[a.type_travail]}</td>
-                      <td style={{ padding: '8px 10px', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.titre}</td>
-                      <td style={{ padding: '8px 10px' }}>{a.zone}</td>
-                      <td style={{ padding: '8px 10px' }}>{a.responsable}</td>
-                      <td style={{ padding: '8px 10px', whiteSpace: 'nowrap' }}>{new Date(a.date_debut).toLocaleDateString('fr-FR')} → {new Date(a.date_fin).toLocaleDateString('fr-FR')}</td>
-                      <td style={{ padding: '8px 10px' }}>{a.statut}</td>
-                      <td style={{ padding: '8px 10px', whiteSpace: 'nowrap' }}>{a.archived_at ? new Date(a.archived_at).toLocaleString('fr-FR') : ''}</td>
-                      <td style={{ padding: '8px 10px' }} onClick={(e) => e.stopPropagation()}>
-                        <button className="btn btn-ghost btn-sm" onClick={() => handleRestore(a)}>♻️ Restaurer</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+  {showArchives && (
+  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
+    {/* Largeur augmentée à 1200px */}
+    <div style={{ background: 'var(--white)', borderRadius: 14, padding: 24, width: 1200, maxWidth: '95vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--sh3)' }}>
+      
+      {/* Header avec Titre, Boutons d'action centrés et Bouton Fermer */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>Archives PTW</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Permis de travail archivés.</div>
+        </div>
+
+        {/* Boutons de recherche déplacés ici au centre de la ligne du titre */}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button className="btn btn-p btn-sm" style={{ padding: '8px 16px', fontSize: 12 }} onClick={loadArchives}>🔍 Rechercher</button>
+          <button className="btn btn-ghost btn-sm" style={{ padding: '8px 16px', fontSize: 12 }} onClick={() => { setArchiveSearch(''); setArchiveFilterType(''); setArchiveFilterResponsable(''); setArchiveDateFrom(''); setArchiveDateTo(''); setArchiveArchivedFrom(''); setArchiveArchivedTo(''); loadArchives(); }}>Réinitialiser</button>
+        </div>
+
+        <button className="btn btn-ghost btn-sm" onClick={() => setShowArchives(false)}>✕ Fermer</button>
+      </div>
+
+      {/* Zone de Filtrage Unifiée */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+        
+        {/* Ligne 1: Recherche globale, Type, Période de travail */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+          <div>
+            <input value={archiveSearch} onChange={e => setArchiveSearch(e.target.value)} placeholder="Recherche: numéro, titre, zone, responsable..." style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)' }} />
+          </div>
+          <div>
+            <select value={archiveFilterType} onChange={e => setArchiveFilterType(e.target.value)} style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)', cursor: 'pointer' }}>
+              <option value="">Tous types</option>
+              <option value="chaud">🔥 Feu chaud</option>
+              <option value="electr">⚡ Électrique</option>
+              <option value="confine">🔵 Espace confiné</option>
+              <option value="hauteur">🟢 Hauteur</option>
+              <option value="general">🔧 Général</option>
+            </select>
+          </div>
+          <div>
+            <input type="date" value={archiveDateFrom} onChange={e => setArchiveDateFrom(e.target.value)} style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)' }} />
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}><strong>Date début</strong>: travail</div>
+          </div>
+          <div>
+            <input type="date" value={archiveDateTo} onChange={e => setArchiveDateTo(e.target.value)} style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)' }} />
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}><strong>Date fin</strong>: travail</div>
           </div>
         </div>
-      )}
+
+        {/* Ligne 2: Responsable, Période d'archivage */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12 }}>
+          <div>
+            <input value={archiveFilterResponsable} onChange={e => setArchiveFilterResponsable(e.target.value)} placeholder="Nom du responsable" style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)' }} />
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}><strong>Responsable</strong>: filtrer par nom</div>
+          </div>
+          <div>
+            <input type="datetime-local" value={archiveArchivedFrom} onChange={e => setArchiveArchivedFrom(e.target.value)} style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)' }} />
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}><strong>Date début</strong>: archive</div>
+          </div>
+          <div>
+            <input type="datetime-local" value={archiveArchivedTo} onChange={e => setArchiveArchivedTo(e.target.value)} style={{ width: '100%', padding: '8px 10px', fontSize: 12, borderRadius: 6, border: '1px solid var(--bdr)', background: 'var(--surf)' }} />
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}><strong>Date fin</strong>: archive</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tableau des Résultats */}
+      <div style={{ flex: 1, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+          <thead>
+            <tr style={{ background: 'var(--surface-2)', textAlign: 'left' }}>
+              <th style={{ padding: '10px 12px' }}>Numéro</th>
+              <th style={{ padding: '10px 12px' }}>Type</th>
+              <th style={{ padding: '10px 12px' }}>Titre</th>
+              <th style={{ padding: '10px 12px' }}>Zone</th>
+              <th style={{ padding: '10px 12px' }}>Responsable</th>
+              <th style={{ padding: '10px 12px', minWidth: 140 }}>Dates</th>
+              <th style={{ padding: '10px 12px' }}>Statut</th>
+              <th style={{ padding: '10px 12px', minWidth: 160 }}>Archivé le</th>
+              <th style={{ padding: '10px 12px' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {archiveLoading ? (
+              <tr><td colSpan={9} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>Chargement...</td></tr>
+            ) : archives.length === 0 ? (
+              <tr><td colSpan={9} style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>Aucun PTW archivé</td></tr>
+            ) : archives.map(a => (
+              <tr key={a.id} style={{ borderBottom: '1px solid var(--surface-2)', cursor: 'pointer' }} onClick={() => { setSelectedPTW(a); setShowForm(false); setShowArchives(false); }}>
+                <td style={{ padding: '10px 12px', fontFamily: 'var(--font-code)', fontWeight: 700 }}>{a.numero_ptw}</td>
+                <td style={{ padding: '10px 12px' }}>{typeIcons[a.type_travail]} {typeLabels[a.type_travail]}</td>
+                <td style={{ padding: '10px 12px', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.titre}</td>
+                <td style={{ padding: '10px 12px' }}>{a.zone}</td>
+                <td style={{ padding: '10px 12px' }}>{a.responsable}</td>
+                <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>{new Date(a.date_debut).toLocaleDateString('fr-FR')} → {new Date(a.date_fin).toLocaleDateString('fr-FR')}</td>
+                <td style={{ padding: '10px 12px' }}>{a.statut}</td>
+                <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>{a.archived_at ? new Date(a.archived_at).toLocaleString('fr-FR') : ''}</td>
+                <td style={{ padding: '10px 12px' }} onClick={(e) => e.stopPropagation()}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => handleRestore(a)}>♻️ Restaurer</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  );
-};
+  </div>
+  )}
+  </div>
+);};
 
 export default PTW;
+
