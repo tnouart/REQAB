@@ -1,14 +1,11 @@
 {
   "version": 2,
+  "contributors": ["t.nouar.t@gmail.com"],
   "builds": [
     {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" },
-      "env": {
-        "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
-        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "@supabase_anon_key"
-      }
+      "config": { "distDir": "dist" }     
     },
     {
       "src": "backend/server.js",
