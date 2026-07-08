@@ -1,0 +1,8 @@
+tree ad3523f0a5f3ca270d3b14a6aa72da6b9d4b77fb
+parent 44e76db1a28ea33f36a0fb6d22ef5a4228fb8920
+author nouar <t.nouar.t@gmail.com> 1783368577 +0100
+committer idim bio <bioidim@gmail.com> 1783460989 +0100
+
+Specify entrypoint for backend in vercel.json
+
+Added entrypoint for backend service in Vercel config.

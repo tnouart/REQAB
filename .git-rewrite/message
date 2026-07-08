@@ -1,0 +1,3 @@
+Specify entrypoint for backend in vercel.json
+
+Added entrypoint for backend service in Vercel config.
